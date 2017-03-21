@@ -43,8 +43,11 @@ pimcore.plugin.objectmerger.panel = Class.create({
         });
     },
 
+    toggle: function () {
 
-
+        this.panel.close();
+        new pimcore.plugin.objectmerger.panel(this.oid2, this.oid1);
+    },
 
     getTabPanel: function () {
 
@@ -55,7 +58,13 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 title: t("plugin_objectmerger_diff") + " " + this.oid1 + " - " + this.oid2,
                 closable: true,
                 items: [],
-                buttons: [{
+                buttons: [
+                    {
+                        text: t("plugin_objectmerger_mirror"),
+                        iconCls: "plugin_objectmerger_icon_mirror",
+                        handler: this.toggle.bind(this)
+                    },
+                    {
                     text: t("save"),
                     iconCls: "pimcore_icon_apply",
                     handler: this.save.bind(this)
@@ -96,23 +105,23 @@ pimcore.plugin.objectmerger.panel = Class.create({
         return html;
         // html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/plugins/ObjectMerger/static/css/preview.css\" />"
         var css = "<style type=\"text/css\">"
-            + "tr {"
-            + "background-color:#000000;"
-            + "color:#E0E0E0"
-            + "}"
-            + " th {"
-            + "background-color: #ccf;"
-            + "color: #000;"
-            + "font-size: x-small;"
-            + "}"
-            + "td {"
-            + "border-right: 1px solid #C1DAD7;"
-            + "border-bottom: 1px solid #C1DAD7;"
-            + "background-color: #ccc;"
-            + "color: #333;"
-            + "font-size: x-small;"
-            + "}"
-            + "</style>";
+                + "tr {"
+                    + "background-color:#000000;"
+                    + "color:#E0E0E0"
+                    + "}"
+                + " th {"
+                    + "background-color: #ccf;"
+                    + "color: #000;"
+                    + "font-size: x-small;"
+                + "}"
+                + "td {"
+                    + "border-right: 1px solid #C1DAD7;"
+                    + "border-bottom: 1px solid #C1DAD7;"
+                    + "background-color: #ccc;"
+                    + "color: #333;"
+                    + "font-size: x-small;"
+                    + "}"
+                + "</style>";
 
         html = css + html;
         return html;
@@ -363,7 +372,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
             applyButton.apply = true;
 
-            var style;
+           var style;
             if (i < 0) {
                 style = 'margin-bottom: 30px;';
             }

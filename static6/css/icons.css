@@ -18,4 +18,9 @@ background: url(/pimcore/static/img/icon/arrow_right.png) left center no-repeat 
 background: url(/pimcore/static/img/icon/lock.png) left center no-repeat !important;
 }
 
+.plugin_objectmerger_icon_mirror {
+    background: url(../img/mirror.svg) left center no-repeat !important;
+}
+
+
 
