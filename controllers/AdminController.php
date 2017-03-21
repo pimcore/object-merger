@@ -274,8 +274,8 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
         }
         $object->save();
 
-        \Pimcore::getEventManager()->trigger("plugin.ObjectMerger.postMerge", $this, ['targetId' => $object->getId(), 'sourceId'=>$this->getParam('sourceId')]);
+        \Pimcore::getEventManager()->trigger("plugin.ObjectMerger.postMerge", $this, ["targetId" => $object->getId(), "sourceId"=>$this->getParam('sourceId')]);
 
-        $this->_helper->json(array("success" => true));
+        $this->_helper->json(array("success" => true, "targetId" => $object->getId(), "sourceId"=>intval($this->getParam('sourceId'))));
     }
 }
