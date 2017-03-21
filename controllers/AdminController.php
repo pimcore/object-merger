@@ -158,9 +158,6 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
             }
 
             $items = array_values($dataFromObject1);
-            usort($items, function($left,$right) {
-                return strcmp($left["key"],$right["key"]);
-            });
 
             $objectData["items"] = $items;
 
