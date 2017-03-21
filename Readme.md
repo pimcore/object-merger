@@ -29,13 +29,6 @@ There are 6 columns:
 
 ![Screenshot](readme/diff1.png)
 
-...
-
-...
-
-...
-
-![Screenshot](readme/diff2.png)
 
 Click on save to apply the changes.
 
