@@ -16,16 +16,22 @@
 class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 
 
+    /**
+     * @param $object
+     * @param $key
+     * @param $fielddefinition \Pimcore\Model\Object\ClassDefinition\Data
+     * @param $objectFromVersion
+     * @param int $level
+     */
     private function getDiffDataForField($object, $key, $fielddefinition, $objectFromVersion, $level = 0) {
         $parent = Object_Service::hasInheritableParentObject($object);
         $getter = "get" . ucfirst($key);
 
-        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object, $objectFromVersion);
+        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object, array(), $objectFromVersion);
         foreach ($value as $el) {
             $key = $el["key"];
             $this->objectData[$key] = $el;
         }
-
     }
 
 
@@ -70,16 +76,28 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
      * Generates a diff for the given two object ids.
      */
     public function diffAction() {
+        $id1 = $this->_getParam("id1");
+        $id2 = $this->_getParam("id2");
 
-        $sourceObjectReceiver = $this->_getParam("sourceObjectReceiver");
-        $sourceParam = $this->_getParam("sourceParam");
-        $targetObjectReceiver = $this->_getParam("targetObjectReceiver");
-        $targetParam = $this->_getParam("targetParam");
+        Logger::debug("############");
+        Logger::debug("############");
+        Logger::debug("############");
+        Logger::debug("############");
+        Logger::debug("############");
+        Logger::debug("############ " . $id1);
+
+//        if (Element_Editlock::isLocked($id2, "object")) {
+//            $this->_helper->json(array(
+//                "editlock" => Element_Editlock::getByElement($id2, "object")
+//            ));
+//        }
 
 
-        $object1 = call_user_func($sourceObjectReceiver, $sourceParam);
-        $object2 = call_user_func($targetObjectReceiver, $targetParam);
+//        Element_Editlock::lock($id1, "object");
+//        Element_Editlock::lock($id2, "object");
 
+        $object1 = Object_Abstract::getById(intval($id1));
+        $object2 = Object_Abstract::getById(intval($id2));
 
         // set the latest available version for editmode
         $latestObject1 = $this->getLatestVersion($object1);
@@ -91,27 +109,19 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
         $object1 = $latestObject1;
         $object2 = $latestObject2;
 
-
-
         if ($object1->isAllowed("view") && $object2->isAllowed("view")) {
             $objectData = array();
 
             $this->getDiffDataForObject($object1, $objectFromVersion1);
 
-
             $dataFromObject1 = $this->objectData;
-
             $this->objectData = null;
 
             $this->getDiffDataForObject($object2, $objectFromVersion2);
             $dataFromObject2 = $this->objectData;
 
-
             $keys1 = array_keys($dataFromObject1);
             $keys2 = array_keys($dataFromObject2);
-
-
-
             $combinedKeys = $this->combineKeys($keys1, $keys2);
 
             foreach($combinedKeys as  $key => $value) {
@@ -138,7 +148,6 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
                         $dataFromObject1[$key] = $merged;
                     }
                 }
-
 
                 if (strpos($key, "key")) {
                     Logger::debug("stop");
@@ -169,7 +178,7 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
                         $languages[$language] = array(
                             "key" => $language,
                             "name" => $locale
-                            );
+                        );
                     }
                 }
             }
@@ -178,7 +187,7 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
                 $languages[] = array(
                     "key" => "default",
                     "name" => "Default"
-                    );
+                );
             }
 
             $languages = array_values($languages);
@@ -215,9 +224,9 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 
         if ($object1 && object2) {
             $this->_helper->json(array(
-                    "success" => true,
-                    "oid1" => $object1->getId(),
-                    "oid2" => $object2->getId(),
+                "success" => true,
+                "oid1" => $object1->getId(),
+                "oid2" => $object2->getId(),
             ));
 
         } else {
@@ -232,17 +241,17 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
      */
     public function saveAction()
     {
-        $targetParam = $this->_getParam("targetParam");
-        $targetObjectReceiver = $this->_getParam("targetObjectReceiver");
+        $objectId = $this->getParam("id");
 
-
-        $object = call_user_func($targetObjectReceiver, $targetParam);
-
-        if($object->getLocked()) {
+        if (Element_Editlock::isLocked($objectId, "object")) {
             $this->_helper->json(array("success" => false, "message" => "plugin_objectmerger_object_locked"));
         }
 
+
         $attributes= Zend_Json::decode($this->getParam("attributes"));
+
+        $object = Object_Abstract::getById($objectId);
+
 
         $objectData = array();
 
@@ -261,12 +270,11 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 
         foreach ($objectData as $key => $value) {
             $fd = $object->getClass()->getFieldDefinition($key);
-            if ($fd && $fd->isDiffChangeAllowed()) {
+            if ($fd && $fd->isDiffChangeAllowed($object)) {
                 $value = $fd->getDiffDataFromEditmode($value, $object);
                 $object->setValue($key, $value);
             }
         }
-
         $object->save();
         $this->_helper->json(array("success" => true));
     }
