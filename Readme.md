@@ -39,7 +39,7 @@ There are 6 columns:
 
 Click on save to apply the changes.
 
-### Customaziations
+### Customizations
 
 The development of the plugin has been discontinued. It has been customized for Kautbullinger where the further development effort was put into. A special requirement for Kautbullinger is that it should be able to show the difference between objects which exist in RAM only, i.e. they haven't been saved before.
 
