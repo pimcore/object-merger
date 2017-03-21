@@ -93,25 +93,26 @@ pimcore.plugin.objectmerger.panel = Class.create({
     },
 
     prependStyle: function(html) {
+        return html;
         // html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/plugins/ObjectMerger/static/css/preview.css\" />"
         var css = "<style type=\"text/css\">"
-                + "tr {"
-                    + "background-color:#000000;"
-                    + "color:#E0E0E0"
-                    + "}"
-                + " th {"
-                    + "background-color: #ccf;"
-                    + "color: #000;"
-                    + "font-size: x-small;"
-                + "}"
-                + "td {"
-                    + "border-right: 1px solid #C1DAD7;"
-                    + "border-bottom: 1px solid #C1DAD7;"
-                    + "background-color: #ccc;"
-                    + "color: #333;"
-                    + "font-size: x-small;"
-                    + "}"
-                + "</style>";
+            + "tr {"
+            + "background-color:#000000;"
+            + "color:#E0E0E0"
+            + "}"
+            + " th {"
+            + "background-color: #ccf;"
+            + "color: #000;"
+            + "font-size: x-small;"
+            + "}"
+            + "td {"
+            + "border-right: 1px solid #C1DAD7;"
+            + "border-bottom: 1px solid #C1DAD7;"
+            + "background-color: #ccc;"
+            + "color: #333;"
+            + "font-size: x-small;"
+            + "}"
+            + "</style>";
 
         html = css + html;
         return html;
@@ -164,21 +165,31 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 if (value) {
                     theValue = this.prependStyle(value.html);
                 }
-                var valuePreview = new Ext.form.HtmlEditor({
+                // var valuePreview = new Ext.form.HtmlEditor({
+                //     width : 450,
+                //     enableLinks            : false,
+                //     enableLists             : false,
+                //     enableSourceEdit      : false,
+                //     enableColors          : false,
+                //     enableFontSize        : false,
+                //     enableFormat          : false,
+                //     enableAlignments      : false,
+                //     enableFont            : false,
+                //     hideLabel             : true,
+                //     autoScroll              : false,
+                //     value: theValue
+                // });
+                // valuePreview.setReadOnly(true);
+
+                var valuePreview = new Ext.Panel({
                     width : 450,
-                    enableLinks            : false,
-                    enableLists             : false,
-                    enableSourceEdit      : false,
-                    enableColors          : false,
-                    enableFontSize        : false,
-                    enableFormat          : false,
-                    enableAlignments      : false,
-                    enableFont            : false,
-                    hideLabel             : true,
-                    autoScroll              : false,
-                    value: theValue
+                    // height: 150,
+                    autoScroll: true,
+                    border: true,
+                    bodyCls: "diffpanel_preview",
+                    html: theValue
                 });
-                valuePreview.setReadOnly(true);
+
             } else {
                 valuePreview = new Ext.form.TextField({
                     width: 450,
@@ -352,7 +363,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
             applyButton.apply = true;
 
-           var style;
+            var style;
             if (i < 0) {
                 style = 'margin-bottom: 30px;';
             }
@@ -385,7 +396,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
         var formForLanguage = new Ext.Panel({
             title: title,
-            iconCls: "pimcore_icon_language_" + language.key,
+            iconCls: "pimcore_icon_language_" + language.key.toLowerCase(),
             bodyStyle: "padding:10px;",
             autoScroll: true,
             border:false,
@@ -567,7 +578,9 @@ pimcore.plugin.objectmerger.panel = Class.create({
             if (theValue.type == "img") {
                 this.replaceImage(rightPreview, theValue.src);
             } else if (theValue.type == "html") {
-                rightPreview.setValue(this.prependStyle(theValue.html));
+                rightPreview.setValue(
+                    this.prependStyle(theValue.html)
+                );
             } else {
                 this.panelActivated(language, tabPanel);
             }
