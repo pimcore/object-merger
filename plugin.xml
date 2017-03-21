@@ -20,9 +20,19 @@
             <path>/ObjectMerger/static/js/plugin.js</path>
             <path>/ObjectMerger/static/js/panel.js</path>
         </pluginJsPaths>
+        <pluginJsPaths-extjs6>
+            <path>/ObjectMerger/static6/js/plugin.js</path>
+            <path>/ObjectMerger/static6/js/panel.js</path>
+        </pluginJsPaths-extjs6>
         <pluginCssPaths>
             <path>/ObjectMerger/static/css/icons.css</path>
             <!-- <path>/ObjectMerger/static/css/preview.css</path> -->
         </pluginCssPaths>
+        <pluginCssPaths-extjs6>
+            <path>/ObjectMerger/static6/css/admin.css</path>
+            <path>/ObjectMerger/static6/css/icons.css</path>
+            <!-- <path>/ObjectMerger/static/css/preview.css</path> -->
+        </pluginCssPaths-extjs6>
+
     </plugin>
 </zend-config>

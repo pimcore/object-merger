@@ -49,20 +49,20 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
             autoHeight: true,
             title: t('plugin_objectmerger_compare'),
             closeAction: 'close',
-            width: 500,
+            width: 700,
             modal: true
         });
 
 
         this.textField1 = new Ext.form.TextField({
             emptyText: t("plugin_objectmerger_path"),
-            width: 300
+            width: 500
         });
 
 
         this.textField2 = new Ext.form.TextField({
             emptyText: t("plugin_objectmerger_path"),
-            width: 300
+            width: 500
         });
 
 
@@ -71,7 +71,8 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
 
             items: [
                 {
-                    xtype: 'compositefield',
+                    xtype: 'fieldcontainer',
+                    layout: 'hbox',
                     fieldLabel: t("plugin_objectmerger_object1"),
                     items: [
                         {
@@ -82,7 +83,8 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
                     ]
                 },
                 {
-                    xtype: 'compositefield',
+                    xtype: 'fieldcontainer',
+                    layout: 'hbox',
                     fieldLabel: t("plugin_objectmerger_object2"),
                     items: [
                         {
@@ -100,7 +102,7 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
                 icon: "/pimcore/static/img/icon/cancel.png",
                 handler: function () {
                     this.selectionDialog.close();
-                }
+                }.bind(this)
             },{
                 xtype: "button",
                 text: t("plugin_objectmerger_btn_compare"),

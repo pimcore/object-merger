@@ -26,7 +26,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
     activate: function () {
         var tabPanel = Ext.getCmp("pimcore_panel_tabs");
-        tabPanel.activate("pimcore_plugin_objectmerger_panel_" +  this.id);
+        tabPanel.setActiveItem("pimcore_plugin_objectmerger_panel_" +  this.id);
     },
 
 
@@ -50,32 +50,24 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
         if (!this.panel) {
             this.panel = new Ext.form.FormPanel({
+                bodyCls: "diffpanel",
                 layout: "fit",
                 title: t("plugin_objectmerger_diff") + " " + this.oid1 + " - " + this.oid2,
                 closable: true,
-//                deferredRender: false,
-//                forceLayout: true,
-                // autoScroll: true,
                 items: [],
-                // style: "margin: 10px 0 0 0",
-                // bodyStyle: "padding: 10px;",
                 buttons: [{
                     text: t("save"),
                     iconCls: "pimcore_icon_apply",
                     handler: this.save.bind(this)
                 }
                 ],
-               // activeTab: 0,
                 id: "pimcore_plugin_objectmerger_panel_" + this.id,
                 iconCls: "plugin_objectmerger_icon"
             });
 
-
-
-
             var tabPanel = Ext.getCmp("pimcore_panel_tabs");
             tabPanel.add(this.panel);
-            tabPanel.activate("pimcore_plugin_objectmerger_panel_" + this.id);
+            tabPanel.setActiveItem("pimcore_plugin_objectmerger_panel_" + this.id);
 
             this.panel.on("destroy", function () {
                 pimcore.globalmanager.remove("plugin_objectmerger_" + this.id);
@@ -128,19 +120,24 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
     replaceImage: function(panel, src) {
 
-        valuePreview = new Ext.BoxComponent({
+        valuePreview = new Ext.Component({
             isFormField: true,
             autoEl: {
                 id: Ext.id(),
                 tag: 'img',
                 src: src
-                // width: 150
+            },
+            isValid: function() {
+                return true;
+            },
+            isDirty: function() {
+                return false;
             }
         });
 
         panel.removeAll();
         panel.add(valuePreview);
-        panel.doLayout();
+        panel.updateLayout();
     },
 
     buildFromValue: function(value, type) {
@@ -155,7 +152,9 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 }
                 var parentPanel = new Ext.Panel({
                     width : 450,
-                    height: 150
+                    height: 150,
+                    border: true,
+                    bodyCls: "diffpanel_preview"
                 });
                 this.replaceImage(parentPanel, theValue);
 
@@ -167,11 +166,10 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 }
                 var valuePreview = new Ext.form.HtmlEditor({
                     width : 450,
-                    // height: 150,
-                    enableLinks             : false,
-                    enableLists              : false,
-                    enableSourceEdit    : false,
-                    enableColors           : false,
+                    enableLinks            : false,
+                    enableLists             : false,
+                    enableSourceEdit      : false,
+                    enableColors          : false,
                     enableFontSize        : false,
                     enableFormat          : false,
                     enableAlignments      : false,
@@ -185,7 +183,9 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 valuePreview = new Ext.form.TextField({
                     width: 450,
                     value: "Unsupported type",
-                    disabled: true
+                    disabled: true,
+                    border: true,
+                    fieldStyle: "border-color: #FFd0d0"
                 });
             }
         } else {
@@ -195,7 +195,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
             valuePreview = new Ext.form.TextField({
                 width: 450,
                 value: value,
-                disabled: true
+                disabled: true,
+                fieldStyle: "border-color: #FFd0d0"
             });
         }
 
@@ -335,6 +336,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
             }
 
             var applyButton = new Ext.Button({
+                style: 'margin-left: 10px;',
                 iconCls: iconCls,
                 disabled: isDisabled,
                 tooltip: btnText
@@ -355,7 +357,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 style = 'margin-bottom: 30px;';
             }
 
-            var fieldSet = new Ext.form.CompositeField({
+            var fieldSet = new Ext.form.FieldContainer({
+                layout: 'hbox',
                 border: false,
                 labelWidth: 0,
                 disabled: isDisabled,
@@ -372,16 +375,17 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
             thePanel.add(fieldSet);
         }
-        thePanel.doLayout();
+        thePanel.updateLayout();
 
     },
 
     getTabForLanguage: function (language) {
 
         var title = language.name;
+
         var formForLanguage = new Ext.Panel({
-            // layout: "pimcoreform",
             title: title,
+            iconCls: "pimcore_icon_language_" + language.key,
             bodyStyle: "padding:10px;",
             autoScroll: true,
             border:false,
@@ -428,7 +432,6 @@ pimcore.plugin.objectmerger.panel = Class.create({
         var languages = data.languages;
 
         this.tab = new Ext.TabPanel({
-            activeTab: 0,
             items: []
         });
 
@@ -480,7 +483,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
         }
 
         this.panel.add(this.tab);
-        this.panel.doLayout();
+        this.tab.setActiveTab(0);
+        this.panel.updateLayout();
     },
 
     changeData: function(apply, item, rightPreview, language, tabPanel, statusPanel, applyButton) {
@@ -532,7 +536,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         }
 
         applyButton.apply = !applyButton.apply;
-        applyButton.setIconClass(iconCls);
+        applyButton.setIconCls(iconCls);
         applyButton.setTooltip(btnText);
 
         this.resultData[item.key] = {
@@ -557,6 +561,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
             statusPanel.setText("!!!");
         }
 
+        var rightPreviewClassName = Ext.getClassName(rightPreview);
+        console.log(Ext.getClassName(rightPreview));
         if (theValue && theValue.type) {
             if (theValue.type == "img") {
                 this.replaceImage(rightPreview, theValue.src);
@@ -571,7 +577,11 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 value = "[undefined]";
             }
 
-            rightPreview.setValue(value);
+            if (rightPreviewClassName == "Ext.panel.Panel") {
+                rightPreview.removeAll();
+            } else {
+                rightPreview.setHTML(value);
+            }
         }
     },
 
