@@ -1,21 +1,21 @@
 .plugin_objectmerger_icon  {
-background: url(../img/plugin_icon.png) left center no-repeat !important;
+    background: url(../img/plugin_icon.png) left center no-repeat !important;
 }
 
 .plugin_objectmerger_icon_revert  {
-background: url(../img/revert.png) left center no-repeat !important;
+    background: url(/pimcore/static6/img/flat-color-icons/undo.svg) left center no-repeat !important;
 }
 
 .plugin_objectmerger_icon_gray_arrow  {
-background: url(../img/gray_arrow.png) left center no-repeat !important;
+    background: url(../img/equal.svg) left center no-repeat !important;
 }
 
 .plugin_objectmerger_icon_arrow_right  {
-background: url(/pimcore/static/img/icon/arrow_right.png) left center no-repeat !important;
+    background: url(../img/green-arrow.svg) left center no-repeat !important;
 }
 
 .plugin_objectmerger_icon_lock  {
-background: url(/pimcore/static/img/icon/lock.png) left center no-repeat !important;
+    background: url(/pimcore/static/img/icon/lock.png) left center no-repeat !important;
 }
 
 .plugin_objectmerger_icon_mirror {
