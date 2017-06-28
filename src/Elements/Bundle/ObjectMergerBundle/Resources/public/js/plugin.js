@@ -99,17 +99,17 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
             bbar: [{
                 xtype: "button",
                 text: t("cancel"),
-                icon: "/pimcore/static/img/icon/cancel.png",
+                iconCls: "pimcore_icon_cancel",
                 handler: function () {
                     this.selectionDialog.close();
                 }.bind(this)
             },{
                 xtype: "button",
                 text: t("plugin_objectmerger_btn_compare"),
-                icon: "/pimcore/static/img/icon/tick.png",
+                icon: "/pimcore/static6/img/icon/tick.png",
                 handler: function () {
                     Ext.Ajax.request({
-                        url: "/plugin/ObjectMerger/admin/getid",
+                        url: "/admin/elementsobjectmerger/admin/getid",
                         method: "post",
                         params: {
                             path1: this.textField1.getValue(),

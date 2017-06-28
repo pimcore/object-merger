@@ -33,7 +33,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
     save: function () {
 
         Ext.Ajax.request({
-            url: "/plugin/ObjectMerger/admin/save",
+            url: "/admin/elementsobjectmerger/admin/save",
             method: "post",
             params: {
                 id: this.oid2,
@@ -88,7 +88,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         }
 
         Ext.Ajax.request({
-            url: "/plugin/ObjectMerger/admin/diff",
+            url: "/admin/elementsobjectmerger/admin/diff",
             method: "post",
             params: {
                 id1: this.oid1,
@@ -621,7 +621,6 @@ pimcore.plugin.objectmerger.panel = Class.create({
     saveComplete: function(response) {
         var data = Ext.decode(response.responseText);
         if (data.success) {
-            pimcore.plugin.broker.fireEvent("pluginObjectMergerPostMerge", data);
             pimcore.helpers.showNotification(t("success"), t("your_object_has_been_saved"), "success");
         } else {
             pimcore.helpers.showNotification(t("error"), t(data.message), "error");

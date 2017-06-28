@@ -12,8 +12,23 @@
  * @copyright  Copyright (c) 2009-2012 elements.at New Media Solutions GmbH (http://www.elements.at)
  * @license    http://www.pimcore.org/license     New BSD License
  */
+namespace Elements\Bundle\ObjectMergerBundle\Controller;
 
-class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
+use Pimcore\Logger;
+use Pimcore\Model\Element\Editlock;
+use Pimcore\Model\Object\AbstractObject;
+use Pimcore\Model\Object\Concrete;
+use Pimcore\Model\Object\Service;
+use Pimcore\Tool;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Intl\Locale\Locale;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @Route("/admin/elementsobjectmerger/admin")
+ */
+class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController {
 
 
     /**
@@ -24,7 +39,7 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
      * @param int $level
      */
     private function getDiffDataForField($object, $key, $fielddefinition, $objectFromVersion, $level = 0) {
-        $parent = Object_Service::hasInheritableParentObject($object);
+        $parent = Service::hasInheritableParentObject($object);
         $getter = "get" . ucfirst($key);
 
         $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object, array(), $objectFromVersion);
@@ -35,7 +50,7 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
     }
 
 
-    private function getDiffDataForObject(Object_Concrete $object, $objectFromVersion = false) {
+    private function getDiffDataForObject(Concrete $object, $objectFromVersion = false) {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
             $this->getDiffDataForField($object, $key, $def, $objectFromVersion);
         }
@@ -54,16 +69,16 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 
 
     /**
-     * @param  Object_Concrete $object
-     * @return Object_Concrete
+     * @param  Concrete $object
+     * @return Concrete
      */
-    protected function getLatestVersion(Object_Concrete $object)
+    protected function getLatestVersion(Concrete $object)
     {
         $modificationDate = $object->getModificationDate();
         $latestVersion = $object->getLatestVersion();
         if ($latestVersion) {
             $latestObj = $latestVersion->loadData();
-            if ($latestObj instanceof Object_Concrete) {
+            if ($latestObj instanceof Concrete) {
                 $object = $latestObj;
                 $object->setModificationDate($modificationDate); // set de modification-date from published version to compare it in js-frontend
             }
@@ -74,17 +89,15 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 
     /**
      * Generates a diff for the given two object ids.
+     *
+     * @Route("/diff")
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function diffAction() {
-        $id1 = $this->_getParam("id1");
-        $id2 = $this->_getParam("id2");
+    public function diffAction(Request $request) {
+        $id1 = $request->get("id1");
+        $id2 = $request->get("id2");
 
-        Logger::debug("############");
-        Logger::debug("############");
-        Logger::debug("############");
-        Logger::debug("############");
-        Logger::debug("############");
-        Logger::debug("############ " . $id1);
 
 //        if (Element_Editlock::isLocked($id2, "object")) {
 //            $this->_helper->json(array(
@@ -96,8 +109,8 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
 //        Element_Editlock::lock($id1, "object");
 //        Element_Editlock::lock($id2, "object");
 
-        $object1 = Object_Abstract::getById(intval($id1));
-        $object2 = Object_Abstract::getById(intval($id2));
+        $object1 = AbstractObject::getById(intval($id1));
+        $object2 = AbstractObject::getById(intval($id2));
 
         // set the latest available version for editmode
         $latestObject1 = $this->getLatestVersion($object1);
@@ -152,12 +165,15 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
                 if (strpos($key, "key")) {
                     Logger::debug("stop");
                 }
-                if (Zend_Json::encode($merged["data"]) != Zend_Json::encode($merged["data2"])) {
+                if (json_encode($merged["data"]) != json_encode($merged["data2"])) {
                     $dataFromObject1[$key]["isdiff"] = true;
                 }
             }
 
             $items = array_values($dataFromObject1);
+            usort($items, function($left,$right) {
+                return strcmp($left["key"],$right["key"]);
+            });
 
             $objectData["items"] = $items;
 
@@ -170,7 +186,7 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
                 if ($language) {
 
                     if (!$languages[$language]) {
-                        $locale = Locale::getDisplayName($language);
+                        $locale = \Locale::getDisplayLanguage($language);
 
                         $languages[$language] = array(
                             "key" => $language,
@@ -200,54 +216,60 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
             $objectData["o1path"] = $object1->getFullPath();
             $objectData["o2path"] = $object2->getFullPath();
 
-            $this->_helper->json($objectData);
+            return $this->json($objectData);
         }
         else {
             Logger::debug("prevented getting object id [ " . $object1->getId() . " or " . $object2->getId() . " ] because of missing permissions");
-            $this->_helper->json(array("success" => false, "message" => "missing_permission"));
+            return $this->json(array("success" => false, "message" => "missing_permission"));
         }
     }
 
 
     /**
      * Returns the IDs for the given 2 full object paths.
+     *
+     * @Route("/getid")
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function getidAction() {
-        $path1 = $this->_getParam("path1");
-        $path2 = $this->_getParam("path2");
+    public function getidAction(Request $request) {
+        $path1 = $request->get("path1");
+        $path2 = $request->get("path2");
 
-        $object1 = Object_Abstract::getByPath($path1);
-        $object2 = Object_Abstract::getByPath($path2);
+        $object1 = AbstractObject::getByPath($path1);
+        $object2 = AbstractObject::getByPath($path2);
 
-        if ($object1 && object2) {
-            $this->_helper->json(array(
+        if ($object1 && $object2) {
+            return $this->json(array(
                 "success" => true,
                 "oid1" => $object1->getId(),
                 "oid2" => $object2->getId(),
             ));
 
         } else {
-            $this->_helper->json(array("success" => false, "message" => "plugin_objectmerger_no_object"));
+            return $this->json(array("success" => false, "message" => "plugin_objectmerger_no_object"));
         }
     }
 
-
-
     /**
      * Saves the merged object.
+     *
+     * @Route("/save")
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function saveAction()
+    public function saveAction(Request $request)
     {
-        $objectId = $this->getParam("id");
+        $objectId = $request->get("id");
 
-        if (Element_Editlock::isLocked($objectId, "object")) {
-            $this->_helper->json(array("success" => false, "message" => "plugin_objectmerger_object_locked"));
+        if (Editlock::isLocked($objectId, "object")) {
+            return $this->json(array("success" => false, "message" => "plugin_objectmerger_object_locked"));
         }
 
 
-        $attributes= Zend_Json::decode($this->getParam("attributes"));
+        $attributes= json_decode($request->get("attributes"), true);
 
-        $object = Object_Abstract::getById($objectId);
+        $object = AbstractObject::getById($objectId);
 
 
         $objectData = array();
@@ -273,9 +295,6 @@ class ObjectMerger_AdminController extends Pimcore_Controller_Action_Admin {
             }
         }
         $object->save();
-
-        \Pimcore::getEventManager()->trigger("plugin.ObjectMerger.postMerge", $this, ["targetId" => $object->getId(), "sourceId"=>$this->getParam('sourceId')]);
-
-        $this->_helper->json(array("success" => true, "targetId" => $object->getId(), "sourceId"=>intval($this->getParam('sourceId'))));
+        return $this->json(array("success" => true));
     }
 }
