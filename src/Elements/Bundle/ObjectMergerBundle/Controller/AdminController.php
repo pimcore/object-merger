@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Intl\Locale\Locale;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * @Route("/admin/elementsobjectmerger/admin")
@@ -295,6 +296,9 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             }
         }
         $object->save();
-        return $this->json(array("success" => true));
+
+        \Pimcore::getEventDispatcher()->dispatch("plugin.ObjectMerger.postMerge", new GenericEvent($this, ["targetId" => $object->getId(), "sourceId"=>$request->get('sourceId')]));
+
+        return $this->json(array("success" => true, "targetId" => $object->getId(), "sourceId"=>$request->get('sourceId')));
     }
 }

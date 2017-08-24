@@ -37,6 +37,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
             method: "post",
             params: {
                 id: this.oid2,
+                sourceId: this.oid1,
                 attributes: Ext.encode(this.resultData)
             },
             success: this.saveComplete.bind(this)
@@ -621,6 +622,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
     saveComplete: function(response) {
         var data = Ext.decode(response.responseText);
         if (data.success) {
+            pimcore.plugin.broker.fireEvent("pluginObjectMergerPostMerge", data);
             pimcore.helpers.showNotification(t("success"), t("your_object_has_been_saved"), "success");
         } else {
             pimcore.helpers.showNotification(t("error"), t(data.message), "error");
