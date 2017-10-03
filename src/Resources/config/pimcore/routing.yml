@@ -1,0 +1,3 @@
+app:
+    resource: "@Pimcore/ObjectMergerBundle/Controller/"
+    type:     annotation

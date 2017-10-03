@@ -1,18 +1,18 @@
 {
-  "name": "elements/object-merger-bundle",
+  "name": "pimcore/object-merger",
   "type": "pimcore-bundle",
   "require": {
     "pimcore/core-version": ">=5.0.0-alpha.1"
   },
   "autoload": {
     "psr-4": {
-        "": "src"
+      "Pimcore\\ObjectMergerBundle\\": "src"
     }
   },
   "extra": {
     "pimcore": {
       "bundles": [
-        "Elements\\Bundle\\ObjectMergerBundle\\ElementsObjectMergerBundle"
+        "Pimcore\\ObjectMergerBundle\\ObjectMergerBundle"
       ]
     }
   }
