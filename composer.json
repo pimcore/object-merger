@@ -6,13 +6,13 @@
   },
   "autoload": {
     "psr-4": {
-      "Pimcore\\ObjectMergerBundle\\": "src"
+      "Pimcore\\Bundle\\ObjectMergerBundle\\": "src"
     }
   },
   "extra": {
     "pimcore": {
       "bundles": [
-        "Pimcore\\ObjectMergerBundle\\ObjectMergerBundle"
+        "Pimcore\\Bundle\\ObjectMergerBundle\\ObjectMergerBundle"
       ]
     }
   }

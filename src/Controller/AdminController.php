@@ -13,7 +13,7 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\ObjectMergerBundle\Controller;
+namespace Pimcore\Bundle\ObjectMergerBundle\Controller;
 
 use Pimcore\Logger;
 use Pimcore\Model\Element\Editlock;
