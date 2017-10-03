@@ -28,8 +28,8 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     public function getCssPaths()
     {
         return [
-            '/bundles/pimcoreobjectmerger/css/admin.css',
-            '/bundles/pimcoreobjectmerger/css/icons.css'
+            '/bundles/objectmerger/css/admin.css',
+            '/bundles/objectmerger/css/icons.css'
         ];
     }
 
@@ -39,8 +39,8 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     public function getJsPaths()
     {
         return [
-            '/bundles/pimcoreobjectmerger/js/plugin.js',
-            '/bundles/pimcoreobjectmerger/js/panel.js'
+            '/bundles/objectmerger/js/plugin.js',
+            '/bundles/objectmerger/js/panel.js'
 
         ];
     }

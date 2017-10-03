@@ -1,3 +1,3 @@
 app:
-    resource: "@Pimcore/Bundle/ObjectMergerBundle/Controller/"
+    resource: "@ObjectMergerBundle/Controller/"
     type:     annotation
