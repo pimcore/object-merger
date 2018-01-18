@@ -16,6 +16,7 @@
 namespace Pimcore\Bundle\ObjectMergerBundle\Controller;
 
 use Pimcore\Logger;
+use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\Element\Editlock;
 use Pimcore\Model\Object\AbstractObject;
 use Pimcore\Model\Object\Concrete;
@@ -33,7 +34,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
     /**
      * @param $object
      * @param $key
-     * @param $fielddefinition \Pimcore\Model\Object\ClassDefinition\Data
+     * @param $fielddefinition Data
      * @param $objectFromVersion
      * @param int $level
      */

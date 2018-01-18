@@ -18,6 +18,10 @@
     background: url(/pimcore/static6/img/icon/lock.png) left center no-repeat !important;
 }
 
+.plugin_objectmerger_icon_advanced  {
+    background: url(../img/advanced.svg) center center no-repeat !important;
+}
+
 .plugin_objectmerger_icon_mirror {
     background: url(../img/mirror.svg) left center no-repeat !important;
 }

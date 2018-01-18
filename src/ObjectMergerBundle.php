@@ -40,7 +40,8 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     {
         return [
             '/bundles/objectmerger/js/plugin.js',
-            '/bundles/objectmerger/js/panel.js'
+            '/bundles/objectmerger/js/panel.js',
+            '/bundles/objectmerger/js/grideditor.js'
 
         ];
     }

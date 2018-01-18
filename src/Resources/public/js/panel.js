@@ -25,11 +25,33 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
     activate: function () {
         var tabPanel = Ext.getCmp("pimcore_panel_tabs");
-        tabPanel.setActiveItem("pimcore_plugin_objectmerger_panel_" +  this.id);
+        tabPanel.setActiveItem("pimcore_plugin_objectmerger_panel_" + this.id);
     },
 
 
     save: function () {
+        var resultdataCopy = Ext.decode(Ext.encode(this.resultData));
+
+        for (var key in resultdataCopy) {
+            if (resultdataCopy.hasOwnProperty(key)) {
+                var item = resultdataCopy[key];
+                var value = item.value;
+                if (value && value["type"] == "grid") {
+                    // filter out nonselected stuff
+                    var data = item.data;
+                    var i;
+                    for (i = 0, len = data.length; i < len; i++) {
+                        var itemData = data[i];
+
+                        if (!itemData["__selected"]) {
+                            data.splice(i, 1);
+                            i--;
+                            len--;
+                        }
+                    }
+                }
+            }
+        }
 
         Ext.Ajax.request({
             url: "/admin/elementsobjectmerger/admin/save",
@@ -37,14 +59,13 @@ pimcore.plugin.objectmerger.panel = Class.create({
             params: {
                 id: this.oid2,
                 sourceId: this.oid1,
-                attributes: Ext.encode(this.resultData)
+                attributes: Ext.encode(resultdataCopy)
             },
             success: this.saveComplete.bind(this)
         });
     },
 
     toggle: function () {
-
         this.panel.close();
         new pimcore.plugin.objectmerger.panel(this.oid2, this.oid1);
     },
@@ -101,7 +122,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
     },
 
-    prependStyle: function(html) {
+    prependStyle: function (html) {
         return html;
         // html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/plugins/ObjectMerger/static/css/preview.css\" />"
         var css = "<style type=\"text/css\">"
@@ -128,7 +149,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
     },
 
 
-    replaceImage: function(panel, src) {
+    replaceImage: function (panel, src) {
 
         valuePreview = new Ext.Component({
             isFormField: true,
@@ -137,10 +158,10 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 tag: 'img',
                 src: src
             },
-            isValid: function() {
+            isValid: function () {
                 return true;
             },
-            isDirty: function() {
+            isDirty: function () {
                 return false;
             }
         });
@@ -150,7 +171,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         panel.updateLayout();
     },
 
-    buildFromValue: function(value, type) {
+    buildFromValue: function (value, type) {
         var valuePreview;
         if (type) {
 
@@ -161,7 +182,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
                     theValue = value.src;
                 }
                 var parentPanel = new Ext.Panel({
-                    width : 450,
+                    width: 450,
                     height: 150,
                     border: true,
                     bodyCls: "diffpanel_preview"
@@ -169,29 +190,14 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 this.replaceImage(parentPanel, theValue);
 
                 valuePreview = parentPanel;
-            } else if (type == "html") {
+            } else if (type == "html" || type == "grid") {
                 var theValue;
                 if (value) {
                     theValue = this.prependStyle(value.html);
                 }
-                // var valuePreview = new Ext.form.HtmlEditor({
-                //     width : 450,
-                //     enableLinks            : false,
-                //     enableLists             : false,
-                //     enableSourceEdit      : false,
-                //     enableColors          : false,
-                //     enableFontSize        : false,
-                //     enableFormat          : false,
-                //     enableAlignments      : false,
-                //     enableFont            : false,
-                //     hideLabel             : true,
-                //     autoScroll              : false,
-                //     value: theValue
-                // });
-                // valuePreview.setReadOnly(true);
 
                 var valuePreview = new Ext.Panel({
-                    width : 450,
+                    width: 450,
                     // height: 150,
                     autoScroll: true,
                     border: true,
@@ -223,7 +229,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         return valuePreview;
     },
 
-    panelActivated: function(language, thePanel) {
+    panelActivated: function (language, thePanel) {
         thePanel.removeAll();
 
         var items = this.data.items;
@@ -237,12 +243,12 @@ pimcore.plugin.objectmerger.panel = Class.create({
                     continue;
                 }
 
-                var style =  {};
+                var style = {};
                 if (item.lang) {
                     style.fontWeight = "bold";
                 }
 
-                var statusStyle =  {};
+                var statusStyle = {};
                 statusStyle.color = "orange";
                 statusStyle.fontWeight = "bold";
             }
@@ -281,7 +287,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
             }
 
             var statusPanel = new Ext.form.Label({
-                width : 16,
+                width: 16,
                 border: false,
                 style: statusStyle,
                 text: statusText
@@ -319,6 +325,17 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 tooltip: typeName,
                 handler: handler
             });
+
+            if (leftValue && leftValue["type"] == "grid") {
+                leftValue = this.buildGridDataPreview(item.data, false);
+                theType = "grid";
+            }
+
+            if (rightValue && rightValue["type"] == "grid") {
+                rightValue = this.buildGridDataPreview(item.data2, true);
+                theType = "grid";
+            }
+
 
             var leftPreview = this.buildFromValue(leftValue, theType);
             var rightPreview = this.buildFromValue(rightValue, theType);
@@ -362,9 +379,35 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 tooltip: btnText
             });
 
+            var advancedButton = null;
+
+
+            var gridHandlerCallback = function (item, rightPreview, language, thePanel, statusPanel, applyButton, fromEditor, injectedData) {
+                applyButton.apply = true;
+                this.applyData(item, rightPreview, language, thePanel, statusPanel, applyButton, fromEditor, injectedData);
+            }.bind(this, item, rightPreview, language, thePanel, statusPanel, applyButton, true);
+
+            var gridHandler = function (item, callback) {
+
+                var itemData = this.resultData[item.key];
+                var window = new pimcore.plugin.objectmerger.grideditor(item, itemData, callback);
+                window.show();
+            }.bind(this, item, gridHandlerCallback);
+
+
+            if (theType == "grid" && (item.data || item.data2)) {
+                advancedButton = new Ext.Button({
+                    style: 'margin-left: 10px;',
+                    iconCls: "plugin_objectmerger_icon_advanced",
+                    tooltip: t("advanced"),
+
+                    handler: gridHandler
+                });
+            }
+
             if (hasHandler) {
                 if (item && item.isdiff) {
-                    applyButton.setHandler(this.applyData.bind(this, item, rightPreview, language, thePanel, statusPanel, applyButton));
+                    applyButton.setHandler(this.applyData.bind(this, item, rightPreview, language, thePanel, statusPanel, applyButton, false, null));
                 } else {
                     applyButton.setHandler(pimcore.helpers.openObject.bind(this, this.data.o2id, "object"));
                 }
@@ -375,6 +418,18 @@ pimcore.plugin.objectmerger.panel = Class.create({
             var style;
             if (i < 0) {
                 style = 'margin-bottom: 30px;';
+            }
+
+            if (advancedButton) {
+                var actionItems = {
+                    xtype: "panel",
+                    layout: "vbox",
+                    items: [applyButton, advancedButton],
+                    style: 'padding: 0px; margin: 0px',
+                    border: false
+                }
+            } else {
+                actionItems = applyButton;
             }
 
             var fieldSet = new Ext.form.FieldContainer({
@@ -388,9 +443,9 @@ pimcore.plugin.objectmerger.panel = Class.create({
                     label,
                     datatype,
                     leftPreview,
-                    applyButton,
+                    actionItems,
                     rightPreview
-                ]
+                ],
             });
 
             thePanel.add(fieldSet);
@@ -398,6 +453,31 @@ pimcore.plugin.objectmerger.panel = Class.create({
         thePanel.updateLayout();
 
     },
+
+    buildGridDataPreview: function (data, respectSelection) {
+        var value = [];
+
+        if (data && data.length > 0) {
+            var i;
+
+            for (i = 0; i < data.length; i++) {
+                var item = data[i];
+                if (respectSelection && !item["__selected"]) {
+                    continue;
+                }
+                value.push(item["title"]);
+            }
+        }
+
+        value = value.join("<br>");
+        var result = {
+            type: "grid",
+            "html": value
+        };
+        return result;
+
+    },
+
 
     getTabForLanguage: function (language) {
 
@@ -408,7 +488,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
             iconCls: "pimcore_icon_language_" + language.key.toLowerCase(),
             bodyStyle: "padding:10px;",
             autoScroll: true,
-            border:false,
+            border: false,
             x_nicename: title,
             x_key: language.key,
             x_diffCount: 0
@@ -419,7 +499,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         return formForLanguage;
     },
 
-    executeFunctionByName: function(functionName, context /*, args */) {
+    executeFunctionByName: function (functionName, context /*, args */) {
         var args = Array.prototype.slice.call(arguments, 2);
         var namespaces = functionName.split(".");
         var func = namespaces.pop();
@@ -429,7 +509,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         return context[func].apply(context, args);
     },
 
-    updateTitle: function() {
+    updateTitle: function () {
         var title = t("plugin_objectmerger_diff") + " " + this.data.o1key + "-" + this.data.o2key;
         if (this.changeCount) {
             title = title + " *";
@@ -437,7 +517,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
         this.panel.setTitle(title);
     },
 
-    showDiff: function(response) {
+    showDiff: function (response) {
         var accordion = Ext.getCmp("pimcore_panel_tree_left");
         accordion.collapse();
 
@@ -470,11 +550,18 @@ pimcore.plugin.objectmerger.panel = Class.create({
 
         for (var i = 0; i < items.length; i++) {
             var item = items[i];
+
+            var mergedData = item.data2;
+
+            if (item.value && item.value.type == "grid") {
+                mergedData = this.mergeGridData(item.data, item.data2);
+            }
+
             this.resultData[item.key] = {
-                value : item.value2,
-                data  : item.data2,
-                field : item.field,
-                key   : item.key,
+                value: item.value2,
+                data: mergedData,
+                field: item.field,
+                key: item.key,
                 extData: item.extData,
                 lang: item.lang,
                 changed: false
@@ -507,15 +594,74 @@ pimcore.plugin.objectmerger.panel = Class.create({
         this.panel.updateLayout();
     },
 
-    changeData: function(apply, item, rightPreview, language, tabPanel, statusPanel, applyButton) {
+    mergeGridData: function(data, data2, reverse) {
+        var mergedData = [];
+
+        var existingStuff = {};
+        var idx;
+
+        if (data2) {
+            for (idx = 0; idx < data2.length; idx++) {
+                var rowItem =data2[idx];
+                var itemId = rowItem["itemId"];
+
+                if (existingStuff[itemId]) {
+                    continue;
+                }
+
+                existingStuff[itemId] = true;
+
+                rowItem["__selected"] = true;
+                rowItem["__source"] = reverse ? "left" : "right";
+                rowItem =  Ext.decode(Ext.encode(rowItem));
+                mergedData.push(rowItem);
+            }
+        }
+
+        if (data) {
+            for (idx = 0; idx < data.length; idx++) {
+                var rowItem = data[idx];
+                var itemId = rowItem["itemId"];
+
+                if (existingStuff[itemId]) {
+                    continue;
+                }
+
+                existingStuff[itemId] = true;
+
+                rowItem["__selected"] = false;
+                rowItem["__source"] = reverse ? "right" : "left";
+                rowItem =  Ext.decode(Ext.encode(rowItem));
+                mergedData.push(rowItem);
+            }
+        }
+        return mergedData;
+
+    },
+
+    changeData: function (apply, item, rightPreview, language, tabPanel, statusPanel, applyButton, fromEditor, injectedData) {
         var theValue;
         var theData;
         var changed;
         var diff;
+        var iconCls;
+        var btnText;
+
         var apply = applyButton.apply;
         if (apply) {
             theValue = item.value;
-            theData = item.data;
+
+            if (theValue && theValue["type"] == "grid") {
+
+                if (fromEditor) {
+                    theData = injectedData;
+                } else {
+                    theData = this.mergeGridData(item.data2, item.data, true);
+                }
+                theValue = this.buildGridDataPreview(theData, true);
+            } else {
+                theData = item.data;
+            }
             changed = true;
             iconCls = "plugin_objectmerger_icon_revert";
             btnText = t("plugin_objectmerger_revert");
@@ -523,7 +669,18 @@ pimcore.plugin.objectmerger.panel = Class.create({
             this.changeCount++;
         } else {
             theValue = item.value2;
-            theData = item.data2;
+
+            if (theValue && theValue["type"] == "grid") {
+                var gridData = fromEditor ? injectedData : item.data2;
+                if (fromEditor) {
+                    theData = injectedData;
+                } else {
+                    theData = this.mergeGridData(item.data, item.data2);
+                }
+                theValue = this.buildGridDataPreview(theData, true);
+            } else {
+                theData = item.data2;
+            }
             changed = false;
             iconCls = "plugin_objectmerger_icon_arrow_right";
             btnText = t("plugin_objectmerger_copy");
@@ -555,15 +712,15 @@ pimcore.plugin.objectmerger.panel = Class.create({
             }
         }
 
-        applyButton.apply = !applyButton.apply;
+        applyButton.apply = !apply;
         applyButton.setIconCls(iconCls);
         applyButton.setTooltip(btnText);
 
         this.resultData[item.key] = {
-            value : theValue,
-            data  : theData,
-            field : item.field,
-            key   : item.key,
+            value: theValue,
+            data: theData,
+            field: item.field,
+            key: item.key,
             extData: item.extData,
             lang: item.lang,
             isdiff: item.isdiff,
@@ -582,11 +739,12 @@ pimcore.plugin.objectmerger.panel = Class.create({
         }
 
         var rightPreviewClassName = Ext.getClassName(rightPreview);
-        console.log(Ext.getClassName(rightPreview));
+
         if (theValue && theValue.type) {
             if (theValue.type == "img") {
                 this.replaceImage(rightPreview, theValue.src);
-            } else if (theValue.type == "html") {
+            } else if (theValue.type == "html" || theValue.type == "grid") {
+
                 rightPreview.setHtml(
                     this.prependStyle(theValue.html)
                 );
@@ -608,20 +766,15 @@ pimcore.plugin.objectmerger.panel = Class.create({
     },
 
 
-    revertData: function(item, rightPreview, language, tabPanel, statusPanel, applyButton) {
-        this.changeData(false, item, rightPreview, language, tabPanel, statusPanel, applyButton);
+    applyData: function (item, rightPreview, language, tabPanel, statusPanel, applyButton, fromEditor, injectedData) {
+        this.changeData(true, item, rightPreview, language, tabPanel, statusPanel, applyButton, fromEditor, injectedData);
 
     },
 
-    applyData: function(item, rightPreview, language, tabPanel, statusPanel, applyButton) {
-        this.changeData(true, item, rightPreview, language, tabPanel, statusPanel, applyButton);
-
-    },
-
-    saveComplete: function(response) {
+    saveComplete: function (response) {
         var data = Ext.decode(response.responseText);
         if (data.success) {
-            pimcore.plugin.broker.fireEvent("pluginObjectMergerPostMerge", data);
+            pimcore.plugin.broker.fireEvent("pluginObjectMergerPostMerge", data);
             pimcore.helpers.showNotification(t("success"), t("your_object_has_been_saved"), "success");
         } else {
             pimcore.helpers.showNotification(t("error"), t(data.message), "error");
