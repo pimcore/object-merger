@@ -488,6 +488,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
             iconCls: "pimcore_icon_language_" + language.key.toLowerCase(),
             bodyStyle: "padding:10px;",
             autoScroll: true,
+            layout: 'vbox',
             border: false,
             x_nicename: title,
             x_key: language.key,
