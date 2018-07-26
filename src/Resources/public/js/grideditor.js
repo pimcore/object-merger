@@ -109,7 +109,7 @@ pimcore.plugin.objectmerger.grideditor = Class.create({
             items: [
                 {
                     tooltip: t('up'),
-                    icon: "/pimcore/static6/img/flat-color-icons/up.svg",
+                    icon: "/bundles/pimcoreadmin/img/flat-color-icons/up.svg",
                     handler: function (grid, rowIndex) {
                         if (rowIndex > 0) {
                             var store = grid.getStore();
@@ -133,7 +133,7 @@ pimcore.plugin.objectmerger.grideditor = Class.create({
             items: [
                 {
                     tooltip: t('down'),
-                    icon: "/pimcore/static6/img/flat-color-icons/down.svg",
+                    icon: "/bundles/pimcoreadmin/img/flat-color-icons/down.svg",
                     handler: function (grid, rowIndex) {
                         if (rowIndex < (grid.getStore().getCount() - 1)) {
                             var store = grid.getStore();

@@ -119,7 +119,7 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
             },{
                 xtype: "button",
                 text: t("plugin_objectmerger_btn_compare"),
-                icon: "/pimcore/static6/img/icon/tick.png",
+                icon: "/bundles/pimcoreadmin/img/icon/tick.png",
                 handler: function () {
                     Ext.Ajax.request({
                         url: "/admin/elementsobjectmerger/admin/getid",
