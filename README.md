@@ -40,3 +40,12 @@ In addition it offers two additional features:
 
 * Apply everything at once
 * Show/Hide fields that are equal (defaults to hide)
+
+
+## Running with Pimcore < 5.4
+With Pimcore 5.4 the location of static Pimcore files like icons has changed. In order to make this bundle work 
+with Pimcore < 5.4, please add following rewrite rule to your `.htaccess`.
+```
+    # rewrite rule for pre pimcore 5.4 core static files
+    RewriteRule ^bundles/pimcoreadmin/(.*) /pimcore/static6/$1 [PT,L]
+``` 
