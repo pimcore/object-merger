@@ -92,7 +92,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
                     }
                 ],
                 id: "pimcore_plugin_objectmerger_panel_" + this.id,
-                iconCls: "plugin_objectmerger_icon"
+                iconCls: "plugin_objectmerger_icon_compare"
             });
 
             var tabPanel = Ext.getCmp("pimcore_panel_tabs");
