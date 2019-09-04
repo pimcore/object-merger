@@ -22,8 +22,6 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
 {
     use PackageVersionTrait;
 
-    const PLUGIN_NAME = 'ObjectMerger';
-
     /**
      * @inheritDoc
      */
@@ -54,15 +52,5 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
             '/bundles/objectmerger/js/grideditor.js'
 
         ];
-    }
-
-    /**
-     * If the bundle has an installation routine, an installer is responsible of handling installation related tasks
-     *
-     * @return InstallerInterface|null
-     */
-    public function getInstaller()
-    {
-        return new Installer();
     }
 }
