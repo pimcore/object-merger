@@ -123,8 +123,6 @@ pimcore.plugin.objectmerger.panel = Class.create({
     },
 
     prependStyle: function (html) {
-        return html;
-        // html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"/plugins/ObjectMerger/static/css/preview.css\" />"
         var css = "<style type=\"text/css\">"
             + "tr {"
             + "background-color:#000000;"
