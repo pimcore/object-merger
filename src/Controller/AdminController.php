@@ -185,9 +185,9 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
             $languages = [];
             foreach ($items as $item) {
-                $language = $item['lang'];
+                $language = $item['lang'] ?? null;
                 if ($language) {
-                    if (!$languages[$language]) {
+                    if (!isset($languages[$language])) {
                         $locale = \Locale::getDisplayLanguage($language);
 
                         $languages[$language] = [
