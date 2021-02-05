@@ -25,7 +25,7 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     /**
      * @inheritDoc
      */
-    protected function getComposerPackageName()
+    protected function getComposerPackageName(): string
     {
         return 'pimcore/object-merger';
     }
