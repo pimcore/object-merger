@@ -142,21 +142,21 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             $combinedKeys = $this->combineKeys($keys1, $keys2);
 
             foreach ($combinedKeys as  $key => $value) {
-                $entry1 = $dataFromObject1[$key];
-                $entry2 = $dataFromObject2[$key];
+                $entry1 = $dataFromObject1[$key] ?? null;
+                $entry2 = $dataFromObject2[$key] ?? null;
 
                 $merged = $entry1;
                 if (!$merged) {
                     $merged = [];
-                    $merged['key'] = $entry2['key'];
-                    $merged['field'] = $entry2['field'];
-                    $merged['value2'] = $entry2['value'];
-                    $merged['data2'] = $entry2['data'];
-                    $merged['extData'] = $entry2['extData'];
-                    $merged['disabled'] = $entry2['disabled'];
-                    $merged['title'] = $entry2['title'];
-                    $merged['lang'] = $entry2['lang'];
-                    $merged['type'] = $entry2['type'];
+                    $merged['key'] = $entry2['key'] ?? null;
+                    $merged['field'] = $entry2['field'] ?? null;
+                    $merged['value2'] = $entry2['value'] ?? null;
+                    $merged['data2'] = $entry2['data'] ?? null;
+                    $merged['extData'] = $entry2['extData'] ?? null;
+                    $merged['disabled'] = $entry2['disabled'] ?? false;
+                    $merged['title'] = $entry2['title'] ?? null;
+                    $merged['lang'] = $entry2['lang'] ?? null;
+                    $merged['type'] = $entry2['type'] ?? null;
                     $dataFromObject1[$key] = $merged;
                 } else {
                     if ($entry2) {
@@ -166,10 +166,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
                     }
                 }
 
-                if (strpos($key, 'key')) {
-                    Logger::debug('stop');
-                }
-                if (json_encode($merged['data']) != json_encode($merged['data2'])) {
+                if (json_encode($merged['data'] ?? null) != json_encode($merged['data2'] ?? null)) {
                     $dataFromObject1[$key]['isdiff'] = true;
                 }
             }
@@ -240,8 +237,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $path1 = $request->get('path1');
         $path2 = $request->get('path2');
 
-        $object1 = AbstractObject::getByPath($path1);
-        $object2 = AbstractObject::getByPath($path2);
+        $object1 = Concrete::getByPath($path1);
+        $object2 = Concrete::getByPath($path2);
 
         if ($object1 && $object2) {
             return $this->adminJson([
