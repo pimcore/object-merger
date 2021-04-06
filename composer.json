@@ -10,6 +10,9 @@
       "Pimcore\\Bundle\\ObjectMergerBundle\\": "src"
     }
   },
+  "require": {
+    "pimcore/pimcore": "^6.9 || ^10.0"
+  },
   "extra": {
     "pimcore": {
       "bundles": [
