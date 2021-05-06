@@ -3,23 +3,22 @@
 /**
  * Pimcore
  *
- * This source file is available under following license:
- * - Pimcore Enterprise License (PEL)
+ * This source file is available under two different licenses:
+ * - GNU General Public License version 3 (GPLv3)
+ * - Pimcore Commercial License (PCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
  *
  *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     PEL
+ *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
 namespace Pimcore\Bundle\ObjectMergerBundle\DependencyInjection;
 
-use Pimcore\Loader\ImplementationLoader\ClassMapLoader;
-use Pimcore\Loader\ImplementationLoader\PrefixLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
 
 class ObjectMergerExtension extends Extension
 {
@@ -28,7 +27,6 @@ class ObjectMergerExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')
@@ -36,5 +34,4 @@ class ObjectMergerExtension extends Extension
 
         $loader->load('config.yml');
     }
-
 }
