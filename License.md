@@ -1,5 +1,5 @@
 # License
-Copyright (C) Pimcore GmbH
+Copyright (C) Pimcore GmbH 
 
 This software is available under two different licenses: 
 * GNU General Public License version 3 (GPLv3) as Pimcore Community Edition
