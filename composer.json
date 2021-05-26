@@ -18,9 +18,6 @@
       "bundles": [
         "Pimcore\\Bundle\\ObjectMergerBundle\\ObjectMergerBundle"
       ]
-    },
-    "branch-alias": {
-      "dev-master": "3.0-dev"
-    }    
+    } 
   }
 }
