@@ -272,7 +272,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $object = AbstractObject::getById($objectId);
 
-        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]),'plugin.ObjectMerger.preMerge');
+        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]), 'plugin.ObjectMerger.preMerge');
 
         $objectData = [];
 
