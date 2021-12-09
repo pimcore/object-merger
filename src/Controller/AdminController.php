@@ -272,14 +272,14 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $object = AbstractObject::getById($objectId);
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.preMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]),'plugin.ObjectMerger.preMerge');
 
         $objectData = [];
 
         foreach ($attributes as $att) {
             $fieldname = $att['field'];
 
-            $fieldAtts = $objectData[$fieldname];
+            $fieldAtts = $objectData[$fieldname] ?? null;
 
             if (!$fieldAtts) {
                 $fieldAtts = [];
@@ -298,7 +298,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
         $object->save();
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.postMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]), 'plugin.ObjectMerger.postMerge');
 
         return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }
