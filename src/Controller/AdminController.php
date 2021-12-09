@@ -19,7 +19,6 @@ use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Element\Editlock;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,18 +31,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
     /**
+     * @var array|null
+     */
+    private $objectData;
+
+    /**
      * @param $object
      * @param $key
      * @param $fielddefinition Data
-     * @param $objectFromVersion
-     * @param int $level
      */
-    private function getDiffDataForField($object, $key, $fielddefinition, $objectFromVersion, $level = 0)
+    private function getDiffDataForField($object, $key, $fielddefinition)
     {
-        $parent = Service::hasInheritableParentObject($object);
         $getter = 'get' . ucfirst($key);
 
-        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object, [], $objectFromVersion);
+        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object);
         foreach ($value as $el) {
             $key = $el['key'];
             $this->objectData[$key] = $el;
@@ -53,7 +54,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
     private function getDiffDataForObject(Concrete $object, $objectFromVersion = false)
     {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
-            $this->getDiffDataForField($object, $key, $def, $objectFromVersion);
+            $this->getDiffDataForField($object, $key, $def);
         }
     }
 
