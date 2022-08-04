@@ -27,9 +27,9 @@ pimcore.plugin.objectmerger.grideditor = Class.create({
         var fields = ["__source", "__title", "__selected", "__raw", "__gridrow", "__unique"];
 
         var typesColumns = [];
-        typesColumns.push({text: ts('source'), sortable: true, dataIndex: '__source'});
-        // typesColumns.push({text: ts('selected'), sortable: true, dataIndex: '__selected'});
-        // typesColumns.push({text: ts('unique'), sortable: true, dataIndex: '__unique'});
+        typesColumns.push({text: t('source'), sortable: true, dataIndex: '__source'});
+        // typesColumns.push({text: t('selected'), sortable: true, dataIndex: '__selected'});
+        // typesColumns.push({text: t('unique'), sortable: true, dataIndex: '__unique'});
 
         var data = [];
 
@@ -70,7 +70,7 @@ pimcore.plugin.objectmerger.grideditor = Class.create({
                             fields.push(dataIndex);
 
                             var config = Ext.applyIf(initialConfig, {
-                                text: ts(key),
+                                text: t(key),
                                 sortable: true,
                                 dataIndex: dataIndex
                             });
