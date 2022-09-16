@@ -189,4 +189,4 @@ pimcore.plugin.objectmerger = Class.create({
     }
 });
 
-var objectmergerPlugin = pimcore.plugin.objectmerger();
+var objectmergerPlugin = new pimcore.plugin.objectmerger();
