@@ -25,12 +25,21 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/admin/elementsobjectmerger/admin")
  */
 class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
+
+    protected EventDispatcherInterface $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @param $object
      * @param $key
@@ -121,8 +130,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $latestObject2 = $this->getLatestVersion($object2);
 
         // we need to know if the latest version is published or not (a version), because of lazy loaded fields in $this->getDataForObject()
-        $objectFromVersion1 = $latestObject1 === $object1 ? false : true;
-        $objectFromVersion2 = $latestObject1 === $object2 ? false : true;
+        $objectFromVersion1 = !($latestObject1 === $object1);
+        $objectFromVersion2 = !($latestObject1 === $object2);
         $object1 = $latestObject1;
         $object2 = $latestObject2;
 
@@ -272,7 +281,12 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $object = AbstractObject::getById($objectId);
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.preMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        $preMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId')
+        ]);
+        $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
+
 
         $objectData = [];
 
@@ -298,7 +312,11 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
         $object->save();
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.postMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        $postMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId')
+        ]);
+        $object = $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
         return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }
