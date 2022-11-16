@@ -166,12 +166,10 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
                     $merged['lang'] = $entry2['lang'] ?? null;
                     $merged['type'] = $entry2['type'] ?? null;
                     $dataFromObject1[$key] = $merged;
-                } else {
-                    if ($entry2) {
-                        $merged['value2'] = $entry2['value'];
-                        $merged['data2'] = $entry2['data'];
-                        $dataFromObject1[$key] = $merged;
-                    }
+                } elseif ($entry2) {
+                    $merged['value2'] = $entry2['value'] ?? null;
+                    $merged['data2'] = $entry2['data'] ?? null;
+                    $dataFromObject1[$key] = $merged;
                 }
 
                 if (json_encode($merged['data'] ?? null) != json_encode($merged['data2'] ?? null)) {
@@ -291,7 +289,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         foreach ($attributes as $att) {
             $fieldname = $att['field'];
 
-            $fieldAtts = $objectData[$fieldname];
+            $fieldAtts = $objectData[$fieldname] ?? null;
 
             if (!$fieldAtts) {
                 $fieldAtts = [];
@@ -314,7 +312,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             'targetId' => $object->getId(),
             'sourceId' => $request->get('sourceId')
         ]);
-        $object = $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
+
+        $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
         return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }
