@@ -32,7 +32,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
-
     protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
@@ -286,7 +285,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             'sourceId' => $request->get('sourceId')
         ]);
         $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
-
 
         $objectData = [];
 
