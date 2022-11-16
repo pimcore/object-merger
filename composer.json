@@ -11,7 +11,7 @@
     }
   },
   "require": {
-    "pimcore/pimcore": "^10.0 || ^11@dev"
+    "pimcore/pimcore": "^10.5 || ^11.0"
   },
   "extra": {
     "pimcore": {
