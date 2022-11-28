@@ -36,9 +36,9 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
     private $objectData;
 
     /**
-     * @param $object
-     * @param $key
-     * @param $fielddefinition Data
+     * @param Concrete $object
+     * @param int|string $key
+     * @param Data $fielddefinition
      */
     private function getDiffDataForField($object, $key, $fielddefinition)
     {
@@ -51,9 +51,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
     }
 
-    /**
-     * @param Concrete $object
-     */
     private function getDiffDataForObject(Concrete $object)
     {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
@@ -104,8 +101,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Generates a diff for the given two object ids.
      *
      * @Route("/diff")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -221,8 +216,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @Route("/getid")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function getidAction(Request $request)
@@ -248,8 +241,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Saves the merged object.
      *
      * @Route("/save")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
