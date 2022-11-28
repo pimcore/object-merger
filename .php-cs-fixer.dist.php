@@ -19,14 +19,14 @@ $finder = PhpCsFixer\Finder::create()
 ;
 
 // do not enable self_accessor as it breaks pimcore models relying on get_called_class()
-return PhpCsFixer\Config::create()
-    ->setRules([
+$config = new PhpCsFixer\Config();
+$config->setRules([
         '@PSR1'                               => true,
         '@PSR2'                               => true,
         'array_syntax'                        => ['syntax' => 'short'],
 
         'header_comment'         => [
-                                        'commentType' => 'PHPDoc',
+                                        'comment_type' => 'PHPDoc',
                                         'header' => 'Pimcore' . PHP_EOL . PHP_EOL .
                                             'This source file is available under two different licenses:' . PHP_EOL .
                                             '- GNU General Public License version 3 (GPLv3)' . PHP_EOL .
@@ -40,22 +40,21 @@ return PhpCsFixer\Config::create()
 
         // keep aligned = and => operators as they are: do not force aligning, but do not remove it
         'binary_operator_spaces'              => ['align_double_arrow' => null, 'align_equals' => null],
-
-        'blank_line_before_return'            => true,
+        'blank_line_before_statement'         => true,
         'encoding'                            => true,
         'function_typehint_space'             => true,
-        'hash_to_slash_comment'               => true,
+        'single_line_comment_style'           => true,
         'lowercase_cast'                      => true,
         'magic_constant_casing'               => true,
-        'method_argument_space'               => ['ensure_fully_multiline' => false],
-        'method_separation'                   => true,
+	'method_argument_space'               => ['on_multiline' => 'ignore'],
+        'class_attributes_separation'         => true,
         'native_function_casing'              => true,
         'no_blank_lines_after_class_opening'  => true,
         'no_blank_lines_after_phpdoc'         => true,
         'no_empty_comment'                    => true,
         'no_empty_phpdoc'                     => true,
         'no_empty_statement'                  => true,
-        'no_extra_consecutive_blank_lines'    => true,
+        'no_extra_blank_lines'                => true,
         'no_leading_import_slash'             => true,
         'no_leading_namespace_whitespace'     => true,
         'no_short_bool_cast'                  => true,
@@ -72,13 +71,14 @@ return PhpCsFixer\Config::create()
         'phpdoc_separation'                   => true,
         'phpdoc_single_line_var_spacing'      => true,
         'return_type_declaration'             => true,
-        'self_accessor'                       => true,
         'short_scalar_cast'                   => true,
         'single_blank_line_before_namespace'  => true,
         'single_quote'                        => true,
         'space_after_semicolon'               => true,
         'standardize_not_equals'              => true,
         'ternary_operator_spaces'             => true,
+        'trailing_comma_in_multiline'         => true,
         'whitespace_after_comma_in_array'     => true,
-    ])
-    ->setFinder($finder);
+	]);
+$config->setFinder($finder);
+return $config;
