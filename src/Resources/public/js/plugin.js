@@ -14,7 +14,7 @@
 
 pimcore.registerNS("pimcore.plugin.objectmerger");
 
-pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
+pimcore.plugin.objectmerger = Class.create({
 
 
     getClassName: function (){
@@ -22,14 +22,14 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
     },
 
     initialize: function(){
-        pimcore.plugin.broker.registerPlugin(this);
+        document.addEventListener(pimcore.events.pimcoreReady, this.onPimcoreReady.bind(this));
     },
 
     uninstall: function(){
 
     },
 
-    pimcoreReady: function (params,broker) {
+    onPimcoreReady: function (e) {
         var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
 
         if (extrasMenu) {
@@ -190,4 +190,4 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
     }
 });
 
-new pimcore.plugin.objectmerger();
+var objectmergerPlugin = new pimcore.plugin.objectmerger();
