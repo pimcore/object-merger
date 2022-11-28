@@ -25,12 +25,20 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/admin/elementsobjectmerger/admin")
  */
 class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
+    protected EventDispatcherInterface $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * @param $object
      * @param $key
@@ -121,8 +129,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $latestObject2 = $this->getLatestVersion($object2);
 
         // we need to know if the latest version is published or not (a version), because of lazy loaded fields in $this->getDataForObject()
-        $objectFromVersion1 = $latestObject1 === $object1 ? false : true;
-        $objectFromVersion2 = $latestObject1 === $object2 ? false : true;
+        $objectFromVersion1 = !($latestObject1 === $object1);
+        $objectFromVersion2 = !($latestObject1 === $object2);
         $object1 = $latestObject1;
         $object2 = $latestObject2;
 
@@ -158,12 +166,10 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
                     $merged['lang'] = $entry2['lang'] ?? null;
                     $merged['type'] = $entry2['type'] ?? null;
                     $dataFromObject1[$key] = $merged;
-                } else {
-                    if ($entry2) {
-                        $merged['value2'] = $entry2['value'];
-                        $merged['data2'] = $entry2['data'];
-                        $dataFromObject1[$key] = $merged;
-                    }
+                } elseif ($entry2) {
+                    $merged['value2'] = $entry2['value'] ?? null;
+                    $merged['data2'] = $entry2['data'] ?? null;
+                    $dataFromObject1[$key] = $merged;
                 }
 
                 if (json_encode($merged['data'] ?? null) != json_encode($merged['data2'] ?? null)) {
@@ -272,14 +278,18 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $object = AbstractObject::getById($objectId);
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.preMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        $preMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId')
+        ]);
+        $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
 
         $objectData = [];
 
         foreach ($attributes as $att) {
             $fieldname = $att['field'];
 
-            $fieldAtts = $objectData[$fieldname];
+            $fieldAtts = $objectData[$fieldname] ?? null;
 
             if (!$fieldAtts) {
                 $fieldAtts = [];
@@ -298,7 +308,12 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
         $object->save();
 
-        \Pimcore::getEventDispatcher()->dispatch('plugin.ObjectMerger.postMerge', new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]));
+        $postMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId')
+        ]);
+
+        $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
         return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }

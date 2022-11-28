@@ -32,12 +32,13 @@ pimcore.plugin.objectmerger = Class.create({
     onPimcoreReady: function (e) {
         var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
 
-        extrasMenu.add({
-            text: t("plugin_objectmerger_compare"),
-            iconCls: "plugin_objectmerger_nav_icon_compare",
-            handler:  this.showObjectSelectionDialog.bind(this)
-
-        });
+        if (extrasMenu) {
+            extrasMenu.add({
+                text: t("plugin_objectmerger_compare"),
+                iconCls: "plugin_objectmerger_nav_icon_compare",
+                handler:  this.showObjectSelectionDialog.bind(this)
+            });
+        }
     },
 
 
