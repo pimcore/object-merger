@@ -39,7 +39,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    private function getDiffDataForField(Concrete $object, int | strng $key, DataObject\ClassDefinition\Data $fielddefinition)
+    private function getDiffDataForField(Concrete $object, int|string $key, DataObject\ClassDefinition\Data $fielddefinition)
     {
         $parent = Service::hasInheritableParentObject($object);
         $getter = 'get' . ucfirst($key);
