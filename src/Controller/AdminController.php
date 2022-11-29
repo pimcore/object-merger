@@ -39,33 +39,26 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @param $object
-     * @param $key
-     * @param $fielddefinition Data
-     * @param $objectFromVersion
-     * @param int $level
-     */
-    private function getDiffDataForField($object, $key, $fielddefinition, $objectFromVersion, $level = 0)
+    private function getDiffDataForField(Concrete $object, int | string $key, Data $fielddefinition)
     {
         $parent = Service::hasInheritableParentObject($object);
         $getter = 'get' . ucfirst($key);
 
-        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object, [], $objectFromVersion);
+        $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object);
         foreach ($value as $el) {
             $key = $el['key'];
             $this->objectData[$key] = $el;
         }
     }
 
-    private function getDiffDataForObject(Concrete $object, $objectFromVersion = false)
+    private function getDiffDataForObject(Concrete $object)
     {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
-            $this->getDiffDataForField($object, $key, $def, $objectFromVersion);
+            $this->getDiffDataForField($object, $key, $def);
         }
     }
 
-    public function combineKeys($arr1, $arr2)
+    public function combineKeys(array $arr1, array $arr2): array
     {
         $result = [];
         foreach ($arr1 as $key) {
@@ -78,12 +71,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         return $result;
     }
 
-    /**
-     * @param  Concrete $object
-     *
-     * @return Concrete
-     */
-    protected function getLatestVersion(Concrete $object)
+    protected function getLatestVersion(Concrete $object): Concrete
     {
         $modificationDate = $object->getModificationDate();
         $latestVersion = $object->getLatestVersion();
@@ -102,12 +90,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Generates a diff for the given two object ids.
      *
      * @Route("/diff")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
      */
-    public function diffAction(Request $request)
+    public function diffAction(Request $request): JsonResponse
     {
         $id1 = $request->get('id1');
         $id2 = $request->get('id2');
@@ -238,7 +222,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @return JsonResponse
      */
-    public function getidAction(Request $request)
+    public function getidAction(Request $request): JsonResponse
     {
         $path1 = $request->get('path1');
         $path2 = $request->get('path2');
@@ -266,7 +250,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @return JsonResponse
      */
-    public function saveAction(Request $request)
+    public function saveAction(Request $request): JsonResponse
     {
         $objectId = $request->get('id');
 

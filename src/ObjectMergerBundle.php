@@ -33,7 +33,7 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getCssPaths()
+    public function getCssPaths(): array
     {
         return [
             '/bundles/objectmerger/css/admin.css',
@@ -44,7 +44,7 @@ class ObjectMergerBundle extends AbstractPimcoreBundle
     /**
      * @return array
      */
-    public function getJsPaths()
+    public function getJsPaths(): array
     {
         return [
             '/bundles/objectmerger/js/plugin.js',
