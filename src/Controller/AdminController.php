@@ -195,7 +195,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
                         $languages[$language] = [
                             'key' => $language,
-                            'name' => $locale
+                            'name' => $locale,
                         ];
                     }
                 }
@@ -204,7 +204,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             if (empty($languages)) {
                 $languages[] = [
                     'key' => 'default',
-                    'name' => 'Default'
+                    'name' => 'Default',
                 ];
             }
 
@@ -280,7 +280,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $preMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->get('sourceId')
+            'sourceId' => $request->get('sourceId'),
         ]);
         $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
 
@@ -310,7 +310,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $postMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->get('sourceId')
+            'sourceId' => $request->get('sourceId'),
         ]);
 
         $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
