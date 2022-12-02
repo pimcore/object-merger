@@ -36,9 +36,9 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
     private $objectData;
 
     /**
-     * @param $object
-     * @param $key
-     * @param $fielddefinition Data
+     * @param Concrete $object
+     * @param int|string $key
+     * @param Data $fielddefinition
      */
     private function getDiffDataForField($object, $key, $fielddefinition)
     {
@@ -51,13 +51,19 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
     }
 
-    private function getDiffDataForObject(Concrete $object, $objectFromVersion = false)
+    private function getDiffDataForObject(Concrete $object)
     {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
             $this->getDiffDataForField($object, $key, $def);
         }
     }
 
+    /**
+     * @param array $arr1
+     * @param array $arr2
+     *
+     * @return array
+     */
     public function combineKeys($arr1, $arr2)
     {
         $result = [];
@@ -72,7 +78,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
     }
 
     /**
-     * @param  Concrete $object
+     * @param Concrete $object
      *
      * @return Concrete
      */
@@ -96,8 +102,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @Route("/diff")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function diffAction(Request $request)
@@ -105,37 +109,22 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $id1 = $request->get('id1');
         $id2 = $request->get('id2');
 
-//        if (Element_Editlock::isLocked($id2, "object")) {
-//            $this->_helper->json(array(
-//                "editlock" => Element_Editlock::getByElement($id2, "object")
-//            ));
-//        }
-
-//        Element_Editlock::lock($id1, "object");
-//        Element_Editlock::lock($id2, "object");
-
         $object1 = AbstractObject::getById(intval($id1));
         $object2 = AbstractObject::getById(intval($id2));
 
         // set the latest available version for editmode
-        $latestObject1 = $this->getLatestVersion($object1);
-        $latestObject2 = $this->getLatestVersion($object2);
-
-        // we need to know if the latest version is published or not (a version), because of lazy loaded fields in $this->getDataForObject()
-        $objectFromVersion1 = $latestObject1 === $object1 ? false : true;
-        $objectFromVersion2 = $latestObject1 === $object2 ? false : true;
-        $object1 = $latestObject1;
-        $object2 = $latestObject2;
+        $object1 = $this->getLatestVersion($object1);
+        $object2 = $this->getLatestVersion($object2);
 
         if ($object1->isAllowed('view') && $object2->isAllowed('view')) {
             $objectData = [];
 
-            $this->getDiffDataForObject($object1, $objectFromVersion1);
+            $this->getDiffDataForObject($object1);
 
             $dataFromObject1 = $this->objectData;
             $this->objectData = null;
 
-            $this->getDiffDataForObject($object2, $objectFromVersion2);
+            $this->getDiffDataForObject($object2);
             $dataFromObject2 = $this->objectData;
 
             $keys1 = array_keys($dataFromObject1);
@@ -227,8 +216,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @Route("/getid")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function getidAction(Request $request)
@@ -254,8 +241,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Saves the merged object.
      *
      * @Route("/save")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
