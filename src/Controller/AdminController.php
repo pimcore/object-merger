@@ -19,7 +19,6 @@ use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Element\Editlock;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,6 +31,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
 {
+    /**
+     * @var array|null
+     */
+    private $objectData;
+
     protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
@@ -41,7 +45,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
     private function getDiffDataForField(Concrete $object, int | string $key, Data $fielddefinition)
     {
-        $parent = Service::hasInheritableParentObject($object);
         $getter = 'get' . ucfirst($key);
 
         $value = $fielddefinition->getDiffDataForEditmode($object->$getter(), $object);
@@ -96,37 +99,22 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $id1 = $request->get('id1');
         $id2 = $request->get('id2');
 
-//        if (Element_Editlock::isLocked($id2, "object")) {
-//            $this->_helper->json(array(
-//                "editlock" => Element_Editlock::getByElement($id2, "object")
-//            ));
-//        }
-
-//        Element_Editlock::lock($id1, "object");
-//        Element_Editlock::lock($id2, "object");
-
         $object1 = AbstractObject::getById(intval($id1));
         $object2 = AbstractObject::getById(intval($id2));
 
         // set the latest available version for editmode
-        $latestObject1 = $this->getLatestVersion($object1);
-        $latestObject2 = $this->getLatestVersion($object2);
-
-        // we need to know if the latest version is published or not (a version), because of lazy loaded fields in $this->getDataForObject()
-        $objectFromVersion1 = !($latestObject1 === $object1);
-        $objectFromVersion2 = !($latestObject1 === $object2);
-        $object1 = $latestObject1;
-        $object2 = $latestObject2;
+        $object1 = $this->getLatestVersion($object1);
+        $object2 = $this->getLatestVersion($object2);
 
         if ($object1->isAllowed('view') && $object2->isAllowed('view')) {
             $objectData = [];
 
-            $this->getDiffDataForObject($object1, $objectFromVersion1);
+            $this->getDiffDataForObject($object1);
 
             $dataFromObject1 = $this->objectData;
             $this->objectData = null;
 
-            $this->getDiffDataForObject($object2, $objectFromVersion2);
+            $this->getDiffDataForObject($object2);
             $dataFromObject2 = $this->objectData;
 
             $keys1 = array_keys($dataFromObject1);
@@ -218,8 +206,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @Route("/getid")
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function getidAction(Request $request): JsonResponse
@@ -245,8 +231,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Saves the merged object.
      *
      * @Route("/save")
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
