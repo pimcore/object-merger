@@ -11,15 +11,8 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-
-.plugin_objectmerger_icon_compare  {
-    background: url(/bundles/pimcoreadmin/img/flat-color-icons/side-by-side.svg) center center no-repeat;
-}
-
-.plugin_objectmerger_nav_icon_compare  {
-    background: url(/bundles/pimcoreadmin/img/flat-color-icons/side-by-side.svg) center center no-repeat;
-}
-
+.plugin_objectmerger_icon_compare,
+.plugin_objectmerger_nav_icon_compare,
 .pimcore_version_6 .plugin_objectmerger_nav_icon_compare,
 .pimcore_version_10 .plugin_objectmerger_nav_icon_compare {
     background: url(/bundles/pimcoreadmin/img/flat-white-icons/side-by-side.svg) center center no-repeat;
