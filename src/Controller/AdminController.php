@@ -24,6 +24,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/admin/elementsobjectmerger/admin")
@@ -35,12 +36,14 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      */
     private $objectData;
 
-    /**
-     * @param Concrete $object
-     * @param int|string $key
-     * @param Data $fielddefinition
-     */
-    private function getDiffDataForField($object, $key, $fielddefinition)
+    protected EventDispatcherInterface $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    private function getDiffDataForField(Concrete $object, int | string $key, Data $fielddefinition)
     {
         $getter = 'get' . ucfirst($key);
 
@@ -58,13 +61,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
     }
 
-    /**
-     * @param array $arr1
-     * @param array $arr2
-     *
-     * @return array
-     */
-    public function combineKeys($arr1, $arr2)
+    public function combineKeys(array $arr1, array $arr2): array
     {
         $result = [];
         foreach ($arr1 as $key) {
@@ -77,12 +74,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         return $result;
     }
 
-    /**
-     * @param Concrete $object
-     *
-     * @return Concrete
-     */
-    protected function getLatestVersion(Concrete $object)
+    protected function getLatestVersion(Concrete $object): Concrete
     {
         $modificationDate = $object->getModificationDate();
         $latestVersion = $object->getLatestVersion();
@@ -101,10 +93,8 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      * Generates a diff for the given two object ids.
      *
      * @Route("/diff")
-     *
-     * @return JsonResponse
      */
-    public function diffAction(Request $request)
+    public function diffAction(Request $request): JsonResponse
     {
         $id1 = $request->get('id1');
         $id2 = $request->get('id2');
@@ -177,7 +167,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
                         $languages[$language] = [
                             'key' => $language,
-                            'name' => $locale
+                            'name' => $locale,
                         ];
                     }
                 }
@@ -186,7 +176,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             if (empty($languages)) {
                 $languages[] = [
                     'key' => 'default',
-                    'name' => 'Default'
+                    'name' => 'Default',
                 ];
             }
 
@@ -218,7 +208,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @return JsonResponse
      */
-    public function getidAction(Request $request)
+    public function getidAction(Request $request): JsonResponse
     {
         $path1 = $request->get('path1');
         $path2 = $request->get('path2');
@@ -244,7 +234,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @return JsonResponse
      */
-    public function saveAction(Request $request)
+    public function saveAction(Request $request): JsonResponse
     {
         $objectId = $request->get('id');
 
@@ -256,7 +246,11 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $object = AbstractObject::getById($objectId);
 
-        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]), 'plugin.ObjectMerger.preMerge');
+        $preMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId'),
+        ]);
+        $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
 
         $objectData = [];
 
@@ -282,7 +276,12 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
         $object->save();
 
-        \Pimcore::getEventDispatcher()->dispatch(new GenericEvent($this, ['targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]), 'plugin.ObjectMerger.postMerge');
+        $postMergeEvent = new GenericEvent($this, [
+            'targetId' => $object->getId(),
+            'sourceId' => $request->get('sourceId'),
+        ]);
+
+        $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
         return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }

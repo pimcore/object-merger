@@ -774,7 +774,14 @@ pimcore.plugin.objectmerger.panel = Class.create({
     saveComplete: function (response) {
         var data = Ext.decode(response.responseText);
         if (data.success) {
-            pimcore.plugin.broker.fireEvent("pluginObjectMergerPostMerge", data);
+            const pluginObjectMergerPostMerge = new CustomEvent(pimcore.events.pluginObjectMergerPostMerge, {
+                detail: {
+                    data: data
+                }
+            });
+
+            document.dispatchEvent(pluginObjectMergerPostMerge);
+
             pimcore.helpers.showNotification(t("success"), t("your_object_has_been_saved"), "success");
         } else {
             pimcore.helpers.showNotification(t("error"), t(data.message), "error");

@@ -14,7 +14,7 @@
 
 pimcore.registerNS("pimcore.plugin.objectmerger");
 
-pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
+pimcore.plugin.objectmerger = Class.create({
 
     getClassName: function (){
         return "pimcore.plugin.objectmerger";
@@ -210,4 +210,4 @@ pimcore.plugin.objectmerger = Class.create(pimcore.plugin.admin,{
     }
 });
 
-new pimcore.plugin.objectmerger();
+var objectmergerPlugin = new pimcore.plugin.objectmerger();
