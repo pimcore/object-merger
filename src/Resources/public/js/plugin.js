@@ -15,7 +15,6 @@
 pimcore.registerNS("pimcore.plugin.objectmerger");
 
 pimcore.plugin.objectmerger = Class.create({
-
     getClassName: function (){
         return "pimcore.plugin.objectmerger";
     },
@@ -52,7 +51,7 @@ pimcore.plugin.objectmerger = Class.create({
         const navigationEntry = {
             text: t("plugin_objectmerger_compare"),
             iconCls: "plugin_objectmerger_nav_icon_compare",
-            handler:  this.showObjectSelectionDialog.bind(this)
+            handler: this.showObjectSelectionDialog.bind(this)
         };
 
         if(e.type === pimcore.events.preMenuBuild) {
