@@ -15,32 +15,57 @@
 pimcore.registerNS("pimcore.plugin.objectmerger");
 
 pimcore.plugin.objectmerger = Class.create({
-
-
     getClassName: function (){
         return "pimcore.plugin.objectmerger";
     },
 
     initialize: function(){
-        document.addEventListener(pimcore.events.pimcoreReady, this.onPimcoreReady.bind(this));
-    },
+        document.addEventListener(pimcore.events.onPerspectiveEditorLoadPermissions, this.perspectiveEditorLoadPermissions.bind(this));
 
-    uninstall: function(){
-
-    },
-
-    onPimcoreReady: function (e) {
-        var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
-
-        if (extrasMenu) {
-            extrasMenu.add({
-                text: t("plugin_objectmerger_compare"),
-                iconCls: "plugin_objectmerger_nav_icon_compare",
-                handler:  this.showObjectSelectionDialog.bind(this)
-            });
+        if (pimcore.events.preMenuBuild) {
+            document.addEventListener(pimcore.events.preMenuBuild, this.createNavigationEntry.bind(this));
+        } else {
+            document.addEventListener(pimcore.events.pimcoreReady, this.createNavigationEntry.bind(this));
         }
     },
 
+    perspectiveEditorLoadPermissions: function (e) {
+        const context = e.detail.context;
+        const menu = e.detail.menu;
+        const permissions = e.detail.permissions;
+
+        if(context === 'toolbar' &&
+            menu === 'extras' &&
+            permissions[context][menu].indexOf('items.objectMerger') === -1) {
+            permissions[context][menu].push('items.objectMerger');
+        }
+    },
+
+    createNavigationEntry: function (e) {
+        const perspectiveCfg = pimcore.globalmanager.get('perspective');
+
+        if(!perspectiveCfg.inToolbar('extras.objectMerger')){
+            return;
+        }
+
+        const navigationEntry = {
+            text: t("plugin_objectmerger_compare"),
+            iconCls: "plugin_objectmerger_nav_icon_compare",
+            handler: this.showObjectSelectionDialog.bind(this)
+        };
+
+        if(e.type === pimcore.events.preMenuBuild) {
+            const menu = e.detail.menu.extras;
+            menu.items.push(navigationEntry);
+        }
+
+        if(e.type === pimcore.events.pimcoreReady) {
+            const menu = pimcore.globalmanager.get('layout_toolbar').extrasMenu;
+            menu.add(navigationEntry);
+        }
+    },
+
+    uninstall: function(){},
 
     showDiff: function(response) {
         var data = Ext.decode(response.responseText);
@@ -59,7 +84,6 @@ pimcore.plugin.objectmerger = Class.create({
     },
 
     showObjectSelectionDialog: function() {
-
         this.selectionDialog = new Ext.Window({
             modal: false,
             autoHeight: true,
@@ -68,18 +92,15 @@ pimcore.plugin.objectmerger = Class.create({
             width: 700
         });
 
-
         this.textField1 = new Ext.form.TextField({
             emptyText: t("plugin_objectmerger_path"),
             width: 500
         });
 
-
         this.textField2 = new Ext.form.TextField({
             emptyText: t("plugin_objectmerger_path"),
             width: 500
         });
-
 
         var form = new Ext.form.FormPanel({
             bodyStyle: 'padding: 10px;',
@@ -137,7 +158,6 @@ pimcore.plugin.objectmerger = Class.create({
             }]
         });
 
-
         var afterRenderHandler = function(fieldPath, el){
             // add drop zone
             new Ext.dd.DropZone(el.getEl(), {
@@ -181,7 +201,6 @@ pimcore.plugin.objectmerger = Class.create({
             this["textField" + objectIndex].setValue(item.fullpath);
         }
     },
-
 
     searchForObject: function(objectIndex) {
         pimcore.helpers.itemselector(false, this.addDataFromSelector.bind(this, objectIndex), {
