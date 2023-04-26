@@ -15,11 +15,14 @@
 
 namespace Pimcore\Bundle\ObjectMergerBundle\Controller;
 
+use Pimcore\Controller\Traits\JsonHelperTrait;
+use Pimcore\Controller\UserAwareController;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\Editlock;
+use Pimcore\Model\Element\ValidationException;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,12 +32,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * @Route("/admin/elementsobjectmerger/admin")
  */
-class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminController
+class AdminController extends UserAwareController
 {
-    /**
-     * @var array|null
-     */
-    private $objectData;
+    use JsonHelperTrait;
+
+    private ?array $objectData;
 
     protected EventDispatcherInterface $eventDispatcher;
 
@@ -43,7 +45,7 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    private function getDiffDataForField(Concrete $object, int | string $key, Data $fielddefinition)
+    private function getDiffDataForField(Concrete $object, int | string $key, Data $fielddefinition): void
     {
         $getter = 'get' . ucfirst($key);
 
@@ -54,7 +56,10 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         }
     }
 
-    private function getDiffDataForObject(Concrete $object)
+    /**
+     * @throws \Exception
+     */
+    private function getDiffDataForObject(Concrete $object): void
     {
         foreach ($object->getClass()->getFieldDefinitions() as $key => $def) {
             $this->getDiffDataForField($object, $key, $def);
@@ -193,11 +198,11 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
             $objectData['o1path'] = $object1->getFullPath();
             $objectData['o2path'] = $object2->getFullPath();
 
-            return $this->adminJson($objectData);
+            return $this->jsonResponse($objectData);
         } else {
             Logger::debug('prevented getting object id [ ' . $object1->getId() . ' or ' . $object2->getId() . ' ] because of missing permissions');
 
-            return $this->adminJson(['success' => false, 'message' => 'missing_permission']);
+            return $this->jsonResponse(['success' => false, 'message' => 'missing_permission']);
         }
     }
 
@@ -217,13 +222,13 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
         $object2 = Concrete::getByPath($path2);
 
         if ($object1 && $object2) {
-            return $this->adminJson([
+            return $this->jsonResponse([
                 'success' => true,
                 'oid1' => $object1->getId(),
                 'oid2' => $object2->getId(),
             ]);
         } else {
-            return $this->adminJson(['success' => false, 'message' => 'plugin_objectmerger_no_object']);
+            return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_no_object']);
         }
     }
 
@@ -232,14 +237,14 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
      *
      * @Route("/save")
      *
-     * @return JsonResponse
+     * @throws ValidationException
      */
     public function saveAction(Request $request): JsonResponse
     {
         $objectId = $request->get('id');
 
-        if (Editlock::isLocked($objectId, 'object')) {
-            return $this->adminJson(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
+        if (Editlock::isLocked($objectId, 'object', $request->getSession()->getId())) {
+            return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
         }
 
         $attributes = json_decode($request->get('attributes'), true);
@@ -283,6 +288,6 @@ class AdminController extends \Pimcore\Bundle\AdminBundle\Controller\AdminContro
 
         $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
-        return $this->adminJson(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
+        return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
     }
 }
