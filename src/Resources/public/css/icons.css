@@ -21,7 +21,8 @@
 }
 
 .pimcore_version_6 .plugin_objectmerger_nav_icon_compare,
-.pimcore_version_10 .plugin_objectmerger_nav_icon_compare {
+.pimcore_version_10 .plugin_objectmerger_nav_icon_compare,
+.pimcore_version_11 .plugin_objectmerger_nav_icon_compare {
     background: url(/bundles/pimcoreadmin/img/flat-white-icons/side-by-side.svg) center center no-repeat;
 }
 
