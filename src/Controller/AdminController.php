@@ -23,11 +23,11 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\Editlock;
 use Pimcore\Model\Element\ValidationException;
+use Pimcore\Version;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Pimcore\Version;
 
 /**
  * @Route("/admin/elementsobjectmerger/admin")
@@ -250,8 +250,7 @@ class AdminController extends UserAwareController
             if (Editlock::isLocked($objectId, 'object', $request->getSession()->getId())) {
                 return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
             }
-        }
-        else {
+        } else {
             if (Editlock::isLocked($objectId, 'object')) {
                 return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
             }
