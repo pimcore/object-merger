@@ -8,3 +8,5 @@ parameters:
     excludePaths:
         - src/Migrations/*
         - src/Tests/*
+includes:
+    - phpstan-baseline.neon
