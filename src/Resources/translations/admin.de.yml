@@ -1,0 +1,18 @@
+---
+plugin_objectmerger: ObjectMerger
+plugin_objectmerger_copy: Kopie von links nach rechts
+plugin_objectmerger_copy_disabled: "Nicht unterst\xFCtzt"
+plugin_objectmerger_revert: "Zur\xFCckkehren"
+plugin_objectmerger_equal: Bereits gleich
+plugin_objectmerger_go: "Objekt \xF6ffnen"
+plugin_objectmerger_compare: Objekte vergleichen
+plugin_objectmerger_btn_compare: Vergleichen Sie
+plugin_objectmerger_path: "Vollst\xE4ndiger Pfad"
+plugin_objectmerger_no_object: Fehler bei der Objektsuche
+plugin_objectmerger_object1: Quelle
+plugin_objectmerger_object2: Ziel
+plugin_objectmerger_object_locked: Objekt ist gesperrt
+plugin_objectmerger_diff: Diff
+plugin_objectmerger_mirror: Spiegelbildliche Ansicht
+plugin_pimcore_perspectiveeditor_menu_extras_items_objectMerger: Objekte vergleichen
+...
