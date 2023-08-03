@@ -23,10 +23,10 @@ use Pimcore\Model\DataObject\ClassDefinition\Data;
 use Pimcore\Model\DataObject\Concrete;
 use Pimcore\Model\Element\Editlock;
 use Pimcore\Model\Element\ValidationException;
+use Pimcore\Version;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -243,12 +243,22 @@ class AdminController extends UserAwareController
     {
         $objectId = $request->get('id');
 
-        if (Editlock::isLocked($objectId, 'object', $request->getSession()->getId())) {
-            return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
+        /**
+         * @TODO Remove when removing support for Pimcore 10
+         */
+        if (Version::getMajorVersion() >= 11) {
+            if (Editlock::isLocked($objectId, 'object', $request->getSession()->getId())) {
+                return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
+            }
+        } else {
+            if (Editlock::isLocked($objectId, 'object')) {
+                return $this->jsonResponse(['success' => false, 'message' => 'plugin_objectmerger_object_locked']);
+            }
         }
 
         $attributes = json_decode($request->get('attributes'), true);
 
+        /** @var \Pimcore\Model\DataObject\Concrete $object */
         $object = AbstractObject::getById($objectId);
 
         $preMergeEvent = new GenericEvent($this, [
