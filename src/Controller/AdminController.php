@@ -105,7 +105,9 @@ class AdminController extends UserAwareController
         $id1 = $request->get('id1');
         $id2 = $request->get('id2');
 
+        /** @var Concrete $object1 */
         $object1 = AbstractObject::getById(intval($id1));
+        /** @var Concrete $object2 */
         $object2 = AbstractObject::getById(intval($id2));
 
         // set the latest available version for editmode
