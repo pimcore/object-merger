@@ -204,7 +204,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
                     html: theValue
                 });
 
-            } else {
+            }
+            else {
                 valuePreview = new Ext.form.TextField({
                     width: 450,
                     value: "Unsupported type",
@@ -257,15 +258,14 @@ pimcore.plugin.objectmerger.panel = Class.create({
             var leftValue;
 
             var changed = false;
-
             if (item) {
-                leftValue = item.value;
+                leftValue = (item.type && item.type == "date")?this.getFormattedDateFromTimestamp(item.data):item.value;
 
                 if (this.resultData[item.key]) {
                     rightValue = this.resultData[item.key].value;
                     changed = this.resultData[item.key].changed;
                 } else {
-                    rightValue = item.value2;
+                    rightValue = (item.type && item.type == "date")?this.getFormattedDateFromTimestamp(item.data):item.value2;
                 }
 
                 var theType = null;
@@ -556,9 +556,8 @@ pimcore.plugin.objectmerger.panel = Class.create({
             if (item.value && item.value.type == "grid") {
                 mergedData = this.mergeGridData(item.data, item.data2);
             }
-
             this.resultData[item.key] = {
-                value: item.value2,
+                value: (item.type && item.type == "date")?this.getFormattedDateFromTimestamp(item.data2):item.value2,
                 data: mergedData,
                 field: item.field,
                 key: item.key,
@@ -617,7 +616,6 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 mergedData.push(rowItem);
             }
         }
-
         if (data) {
             for (idx = 0; idx < data.length; idx++) {
                 var rowItem = data[idx];
@@ -786,6 +784,10 @@ pimcore.plugin.objectmerger.panel = Class.create({
         } else {
             pimcore.helpers.showNotification(t("error"), t(data.message), "error");
         }
+    },
+
+    getFormattedDateFromTimestamp: function (timestamp) {
+        return Ext.Date.format(new Date(intval(timestamp) * 1000),'Y-m-d')
     }
 });
 
