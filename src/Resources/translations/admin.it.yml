@@ -1,0 +1,18 @@
+---
+plugin_objectmerger: ObjectMerger
+plugin_objectmerger_copy: Copy from left to right
+plugin_objectmerger_copy_disabled: Not supported
+plugin_objectmerger_revert: Revert
+plugin_objectmerger_equal: Already equal
+plugin_objectmerger_go: Open object
+plugin_objectmerger_compare: Compare Objects
+plugin_objectmerger_btn_compare: Compare
+plugin_objectmerger_path: Full Path
+plugin_objectmerger_no_object: Error finding object
+plugin_objectmerger_object1: Source
+plugin_objectmerger_object2: Target
+plugin_objectmerger_object_locked: Object is locked
+plugin_objectmerger_diff: Diff
+plugin_objectmerger_mirror: Mirror View
+plugin_pimcore_perspectiveeditor_menu_extras_items_objectMerger: Compare Objects
+...
