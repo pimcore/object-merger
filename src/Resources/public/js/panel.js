@@ -278,7 +278,7 @@ pimcore.plugin.objectmerger.panel = Class.create({
                 if (item.isdiff && !changed) {
                     statusText = "!!!";
                 }
-                var niceName = item.title;
+                var niceName = t(item.title);
 
             } else {
                 leftValue = this.data.o1path + " (id:" + this.data.o1id + ")";
