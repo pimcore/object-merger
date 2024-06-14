@@ -25,17 +25,11 @@ class ObjectMergerBundle extends AbstractPimcoreBundle implements PimcoreBundleA
     use BundleAdminClassicTrait;
     use PackageVersionTrait;
 
-    /**
-     * @inheritDoc
-     */
     protected function getComposerPackageName(): string
     {
         return 'pimcore/object-merger';
     }
 
-    /**
-     * @return array
-     */
     public function getCssPaths(): array
     {
         return [
@@ -44,9 +38,6 @@ class ObjectMergerBundle extends AbstractPimcoreBundle implements PimcoreBundleA
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getJsPaths(): array
     {
         return [
