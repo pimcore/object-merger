@@ -214,7 +214,6 @@ class AdminController extends UserAwareController
      *
      * @Route("/getid")
      *
-     * @return JsonResponse
      */
     public function getidAction(Request $request): JsonResponse
     {
