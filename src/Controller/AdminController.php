@@ -102,8 +102,8 @@ class AdminController extends UserAwareController
      */
     public function diffAction(Request $request): JsonResponse
     {
-        $id1 = $request->get('id1');
-        $id2 = $request->get('id2');
+        $id1 = $request->request->getString('id1');
+        $id2 = $request->request->getString('id2');
 
         /** @var Concrete $object1 */
         $object1 = AbstractObject::getById(intval($id1));
@@ -217,8 +217,8 @@ class AdminController extends UserAwareController
      */
     public function getidAction(Request $request): JsonResponse
     {
-        $path1 = $request->get('path1');
-        $path2 = $request->get('path2');
+        $path1 = $request->request->getString('path1');
+        $path2 = $request->request->getString('path2');
 
         $object1 = Concrete::getByPath($path1);
         $object2 = Concrete::getByPath($path2);
@@ -243,7 +243,7 @@ class AdminController extends UserAwareController
      */
     public function saveAction(Request $request): JsonResponse
     {
-        $objectId = $request->get('id');
+        $objectId = $request->request->getInt('id');
 
         /**
          * @TODO Remove when removing support for Pimcore 10
@@ -258,14 +258,14 @@ class AdminController extends UserAwareController
             }
         }
 
-        $attributes = json_decode($request->get('attributes'), true);
+        $attributes = json_decode($request->request->getString('attributes'), true);
 
         /** @var \Pimcore\Model\DataObject\Concrete $object */
         $object = AbstractObject::getById($objectId);
 
         $preMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->get('sourceId'),
+            'sourceId' => $request->request->getInt('sourceId'),
         ]);
         $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
 
@@ -295,11 +295,11 @@ class AdminController extends UserAwareController
 
         $postMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->get('sourceId'),
+            'sourceId' => $request->request->getInt('sourceId'),
         ]);
 
         $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
-        return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->get('sourceId')]);
+        return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->request->getInt('sourceId')]);
     }
 }
