@@ -129,7 +129,7 @@ class AdminController extends UserAwareController
             $keys2 = array_keys($dataFromObject2);
             $combinedKeys = $this->combineKeys($keys1, $keys2);
 
-            foreach ($combinedKeys as  $key => $value) {
+            foreach ($combinedKeys as $key => $value) {
                 $entry1 = $dataFromObject1[$key] ?? null;
                 $entry2 = $dataFromObject2[$key] ?? null;
 
