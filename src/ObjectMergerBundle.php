@@ -15,10 +15,12 @@
 
 namespace Pimcore\Bundle\ObjectMergerBundle;
 
+use Pimcore\Bundle\ObjectMergerBundle\DependencyInjection\ObjectMergerExtension;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 use Pimcore\Extension\Bundle\Traits\BundleAdminClassicTrait;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 class ObjectMergerBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
@@ -28,6 +30,11 @@ class ObjectMergerBundle extends AbstractPimcoreBundle implements PimcoreBundleA
     protected function getComposerPackageName(): string
     {
         return 'pimcore/object-merger';
+    }
+
+    public function getContainerExtension(): ExtensionInterface
+    {
+        return new ObjectMergerExtension();
     }
 
     public function getCssPaths(): array
