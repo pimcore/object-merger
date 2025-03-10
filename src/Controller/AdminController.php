@@ -27,12 +27,10 @@ use Pimcore\Version;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @Route("/admin/elementsobjectmerger/admin")
- */
+#[Route('/admin/elementsobjectmerger/admin')]
 class AdminController extends UserAwareController
 {
     use JsonHelperTrait;
@@ -97,9 +95,8 @@ class AdminController extends UserAwareController
 
     /**
      * Generates a diff for the given two object ids.
-     *
-     * @Route("/diff")
      */
+    #[Route('/diff')]
     public function diffAction(Request $request): JsonResponse
     {
         $id1 = $request->request->getString('id1');
@@ -211,10 +208,8 @@ class AdminController extends UserAwareController
 
     /**
      * Returns the IDs for the given 2 full object paths.
-     *
-     * @Route("/getid")
-     *
      */
+    #[Route('/getid')]
     public function getidAction(Request $request): JsonResponse
     {
         $path1 = $request->request->getString('path1');
@@ -237,10 +232,9 @@ class AdminController extends UserAwareController
     /**
      * Saves the merged object.
      *
-     * @Route("/save")
-     *
      * @throws ValidationException
      */
+    #[Route('/save')]
     public function saveAction(Request $request): JsonResponse
     {
         $objectId = $request->request->getInt('id');
