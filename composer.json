@@ -1,7 +1,7 @@
 {
   "name": "pimcore/object-merger",
   "type": "pimcore-bundle",
-  "license": "GPL-3.0-or-later",
+  "license": "Pimcore Open Core License (POCL)",
   "config": {
     "sort-packages": true
   },
