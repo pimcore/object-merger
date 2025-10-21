@@ -12,6 +12,7 @@
 
 namespace Pimcore\Bundle\ObjectMergerBundle\Controller;
 
+use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
 use Pimcore\Logger;
@@ -234,7 +235,7 @@ class AdminController extends UserAwareController
     #[Route('/save')]
     public function saveAction(Request $request): JsonResponse
     {
-        $objectId = $request->request->getInt('id');
+        $objectId = ParameterBagHelper::getInt($request->request, 'id');
 
         /**
          * @TODO Remove when removing support for Pimcore 10
@@ -256,7 +257,7 @@ class AdminController extends UserAwareController
 
         $preMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->request->getInt('sourceId'),
+            'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId'),
         ]);
         $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
 
@@ -286,11 +287,11 @@ class AdminController extends UserAwareController
 
         $postMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
-            'sourceId' => $request->request->getInt('sourceId'),
+            'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId'),
         ]);
 
         $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
 
-        return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => $request->request->getInt('sourceId')]);
+        return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId')]);
     }
 }
