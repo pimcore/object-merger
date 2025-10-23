@@ -12,9 +12,9 @@
 
 namespace Pimcore\Bundle\ObjectMergerBundle\Controller;
 
-use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Controller\Traits\JsonHelperTrait;
 use Pimcore\Controller\UserAwareController;
+use Pimcore\Helper\ParameterBagHelper;
 use Pimcore\Logger;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\DataObject\ClassDefinition\Data;
