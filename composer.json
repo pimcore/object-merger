@@ -20,6 +20,9 @@
     "phpstan/phpstan": "^1.12.15"
   },
   "extra": {
+    "branch-alias": {
+      "dev-5.x": "5.1.x-dev"
+    },
     "pimcore": {
       "bundles": [
         "Pimcore\\Bundle\\ObjectMergerBundle\\ObjectMergerBundle"
