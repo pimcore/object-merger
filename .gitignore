@@ -27,3 +27,6 @@ node_modules/
 /pimcore/tests/_output/*
 /pimcore/tests/_support/_generated/*
 
+# studio related
+/assets/studio/node_modules
+
