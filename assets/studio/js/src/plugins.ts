@@ -11,7 +11,9 @@
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
 import { ObjectMergerModule } from './modules/object-merger/index'
 
-if (module.hot !== undefined) {}
+if (module.hot !== undefined) {
+  module.hot.accept()
+}
 
 export const ObjectMergerPlugin: IAbstractPlugin = {
   name: 'object-merger-plugin',
