@@ -78,7 +78,7 @@ jobs:
     with:
       phpstan_matrix: ${{ needs.setup-matrix.outputs.phpstan_matrix }}
       private_repo: ${{ needs.setup-matrix.outputs.private_repo }}
-      APP_ENV: test
+      APP_ENV: object-merger-page
       PIMCORE_TEST: 1
       REQUIRE_ADMIN_BUNDLE: "true"
       COVERAGE: "none"

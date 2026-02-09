@@ -7,3 +7,9 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
+
+import React from 'react'
+
+export const ObjectMergerPage = (): React.JSX.Element => {
+  return <div>Object Merger Page</div>
+}

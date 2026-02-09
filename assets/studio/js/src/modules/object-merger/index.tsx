@@ -8,9 +8,39 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { type AbstractModule } from '@pimcore/studio-ui-bundle'
+import { type MainNavRegistry } from '@pimcore/studio-ui-bundle/modules/app'
+import { container, type AbstractModule } from '@pimcore/studio-ui-bundle'
+import { type WidgetRegistry } from '@pimcore/studio-ui-bundle/modules/widget-manager'
+import { serviceIds } from '@pimcore/studio-ui-bundle/app'
+import { ObjectMergerPage } from './object-merger-page/object-merger-page'
 
 export const ObjectMergerModule: AbstractModule = {
   onInit: (): void => {
+    const mainNavRegistryService = container.get<MainNavRegistry>(serviceIds.mainNavRegistry)
+
+    mainNavRegistryService.registerMainNavItem({
+      path: 'DataManagement/Compare Objects',
+      label: 'compare_objects.nav.compare_objects',
+      order: 500,
+      widgetConfig: {
+        name: 'ObjectMergerPage',
+        id: 'object-merger-page',
+        component: 'object-merger-page',
+        config: {
+          translationKey: 'compare_objects.nav.compare_objects',
+          icon: {
+            type: 'name',
+            value: 'compare'
+          }
+        }
+      }
+    })
+
+    const widgetRegistryService = container.get<WidgetRegistry>(serviceIds.widgetManager)
+
+    widgetRegistryService.registerWidget({
+      name: 'object-merger-page',
+      component: ObjectMergerPage
+    })
   }
 }

@@ -1,0 +1,27 @@
+{
+  "entrypoints": {
+    "main": {
+      "js": [
+        "http://localhost:3033/static/js/vendors-node_modules_react_index_js-node_modules_rsbuild_core_dist_client_overlay_js-node_mod-bd800f.js",
+        "http://localhost:3033/static/js/main.js",
+        "http://localhost:3033/main.8192e29c442fddbd.hot-update.js"
+      ],
+      "css": []
+    },
+    "pimcore_objectmerger_bundle": {
+      "js": [
+        "http://localhost:3033/static/js/async/vendors-node_modules_react_jsx-dev-runtime_js.js",
+        "http://localhost:3033/static/js/async/__federation_expose_default_export.js",
+        "http://localhost:3033/pimcore_objectmerger_bundle.8192e29c442fddbd.hot-update.js",
+        "http://localhost:3033/static/js/remoteEntry.js"
+      ],
+      "css": []
+    },
+    "exposeRemote": {
+      "js": [
+        "/bundles/objectmerger/studio/build/eded1c5f-3877-41e3-a87c-7b5aa9858ce4/exposeRemote.js"
+      ],
+      "css": []
+    }
+  }
+}

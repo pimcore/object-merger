@@ -259,7 +259,7 @@ class AdminController extends UserAwareController
             'targetId' => $object->getId(),
             'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId'),
         ]);
-        $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMerger.preMerge');
+        $this->eventDispatcher->dispatch($preMergeEvent, 'plugin.ObjectMergerPage.preMerge');
 
         $objectData = [];
 
@@ -290,7 +290,7 @@ class AdminController extends UserAwareController
             'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId'),
         ]);
 
-        $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMerger.postMerge');
+        $this->eventDispatcher->dispatch($postMergeEvent, 'plugin.ObjectMergerPage.postMerge');
 
         return $this->jsonResponse(['success' => true, 'targetId' => $object->getId(), 'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId')]);
     }
