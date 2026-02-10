@@ -9,7 +9,29 @@
  */
 
 import React from 'react'
+import { Box, Divider, ContentLayout, Content } from '@pimcore/studio-ui-bundle/components'
+import { ObjectMergerForm } from './components/object-merger-form/object-merger-form'
 
 export const ObjectMergerPage = (): React.JSX.Element => {
-  return <div>Object Merger Page</div>
+  return (
+    <ContentLayout
+      renderToolbar={ <div>Bottom Toolbar</div> }
+      renderTopBar={
+        <>
+          <ObjectMergerForm />
+          <Divider
+            size="none"
+            theme="secondary"
+          />
+        </>
+      }
+    >
+      <Content
+        padded
+        padding={ { x: 'small', y: 'extra-small' } }
+      >
+        Main Content
+      </Content>
+    </ContentLayout>
+  )
 }
