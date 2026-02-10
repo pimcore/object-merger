@@ -8,14 +8,26 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, Button } from '@pimcore/studio-ui-bundle/components'
+import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValueType, Button } from '@pimcore/studio-ui-bundle/components'
+import { useObjectMergerContext } from '../../../context/object-merger-context'
 import { useStyles } from './object-merger-form.styles'
 
 export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
+
+  const { selectedIds, setSelectedIds } = useObjectMergerContext()
+
+  const canCompare = useMemo(
+    () => selectedIds?.A != null && selectedIds?.B != null,
+    [selectedIds?.A, selectedIds?.B]
+  )
+
+  const handleCompare = (): void => {
+    console.log('----- selectedIds: ', selectedIds)
+  }
 
   return (
     <Content
@@ -37,21 +49,32 @@ export const ObjectMergerForm = (): React.JSX.Element => {
                 <ManyToOneRelationInput
                   dataObjectsAllowed
                   enableSearch
-                  onChange={ (searchFor: string) => { console.log('initial searchFor changed: ', searchFor) } }
-                  value={ null }
+                  onChange={ (value: ManyToOneRelationValueType) => {
+                    setSelectedIds({ A: value?.id ?? null, B: selectedIds?.B ?? null })
+                  } }
+                  value={ selectedIds?.A }
                 />
               </Form.Item>
               <Form.Item name="compareObject">
                 <ManyToOneRelationInput
                   dataObjectsAllowed
                   enableSearch
-                  onChange={ (searchFor: string) => { console.log('compare searchFor changed: ', searchFor) } }
-                  value={ null }
+                  onChange={ (value: ManyToOneRelationValueType) => {
+                    setSelectedIds({ A: selectedIds?.A ?? null, B: value?.id ?? null })
+                  } }
+                  value={ selectedIds?.B }
                 />
               </Form.Item>
             </FormKit>
           </div>
-          <Button type="primary">{t('compare_objects.form.compare_btn')}</Button>
+          <Button
+            disabled={ !canCompare }
+            // loading={ isLoading }
+            onClick={ handleCompare }
+            type="primary"
+          >
+            {t('compare_objects.form.compare_btn')}
+          </Button>
         </Flex>
       </Flex>
     </Content>

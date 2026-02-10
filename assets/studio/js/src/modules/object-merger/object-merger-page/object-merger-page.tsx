@@ -15,7 +15,14 @@ import { ObjectMergerForm } from './components/object-merger-form/object-merger-
 export const ObjectMergerPage = (): React.JSX.Element => {
   return (
     <ContentLayout
-      renderToolbar={ <div>Bottom Toolbar</div> }
+      renderToolbar={
+        <Content
+          padded
+          padding={ { x: 'small', y: 'extra-small' } }
+        >
+          <div>Bottom Toolbar</div>
+        </Content>
+        }
       renderTopBar={
         <>
           <ObjectMergerForm />

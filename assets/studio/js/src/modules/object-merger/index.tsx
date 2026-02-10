@@ -12,7 +12,7 @@ import { type MainNavRegistry } from '@pimcore/studio-ui-bundle/modules/app'
 import { container, type AbstractModule } from '@pimcore/studio-ui-bundle'
 import { type WidgetRegistry } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { serviceIds } from '@pimcore/studio-ui-bundle/app'
-import { ObjectMergerPage } from './object-merger-page/object-merger-page'
+import { ObjectMergerPageWrapper } from './object-merger-page/object-merger-page-wrapper'
 
 export const ObjectMergerModule: AbstractModule = {
   onInit: (): void => {
@@ -40,7 +40,7 @@ export const ObjectMergerModule: AbstractModule = {
 
     widgetRegistryService.registerWidget({
       name: 'object-merger-page',
-      component: ObjectMergerPage
+      component: ObjectMergerPageWrapper
     })
   }
 }
