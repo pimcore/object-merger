@@ -9,7 +9,7 @@
  */
 
 import React from 'react'
-import { Box, Divider, ContentLayout, Content } from '@pimcore/studio-ui-bundle/components'
+import { Divider, ContentLayout, Content } from '@pimcore/studio-ui-bundle/components'
 import { ObjectMergerForm } from './components/object-merger-form/object-merger-form'
 
 export const ObjectMergerPage = (): React.JSX.Element => {
