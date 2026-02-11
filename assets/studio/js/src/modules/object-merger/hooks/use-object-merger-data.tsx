@@ -351,7 +351,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         setInitialVersions(prev => ({ ...prev, A: objectValues }))
         setVersions(prev => ({ ...prev, A: objectValues }))
 
-        console.log('----- Formatted Data A:', formatted)
+        setShouldFetchObjectA(false)
       }
 
       void processData()
@@ -378,7 +378,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         setInitialVersions(prev => ({ ...prev, B: objectValues }))
         setVersions(prev => ({ ...prev, B: objectValues }))
 
-        console.log('----- Formatted Data B:', formatted)
+        setShouldFetchObjectB(false)
       }
 
       void processData()
