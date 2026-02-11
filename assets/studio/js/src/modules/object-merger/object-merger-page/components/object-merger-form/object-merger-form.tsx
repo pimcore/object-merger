@@ -18,13 +18,12 @@ export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds, setSelectedIds, loadLayoutData, isLoadingObjectA, isLoadingObjectB } = useObjectMergerContext()
+  const { selectedIds, setSelectedIds, loadLayoutData, isLoading } = useObjectMergerContext()
 
   const canCompare = useMemo(
     () => selectedIds?.A != null && selectedIds?.B != null,
     [selectedIds?.A, selectedIds?.B]
   )
-  const isLoading = isLoadingObjectA || isLoadingObjectB
 
   return (
     <Content

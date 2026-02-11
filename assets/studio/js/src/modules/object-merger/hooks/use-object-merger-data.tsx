@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react'
-import { useDataObjectGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
+import { useDataObjectGetLayoutByIdQuery, useDataObjectGetByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
 
 type VersionData = Record<string, any>
 interface Roles {
@@ -23,8 +23,7 @@ interface IUseObjectMergerDataProps {
 
 export interface IUseObjectMergerDataReturn {
   loadLayoutData: () => void
-  isLoadingObjectA: boolean
-  isLoadingObjectB: boolean
+  isLoading: boolean
   layoutDataObjectA: any
   layoutDataObjectB: any
   versions: { A: VersionData | null, B: VersionData | null }
@@ -48,12 +47,20 @@ export const useObjectMergerData = ({ selectedIds }: IUseObjectMergerDataProps):
     B: null
   })
 
-  const { data: layoutDataObjectA, isLoading: isLoadingObjectA } = useDataObjectGetLayoutByIdQuery(
+  const { data: layoutDataObjectA, isLoading: isLoadingLayoutObjectA } = useDataObjectGetLayoutByIdQuery(
+    { id: selectedIds.A! },
+    { skip: !shouldFetchObjectA || selectedIds.A === null }
+  )
+  const { data: objectDataA, isLoading: isLoadingObjectDataA } = useDataObjectGetByIdQuery(
     { id: selectedIds.A! },
     { skip: !shouldFetchObjectA || selectedIds.A === null }
   )
 
-  const { data: layoutDataObjectB, isLoading: isLoadingObjectB } = useDataObjectGetLayoutByIdQuery(
+  const { data: layoutDataObjectB, isLoading: isLoadingLayoutObjectB } = useDataObjectGetLayoutByIdQuery(
+    { id: selectedIds.B! },
+    { skip: !shouldFetchObjectB || selectedIds.B === null }
+  )
+  const { data: objectDataB, isLoading: isLoadingObjectDataB } = useDataObjectGetByIdQuery(
     { id: selectedIds.B! },
     { skip: !shouldFetchObjectB || selectedIds.B === null }
   )
@@ -72,10 +79,11 @@ export const useObjectMergerData = ({ selectedIds }: IUseObjectMergerDataProps):
   useEffect(() => {
     if (layoutDataObjectA !== undefined && shouldFetchObjectA) {
       const formattedData = formatLayoutData(layoutDataObjectA)
+
       setInitialVersions(prev => ({ ...prev, A: formattedData }))
       setVersions(prev => ({ ...prev, A: formattedData }))
     }
-  }, [layoutDataObjectA, shouldFetchObjectA, formatLayoutData])
+  }, [layoutDataObjectA, objectDataA, shouldFetchObjectA, formatLayoutData])
 
   useEffect(() => {
     if (layoutDataObjectB !== undefined && shouldFetchObjectB) {
@@ -84,12 +92,13 @@ export const useObjectMergerData = ({ selectedIds }: IUseObjectMergerDataProps):
       setInitialVersions(prev => ({ ...prev, B: formattedData }))
       setVersions(prev => ({ ...prev, B: formattedData }))
     }
-  }, [layoutDataObjectB, shouldFetchObjectB, formatLayoutData])
+  }, [layoutDataObjectB, objectDataB, shouldFetchObjectB, formatLayoutData])
+
+  const isLoading = isLoadingLayoutObjectA === true || isLoadingObjectDataA === true || isLoadingLayoutObjectB === true || isLoadingObjectDataB === true
 
   return {
     loadLayoutData,
-    isLoadingObjectA,
-    isLoadingObjectB,
+    isLoading,
     layoutDataObjectA,
     layoutDataObjectB,
     versions,
