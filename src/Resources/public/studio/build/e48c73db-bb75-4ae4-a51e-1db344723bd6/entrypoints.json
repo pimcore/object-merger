@@ -7,7 +7,7 @@
         "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_lodash_lodash_js.js",
         "http://localhost:3033/static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rsbuild_core-3904be.js",
         "http://localhost:3033/static/js/main.js",
-        "http://localhost:3033/main.e5bd74dae20a42c7.hot-update.js"
+        "http://localhost:3033/main.936b584e2fef3fc8.hot-update.js"
       ],
       "css": []
     },
@@ -18,7 +18,7 @@
         "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
         "http://localhost:3033/static/js/async/__federation_expose_default_export.js",
         "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_lodash_lodash_js.js",
-        "http://localhost:3033/pimcore_objectmerger_bundle.e5bd74dae20a42c7.hot-update.js",
+        "http://localhost:3033/pimcore_objectmerger_bundle.936b584e2fef3fc8.hot-update.js",
         "http://localhost:3033/static/js/remoteEntry.js"
       ],
       "css": []

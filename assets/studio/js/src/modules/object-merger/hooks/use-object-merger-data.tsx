@@ -81,14 +81,8 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
   const [layoutsList, setLayoutsList] = useState<any>({})
 
-  const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({
-    A: null,
-    B: null
-  })
-  const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({
-    A: null,
-    B: null
-  })
+  const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
+  const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
 
   const loadLayoutData = useCallback(async (): Promise<void> => {
     if (selectedIds.A == null || selectedIds.B == null) {
@@ -241,7 +235,6 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     }))
 
     setTouchedFields(new Set())
-    console.log(`Reset all fields in ${roles.target} to initial values`)
   }, [roles, initialVersions])
 
   const mirror = useCallback(() => {
@@ -251,7 +244,6 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     }))
 
     setTouchedFields(new Set())
-    console.log(`Mirrored roles: main is now ${roles.target}, target is now ${roles.main}`)
   }, [roles])
 
   return {
