@@ -16,6 +16,7 @@ import {
   type Roles,
   type VersionData
 } from '../hooks/use-object-merger-data'
+import { formatDateTime } from '@pimcore/studio-ui-bundle/utils'
 
 enum DATATYPE_LIST {
   LAYOUT = 'layout',
@@ -27,6 +28,26 @@ export const getBreadcrumbTitle = (value1: string, value2: string): string => {
 }
 
 const fieldTypesRequiringChildren = ['block']
+
+export const getGeneralSystemData = (objectValuesData: any): IFormattedFieldData[] => {
+  const formattedSystemData = {
+    fullPath: objectValuesData?.fullPath ?? '',
+    creationDate: formatDateTime({ timestamp: objectValuesData?.creationDate ?? null, dateStyle: 'short', timeStyle: 'medium' }),
+    modificationDate: formatDateTime({ timestamp: objectValuesData?.modificationDate ?? null, dateStyle: 'short', timeStyle: 'medium' })
+  }
+
+  const result: IFormattedFieldData[] = []
+
+  Object.entries(formattedSystemData).forEach(([key, value]): void => {
+    result.push({
+      fieldBreadcrumbTitle: 'systemData',
+      fieldData: { title: key, name: key, fieldtype: 'input' } as any,
+      fieldValue: value
+    })
+  })
+
+  return result
+}
 
 export const processLayoutData = async ({ data, objectValuesData = {}, fieldBreadcrumbTitle = '', objectId, objectDataRegistry, layoutsList, setLayoutsList }: {
   data: any[]
@@ -127,8 +148,8 @@ export const processLayoutData = async ({ data, objectValuesData = {}, fieldBrea
     return []
   })
 
-  const allResults = await Promise.all(promises)
-  return allResults.reduce((acc, val) => acc.concat(val), [])
+  const layoutData = await Promise.all(promises)
+  return layoutData.reduce((acc, val) => acc.concat(val), [])
 }
 
 export const getUniqFieldKey = (item: any): string => {

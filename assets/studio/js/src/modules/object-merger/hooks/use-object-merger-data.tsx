@@ -11,7 +11,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { isEqual, get, isEmpty } from 'lodash'
 import { useDataObjectGetLayoutByIdQuery, useDataObjectGetByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
-import { createMergerFields, getUniqFieldKey, processLayoutData } from '../helpers/details-functions'
+import { createMergerFields, getUniqFieldKey, processLayoutData, getGeneralSystemData } from '../helpers/details-functions'
 
 export type VersionData = Record<string, any>
 
@@ -122,7 +122,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         const layoutChildren = layoutDataObjectA?.children ?? []
         const objectValues = objectDataA?.objectData ?? {}
 
-        const formatted = await processLayoutData({
+        const layoutData = await processLayoutData({
           data: layoutChildren,
           objectValuesData: objectValues,
           fieldBreadcrumbTitle: '',
@@ -131,6 +131,9 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
           layoutsList,
           setLayoutsList
         })
+
+        const generalSystemData = getGeneralSystemData(objectDataA)
+        const formatted = [...generalSystemData, ...layoutData]
 
         setFormattedDataA(formatted)
         setInitialVersions(prev => ({ ...prev, A: objectValues }))
@@ -149,7 +152,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         const layoutChildren = layoutDataObjectB?.children ?? []
         const objectValues = objectDataB?.objectData ?? {}
 
-        const formatted = await processLayoutData({
+        const layoutData = await processLayoutData({
           data: layoutChildren,
           objectValuesData: objectValues,
           fieldBreadcrumbTitle: '',
@@ -158,6 +161,9 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
           layoutsList,
           setLayoutsList
         })
+
+        const generalSystemData = getGeneralSystemData(objectDataB)
+        const formatted = [...generalSystemData, ...layoutData]
 
         setFormattedDataB(formatted)
         setInitialVersions(prev => ({ ...prev, B: objectValues }))
