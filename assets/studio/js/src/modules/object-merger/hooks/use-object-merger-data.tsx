@@ -9,16 +9,16 @@
  */
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { isEqual, get, isEmpty, differenceWith } from 'lodash'
+import { isEqual, get, isEmpty } from 'lodash'
 import { useDataObjectGetLayoutByIdQuery, useDataObjectGetByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
+import { createMergerFields, getUniqFieldKey, processLayoutData } from '../helpers/details-functions'
 
-type VersionData = Record<string, any>
+export type VersionData = Record<string, any>
 
 export interface IFormattedFieldData {
   fieldBreadcrumbTitle: string
   fieldData: any
   fieldValue: any
-  objectKey: 'A' | 'B'
 }
 
 export interface IFieldCollectionValue {
@@ -41,12 +41,12 @@ export interface IMergerField {
   fieldCollectionModifiedList?: string[]
 }
 
-interface Roles {
+export interface Roles {
   main: 'A' | 'B'
   target: 'A' | 'B'
 }
 
-interface IUseObjectMergerDataProps {
+export interface IUseObjectMergerDataProps {
   selectedIds: { A: number | null, B: number | null }
   objectDataRegistry?: any
 }
@@ -64,221 +64,6 @@ export interface IUseObjectMergerDataReturn {
   mirror: () => void
   versions: { A: VersionData | null, B: VersionData | null }
   initialVersions: { A: VersionData | null, B: VersionData | null }
-}
-
-const DATATYPE_LIST = {
-  LAYOUT: 'layout',
-  DATA: 'data'
-}
-
-const fieldTypesRequiringChildren = ['block']
-
-const getBreadcrumbTitle = (value1: string, value2: string): string => {
-  return [value1, value2].filter(Boolean).join('/')
-}
-
-const getUniqFieldKey = (item: any): string => {
-  const path = item.fieldBreadcrumbTitle ?? ''
-  const name = item.fieldData?.name ?? ''
-  const locale = item.fieldData?.locale ?? 'default'
-
-  return `${path}-${name}-${locale}`
-}
-
-const processLayoutData = async ({
-  data,
-  objectValuesData = {},
-  fieldBreadcrumbTitle = '',
-  objectId,
-  objectDataRegistry,
-  layoutsList,
-  setLayoutsList
-}: {
-  data: any[]
-  objectValuesData?: any
-  fieldBreadcrumbTitle?: string
-  objectId?: number
-  objectDataRegistry?: any
-  layoutsList?: any
-  setLayoutsList?: any
-}): Promise<IFormattedFieldData[]> => {
-  const results: IFormattedFieldData[] = []
-
-  if (!Array.isArray(data)) {
-    return results
-  }
-
-  const promises = data.map(async (item: any) => {
-    if (item.datatype === DATATYPE_LIST.LAYOUT) {
-      const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, item.title as string)
-      return await processLayoutData({
-        data: item.children ?? [],
-        fieldBreadcrumbTitle: breadcrumbTitle,
-        objectValuesData,
-        objectId,
-        objectDataRegistry,
-        layoutsList,
-        setLayoutsList
-      })
-    }
-
-    if (item.datatype === DATATYPE_LIST.DATA) {
-      const fieldName = item.name
-      const fieldValueByName = get(objectValuesData, fieldName)
-      const currentFieldType: string = item.fieldtype
-
-      // Check if we have objectDataRegistry and if it supports this field type
-      if (objectDataRegistry != null && objectDataRegistry.hasDynamicType?.(currentFieldType) === true) {
-        const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
-
-        // Use dynamic type's processing method
-        const processedDataList = await objectDataType.processVersionFieldData({
-          objectId,
-          item,
-          fieldBreadcrumbTitle,
-          fieldValueByName,
-          layoutsList,
-          setLayoutsList
-        })
-
-        const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
-          const nestedObjectData = {}
-
-          // Handle nested children for complex types
-          if (!isEmpty(processedDataItem?.fieldData?.children) &&
-              !fieldTypesRequiringChildren.includes(String(processedDataItem?.fieldData?.fieldtype ?? ''))) {
-            const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(processedDataItem?.fieldData?.title ?? ''))
-
-            return await processLayoutData({
-              data: [processedDataItem?.fieldData],
-              objectValuesData: { ...nestedObjectData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
-              fieldBreadcrumbTitle: breadcrumbTitle,
-              objectId,
-              objectDataRegistry,
-              layoutsList,
-              setLayoutsList
-            })
-          }
-
-          return [{
-            fieldBreadcrumbTitle: processedDataItem.fieldBreadcrumbTitle,
-            fieldData: processedDataItem.fieldData,
-            fieldValue: processedDataItem.fieldValue,
-            objectKey: 'A' // Will be set correctly when processing each object
-          }]
-        })
-
-        const processedResults = await Promise.all(processedPromises ?? [])
-        return processedResults.reduce((acc, val) => acc.concat(val), [])
-      }
-
-      // Fallback for simple fields without objectDataRegistry
-      const result: IFormattedFieldData = {
-        fieldBreadcrumbTitle,
-        fieldData: item,
-        fieldValue: fieldValueByName,
-        objectKey: 'A'
-      }
-
-      const childResults: IFormattedFieldData[] = [result]
-
-      // Handle simple nested children
-      if (item.children != null && Array.isArray(item.children) && item.children.length > 0) {
-        const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(item.title ?? ''))
-        const childObjectData = typeof fieldValueByName === 'object' ? fieldValueByName : {}
-        const nestedResults = await processLayoutData({
-          data: item.children,
-          objectValuesData: childObjectData,
-          fieldBreadcrumbTitle: breadcrumbTitle,
-          objectId,
-          objectDataRegistry,
-          layoutsList,
-          setLayoutsList
-        })
-        childResults.push(...nestedResults)
-      }
-
-      return childResults
-    }
-
-    return []
-  })
-
-  const allResults = await Promise.all(promises)
-  return allResults.reduce((acc, val) => acc.concat(val), [])
-}
-
-const createMergerFields = (
-  dataA: IFormattedFieldData[],
-  dataB: IFormattedFieldData[],
-  roles: Roles,
-  touchedFields: Set<string>,
-  currentVersions: { A: VersionData | null, B: VersionData | null },
-  initialVersions: { A: VersionData | null, B: VersionData | null }
-): IMergerField[] => {
-  const resultList: IMergerField[] = []
-
-  const mapA = new Map(dataA.map(item => [getUniqFieldKey(item), item]))
-  const mapB = new Map(dataB.map(item => [getUniqFieldKey(item), item]))
-
-  const allKeys = new Set([...mapA.keys(), ...mapB.keys()])
-
-  for (const key of allKeys) {
-    const itemA = mapA.get(key)
-    const itemB = mapB.get(key)
-
-    const mainItem = roles.main === 'A' ? itemA : itemB
-    const targetItem = roles.target === 'B' ? itemB : itemA
-
-    const fieldName = (mainItem?.fieldData?.name ?? targetItem?.fieldData?.name)!
-    const targetCurrentValue = roles.target === 'B'
-      ? get(currentVersions.B, fieldName)
-      : get(currentVersions.A, fieldName)
-
-    const mainValue = mainItem?.fieldValue ?? null
-    const targetValue = targetCurrentValue ?? targetItem?.fieldValue ?? null
-
-    const field: IMergerField = {
-      Field: {
-        fieldBreadcrumbTitle: (mainItem?.fieldBreadcrumbTitle ?? targetItem?.fieldBreadcrumbTitle)!,
-        name: fieldName,
-        title: (mainItem?.fieldData?.title ?? targetItem?.fieldData?.title),
-        fieldtype: (mainItem?.fieldData?.fieldtype ?? targetItem?.fieldData?.fieldtype),
-        locale: (mainItem?.fieldData?.locale ?? targetItem?.fieldData?.locale)
-      },
-      main: mainValue,
-      target: targetValue,
-      isTouched: touchedFields.has(key),
-      isDifferent: !isEqual(mainValue, targetValue)
-    }
-
-    if (field.isDifferent && field.Field.fieldtype === 'fieldcollections') {
-      const mainFieldValue = mainValue as IFieldCollectionValue[] | null
-      const targetFieldValue = targetValue as IFieldCollectionValue[] | null
-
-      if (Array.isArray(mainFieldValue) || Array.isArray(targetFieldValue)) {
-        const mainLength = mainFieldValue?.length ?? 0
-        const targetLength = targetFieldValue?.length ?? 0
-
-        const mainList = targetLength > mainLength ? targetFieldValue : mainFieldValue
-        const compareList = mainLength < targetLength ? mainFieldValue : targetFieldValue
-
-        const differences = differenceWith(
-          mainList ?? [],
-          compareList ?? [],
-          (item1, item2) => {
-            return item1?.type === item2?.type && isEqual(item1?.data, item2?.data)
-          }
-        )
-
-        field.fieldCollectionModifiedList = differences.map(item => item.type)
-      }
-    }
-
-    resultList.push(field)
-  }
-
-  return resultList
 }
 
 export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
@@ -389,8 +174,8 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
       return []
     }
-    return createMergerFields(formattedDataA, formattedDataB, roles, touchedFields, versions, initialVersions)
-  }, [formattedDataA, formattedDataB, roles, touchedFields, versions, initialVersions])
+    return createMergerFields(formattedDataA, formattedDataB, roles, touchedFields, versions)
+  }, [formattedDataA, formattedDataB, roles, touchedFields, versions])
 
   const copyFieldToTarget = useCallback((fieldKey: string) => {
     const formattedDataMain = roles.main === 'A' ? formattedDataA : formattedDataB
