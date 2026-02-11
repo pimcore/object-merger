@@ -8,9 +8,10 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, isEmpty } from 'lodash'
-import { useDataObjectGetLayoutByIdQuery, useDataObjectGetByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
+import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
+import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, getUniqFieldKey, processLayoutData, getGeneralSystemData } from '../helpers/details-functions'
 
 export type VersionData = Record<string, any>
@@ -67,19 +68,17 @@ export interface IUseObjectMergerDataReturn {
 }
 
 export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
-  const [shouldFetchObjectA, setShouldFetchObjectA] = useState(false)
-  const [shouldFetchObjectB, setShouldFetchObjectB] = useState(false)
+  const dispatch = useAppDispatch()
 
+  const [isLoadingData, setIsLoadingData] = useState(false)
   const [roles, setRoles] = useState<Roles>({
     main: 'A',
     target: 'B'
   })
 
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
-
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
-
   const [layoutsList, setLayoutsList] = useState<any>({})
 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({
@@ -91,90 +90,70 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     B: null
   })
 
-  const { data: layoutDataObjectA, isLoading: isLoadingLayoutObjectA } = useDataObjectGetLayoutByIdQuery(
-    { id: selectedIds.A! },
-    { skip: !shouldFetchObjectA || selectedIds.A === null }
-  )
-  const { data: objectDataA, isLoading: isLoadingObjectDataA } = useDataObjectGetByIdQuery(
-    { id: selectedIds.A! },
-    { skip: !shouldFetchObjectA || selectedIds.A === null }
-  )
-
-  const { data: layoutDataObjectB, isLoading: isLoadingLayoutObjectB } = useDataObjectGetLayoutByIdQuery(
-    { id: selectedIds.B! },
-    { skip: !shouldFetchObjectB || selectedIds.B === null }
-  )
-  const { data: objectDataB, isLoading: isLoadingObjectDataB } = useDataObjectGetByIdQuery(
-    { id: selectedIds.B! },
-    { skip: !shouldFetchObjectB || selectedIds.B === null }
-  )
-
-  const loadLayoutData = useCallback(() => {
-    if (selectedIds.A !== null && selectedIds.B !== null) {
-      setShouldFetchObjectA(true)
-      setShouldFetchObjectB(true)
+  const loadLayoutData = useCallback(async (): Promise<void> => {
+    if (selectedIds.A == null || selectedIds.B == null) {
+      return
     }
-  }, [selectedIds.A, selectedIds.B])
 
-  useEffect(() => {
-    if (layoutDataObjectA !== undefined && objectDataA !== undefined && shouldFetchObjectA) {
-      const processData = async (): Promise<void> => {
-        const layoutChildren = layoutDataObjectA?.children ?? []
-        const objectValues = objectDataA?.objectData ?? {}
+    setIsLoadingData(true)
 
-        const layoutData = await processLayoutData({
-          data: layoutChildren,
-          objectValuesData: objectValues,
-          fieldBreadcrumbTitle: '',
-          objectId: selectedIds.A ?? undefined,
-          objectDataRegistry,
-          layoutsList,
-          setLayoutsList
-        })
+    setFormattedDataA([])
+    setFormattedDataB([])
+    setTouchedFields(new Set())
 
-        const generalSystemData = getGeneralSystemData(objectDataA)
-        const formatted = [...generalSystemData, ...layoutData]
+    try {
+      const [layoutAResult, objectAResult, layoutBResult, objectBResult] =
+        await Promise.all([
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedIds.A })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedIds.A })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedIds.B })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedIds.B })).unwrap()
+        ])
 
-        setFormattedDataA(formatted)
-        setInitialVersions(prev => ({ ...prev, A: objectValues }))
-        setVersions(prev => ({ ...prev, A: objectValues }))
+      const layoutDataA = await processLayoutData({
+        data: layoutAResult?.children ?? [],
+        objectValuesData: objectAResult?.objectData ?? {},
+        fieldBreadcrumbTitle: '',
+        objectId: selectedIds.A,
+        objectDataRegistry,
+        layoutsList,
+        setLayoutsList
+      })
 
-        setShouldFetchObjectA(false)
-      }
+      const generalSystemDataA = getGeneralSystemData(objectAResult)
+      const formattedA = [...generalSystemDataA, ...layoutDataA]
 
-      void processData()
+      const layoutDataB = await processLayoutData({
+        data: layoutBResult?.children ?? [],
+        objectValuesData: objectBResult?.objectData ?? {},
+        fieldBreadcrumbTitle: '',
+        objectId: selectedIds.B,
+        objectDataRegistry,
+        layoutsList,
+        setLayoutsList
+      })
+
+      const generalSystemDataB = getGeneralSystemData(objectBResult)
+      const formattedB = [...generalSystemDataB, ...layoutDataB]
+
+      setFormattedDataA(formattedA)
+      setFormattedDataB(formattedB)
+
+      setInitialVersions({
+        A: objectAResult?.objectData ?? {},
+        B: objectBResult?.objectData ?? {}
+      })
+      setVersions({
+        A: objectAResult?.objectData ?? {},
+        B: objectBResult?.objectData ?? {}
+      })
+
+      setIsLoadingData(false)
+    } catch (error) {
+      setIsLoadingData(false)
+      console.error('Failed to load merger data', error)
     }
-  }, [layoutDataObjectA, objectDataA, shouldFetchObjectA, selectedIds.A, objectDataRegistry, layoutsList, setLayoutsList])
-
-  useEffect(() => {
-    if (layoutDataObjectB !== undefined && objectDataB !== undefined && shouldFetchObjectB) {
-      const processData = async (): Promise<void> => {
-        const layoutChildren = layoutDataObjectB?.children ?? []
-        const objectValues = objectDataB?.objectData ?? {}
-
-        const layoutData = await processLayoutData({
-          data: layoutChildren,
-          objectValuesData: objectValues,
-          fieldBreadcrumbTitle: '',
-          objectId: selectedIds.B ?? undefined,
-          objectDataRegistry,
-          layoutsList,
-          setLayoutsList
-        })
-
-        const generalSystemData = getGeneralSystemData(objectDataB)
-        const formatted = [...generalSystemData, ...layoutData]
-
-        setFormattedDataB(formatted)
-        setInitialVersions(prev => ({ ...prev, B: objectValues }))
-        setVersions(prev => ({ ...prev, B: objectValues }))
-
-        setShouldFetchObjectB(false)
-      }
-
-      void processData()
-    }
-  }, [layoutDataObjectB, objectDataB, shouldFetchObjectB, selectedIds.B, objectDataRegistry, layoutsList, setLayoutsList])
+  }, [selectedIds])
 
   const mergerFields = useMemo(() => {
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
@@ -275,11 +254,9 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     console.log(`Mirrored roles: main is now ${roles.target}, target is now ${roles.main}`)
   }, [roles])
 
-  const isLoading = isLoadingLayoutObjectA === true || isLoadingObjectDataA === true || isLoadingLayoutObjectB === true || isLoadingObjectDataB === true
-
   return {
     loadLayoutData,
-    isLoading,
+    isLoading: isLoadingData,
     mergerFields,
     roles,
     touchedFields,
