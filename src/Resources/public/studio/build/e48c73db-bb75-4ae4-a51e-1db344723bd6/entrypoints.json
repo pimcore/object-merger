@@ -2,28 +2,28 @@
   "entrypoints": {
     "main": {
       "js": [
-        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
         "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
+        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
         "http://localhost:3033/static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rsbuild_core-3904be.js",
         "http://localhost:3033/static/js/main.js",
-        "http://localhost:3033/main.d3de7e8568d9a23d.hot-update.js"
+        "http://localhost:3033/main.d5b536d30d9462e0.hot-update.js"
       ],
       "css": []
     },
     "pimcore_objectmerger_bundle": {
       "js": [
+        "http://localhost:3033/static/js/async/__federation_expose_default_export.js",
+        "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
         "http://localhost:3033/static/js/async/vendors-node_modules_react_jsx-dev-runtime_js.js",
         "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
-        "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
-        "http://localhost:3033/static/js/async/__federation_expose_default_export.js",
-        "http://localhost:3033/pimcore_objectmerger_bundle.d3de7e8568d9a23d.hot-update.js",
+        "http://localhost:3033/pimcore_objectmerger_bundle.d5b536d30d9462e0.hot-update.js",
         "http://localhost:3033/static/js/remoteEntry.js"
       ],
       "css": []
     },
     "exposeRemote": {
       "js": [
-        "/bundles/objectmerger/studio/build/13c1fc79-6b8d-4253-98ec-4fee71add5e1/exposeRemote.js"
+        "/bundles/objectmerger/studio/build/e48c73db-bb75-4ae4-a51e-1db344723bd6/exposeRemote.js"
       ],
       "css": []
     }

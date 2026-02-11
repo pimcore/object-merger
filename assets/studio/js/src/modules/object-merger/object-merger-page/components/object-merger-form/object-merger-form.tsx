@@ -18,16 +18,13 @@ export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds, setSelectedIds } = useObjectMergerContext()
+  const { selectedIds, setSelectedIds, loadLayoutData, isLoadingObjectA, isLoadingObjectB } = useObjectMergerContext()
 
   const canCompare = useMemo(
     () => selectedIds?.A != null && selectedIds?.B != null,
     [selectedIds?.A, selectedIds?.B]
   )
-
-  const handleCompare = (): void => {
-    console.log('----- selectedIds: ', selectedIds)
-  }
+  const isLoading = isLoadingObjectA || isLoadingObjectB
 
   return (
     <Content
@@ -69,8 +66,8 @@ export const ObjectMergerForm = (): React.JSX.Element => {
           </div>
           <Button
             disabled={ !canCompare }
-            // loading={ isLoading }
-            onClick={ handleCompare }
+            loading={ isLoading }
+            onClick={ () => { loadLayoutData() } }
             type="primary"
           >
             {t('compare_objects.form.compare_btn')}
