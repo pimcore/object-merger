@@ -14,6 +14,7 @@ import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { Content, Flex, Text } from '@pimcore/studio-ui-bundle/components'
 import { DataComponent, DataObjectProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
+import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/element'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import {
   type CategoriesList,
@@ -145,16 +146,18 @@ export const ObjectMergerView = (): React.JSX.Element => {
                                 </Flex>
                                 )}
                                 <DataObjectProvider id={ currentId }>
-                                  <DataComponent
-                                    datatype={ 'data' }
-                                    fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
-                                    fieldType={ fieldItem.Field.fieldtype }
-                                    isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
-                                    key={ `${index}-${key}` }
-                                    value={ fieldItem[key] }
-                                    { ...fieldItem.Field }
-                                    name={ fieldItem.Field.name }
-                                  />
+                                  <FieldCollectionProvider>
+                                    <DataComponent
+                                      datatype={ 'data' }
+                                      fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
+                                      fieldType={ fieldItem.Field.fieldtype }
+                                      isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
+                                      key={ `${index}-${key}` }
+                                      name={ fieldItem.Field.name }
+                                      value={ fieldItem[key] }
+                                      { ...fieldItem.Field }
+                                    />
+                                  </FieldCollectionProvider>
                                 </DataObjectProvider>
                               </div>
                             )
