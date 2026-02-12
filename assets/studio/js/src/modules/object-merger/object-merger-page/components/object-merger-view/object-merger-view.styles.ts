@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ token, css }: { token: FullToken, css: 
 
     headerItem: css`
       flex: 1 1 50%;
-      padding: ${token.paddingXS}px;
+      padding: ${token.paddingXXS}px ${token.paddingXS}px;
       background-color: ${token.Table.headerBg};
       border: 0.5px solid ${token.Table.colorBorderSecondary};
       border-top-width: 0;

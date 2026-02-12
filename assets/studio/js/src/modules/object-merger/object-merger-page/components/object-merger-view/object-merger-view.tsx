@@ -11,10 +11,10 @@
 import React, { useMemo, useState } from 'react'
 import { isEmpty, isEqual, isUndefined } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Content, Flex, Text, Switch } from '@pimcore/studio-ui-bundle/components'
+import { useElementHelper } from '@pimcore/studio-ui-bundle/modules/element'
+import { Content, Flex, Text, Switch, IconButton } from '@pimcore/studio-ui-bundle/components'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import { type CategoriesList, getObjectBreadcrumbsList, getObjectBreadcrumbsListWithFields } from './helpers'
-import { MERGE_SOURCES } from './constants'
 import { ObjectMergerVersions } from './components/object-merger-versions/object-merger-versions'
 import { useStyles } from './object-merger-view.styles'
 
@@ -22,7 +22,8 @@ export const ObjectMergerView = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { canCompare, mergerFields, isLoading } = useObjectMergerContext()
+  const { selectedMergerObjects, canCompare, mergerFields, isLoading } = useObjectMergerContext()
+  const { openElement } = useElementHelper()
 
   const [isExpandedUnmodifiedFields, setIsExpandedUnmodifiedFields] = useState(false)
 
@@ -56,17 +57,25 @@ export const ObjectMergerView = (): React.JSX.Element => {
   }, [mergerModifiedFields])
   const hasModifiedFields = !isUndefined(modifiedFields) && modifiedFields.length > 0
 
-  const renderHeaderItem = (item: string, index: number): React.JSX.Element => {
-    const regexpMatch = (/\d+/).exec(item)
-    const versionNumber = regexpMatch?.[0] ?? '0'
-
+  const renderHeaderItem = (): React.JSX.Element => {
     return (
-      <Flex
-        className={ styles.headerItem }
-        key={ `${index}-${item}` }
-      >
-        <Text>{t('version.version')} {Number(versionNumber)}</Text>
-      </Flex>
+      <>
+        {Object.entries(selectedMergerObjects).map(([key, value]) => (
+          <Flex
+            align="center"
+            className={ styles.headerItem }
+            justify="space-between"
+            key={ value?.id }
+          >
+            <Text strong>{value?.fullPath} {`(id:${value?.id})`}</Text>
+            <IconButton
+              icon={ { value: 'open-folder' } }
+              onClick={ () => { void openElement({ id: Number(value?.id), type: 'data-object' }) } }
+              type="link"
+            />
+          </Flex>
+        ))}
+      </>
     )
   }
 
@@ -83,9 +92,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
             className={ styles.headerContainer }
             wrap="wrap"
           >
-            {MERGE_SOURCES.map((item, index) => (
-              renderHeaderItem(item, index)
-            ))}
+            {renderHeaderItem()}
           </Flex>
           <Flex
             className={ styles.content }

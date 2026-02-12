@@ -54,7 +54,7 @@ export const useObjectMergerContext = (): IObjectMergerDataContext => {
   const context = useContext(ObjectMergerDataContext)
 
   if (isUndefined(context)) {
-    throw new Error('useReportDataContext must be used within a ReportDataProvider')
+    throw new Error('useObjectMergerContext must be used within a ObjectMergerProvider')
   }
 
   return context
