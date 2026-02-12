@@ -9,28 +9,20 @@
  */
 
 import React, { useMemo, useState } from 'react'
-import cn from 'classnames'
 import { isEmpty, isEqual, isUndefined } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { Content, Flex, Text, Switch } from '@pimcore/studio-ui-bundle/components'
-import { DataComponent, DataObjectProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
-import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/element'
-import { AutoHideEmptyContent } from '@pimcore/studio-ui-bundle/modules/app'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
-import {
-  type CategoriesList,
-  getObjectBreadcrumbsList,
-  getObjectBreadcrumbsListWithFields
-} from './helpers/objectBreadcrumbsHelper'
-import { ComparisonCategoryName } from './constants'
+import { type CategoriesList, getObjectBreadcrumbsList, getObjectBreadcrumbsListWithFields } from './helpers'
+import { MERGE_SOURCES } from './constants'
+import { ObjectMergerVersions } from './components/object-merger-versions/object-merger-versions'
 import { useStyles } from './object-merger-view.styles'
 
 export const ObjectMergerView = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds, canCompare, mergerFields, isLoading } = useObjectMergerContext()
+  const { canCompare, mergerFields, isLoading } = useObjectMergerContext()
 
   const [isExpandedUnmodifiedFields, setIsExpandedUnmodifiedFields] = useState(false)
 
@@ -64,43 +56,6 @@ export const ObjectMergerView = (): React.JSX.Element => {
   }, [mergerModifiedFields])
   const hasModifiedFields = !isUndefined(modifiedFields) && modifiedFields.length > 0
 
-  const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
-    const isShowValueWithTranslation = ['systemData'].includes(key)
-    const textValue = isShowValueWithTranslation ? t(`version.category.title.${key}`) : key
-
-    const titleParts = textValue.split('/')
-    const translatedTitleParts = isShowValueWithTranslation ? titleParts : titleParts.map(part => t(part))
-    const [firstTitlePart, ...remainingTitleParts] = translatedTitleParts
-
-    const secondTitlePart = remainingTitleParts.length > 0 ? ` | ${remainingTitleParts.join(' | ')}` : ''
-
-    return (
-      (!isEmptyValue(firstTitlePart) || !isEmptyValue(secondTitlePart))
-        ? (
-          <Text
-            className={ cn(styles.sectionTitle, { [styles.subSectionTitle]: !isCommonSection }) }
-            strong
-          >
-            {firstTitlePart}
-            {!isEmptyValue(secondTitlePart) && <span className={ styles.subSectionText }>{secondTitlePart}</span>}
-          </Text>
-          )
-        : null
-    )
-  }
-
-  const renderFieldTitle = ({ key, locale, isCommonSection }: { key: string, locale: string, isCommonSection: boolean }): React.JSX.Element => {
-    if (isEmptyValue(key)) return <></>
-
-    const textValue = isCommonSection ? t(`version.${key}`) : t(key)
-
-    return (
-      <Text className={ styles.fieldTitle }>
-        {textValue} {!isEmpty(locale) && <Text type="secondary">| {locale.toUpperCase()}</Text>}
-      </Text>
-    )
-  }
-
   const renderHeaderItem = (item: string, index: number): React.JSX.Element => {
     const regexpMatch = (/\d+/).exec(item)
     const versionNumber = regexpMatch?.[0] ?? '0'
@@ -128,7 +83,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
             className={ styles.headerContainer }
             wrap="wrap"
           >
-            {['main', 'target'].map((item, index) => (
+            {MERGE_SOURCES.map((item, index) => (
               renderHeaderItem(item, index)
             ))}
           </Flex>
@@ -150,87 +105,11 @@ export const ObjectMergerView = (): React.JSX.Element => {
                 </Text>
               </Flex>
             )}
-            {breadcrumbsList?.map((breadcrumb, index) => {
-              const isCommonSection = breadcrumb.key === ComparisonCategoryName.SYSTEM_DATA
-
-              return (
-                <div key={ `${index}-${breadcrumb.key}` }>
-                  {renderSectionTitle({ key: breadcrumb.key, isCommonSection })}
-                  <Flex
-                    className={ cn(styles.sectionFields, { [styles.sectionFieldsWithoutBorder]: !isCommonSection }) }
-                    gap="extra-small"
-                    vertical
-                  >
-                    {mergerData.map((fieldItem, fieldIndex) => {
-                      const isBreadcrumbKeyMatch = breadcrumb.key === fieldItem.Field.fieldBreadcrumbTitle
-                      const isFieldInBreadcrumbList = breadcrumb.fieldKeys.includes(fieldItem.Field.name)
-
-                      return (
-                        isBreadcrumbKeyMatch && isFieldInBreadcrumbList && (
-                        <AutoHideEmptyContent
-                          contentSelector={ `.${styles.objectSectionFieldItemWrapper}` }
-                          key={ `${fieldIndex}-${fieldItem.Field.name}` }
-                        >
-                          <div>
-                            {renderFieldTitle({ key: fieldItem.Field.title!, locale: fieldItem.Field?.locale!, isCommonSection })}
-                            <Flex gap="mini">
-                              {['main', 'target'].map((key, index) => {
-                                const isModifiedField = fieldItem?.isDifferent
-                                const isMainVersion = index === 0
-                                const isCompareVersion = index === 1
-                                const currentId = isMainVersion ? selectedIds?.A : selectedIds?.B
-
-                                const isComplexType = ['block', 'fieldcollections'].includes(fieldItem?.Field.fieldtype!)
-                                const isEmptyModifiedStateForComplexTypes: boolean = isModifiedField && isComplexType && isEmptyValue(fieldItem[key])
-
-                                return (
-                                  <div
-                                    className={ styles.objectSectionFieldItemWrapper }
-                                    key={ `${index}-${key}` }
-                                  >
-                                    {isEmptyModifiedStateForComplexTypes && (
-                                    <Flex
-                                      align="center"
-                                      className={ cn(styles.objectSectionFieldItem, styles.objectSectionEmptyState, {
-                                        [styles.objectSectionEmptyStateDisabled]: isMainVersion,
-                                        [styles.objectSectionEmptyStateHighlight]: isCompareVersion
-                                      }) }
-                                      justify="center"
-                                    >
-                                      {t('empty')}
-                                    </Flex>
-                                    )}
-                                    <DataObjectProvider id={ currentId! }>
-                                      <FieldCollectionProvider>
-                                        <DataComponent
-                                          className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
-                                            [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion,
-                                            versionFieldItemHighlight: isModifiedField && isCompareVersion
-                                          }) }
-                                          datatype={ 'data' }
-                                          fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
-                                          fieldType={ fieldItem.Field.fieldtype }
-                                          isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
-                                          key={ `${index}-${key}` }
-                                          name={ fieldItem.Field.name }
-                                          value={ fieldItem[key] }
-                                          { ...fieldItem.Field }
-                                        />
-                                      </FieldCollectionProvider>
-                                    </DataObjectProvider>
-                                  </div>
-                                )
-                              })}
-                            </Flex>
-                          </div>
-                        </AutoHideEmptyContent>
-                        )
-                      )
-                    })}
-                  </Flex>
-                </div>
-              )
-            })}
+            <ObjectMergerVersions
+              breadcrumbsList={ breadcrumbsList! }
+              isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
+              mergerData={ mergerData }
+            />
           </Flex>
         </Flex>
       )}

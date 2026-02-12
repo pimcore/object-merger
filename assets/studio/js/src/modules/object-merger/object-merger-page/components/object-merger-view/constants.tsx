@@ -12,3 +12,5 @@ export enum ComparisonCategoryName {
   SYSTEM_DATA = 'systemData',
   META = 'meta'
 }
+
+export const MERGE_SOURCES = ['main', 'target']
