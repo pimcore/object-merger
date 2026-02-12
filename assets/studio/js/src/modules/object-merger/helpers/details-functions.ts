@@ -54,7 +54,7 @@ export const processLayoutData = async ({ data, objectValuesData = {}, fieldBrea
   objectValuesData?: any
   fieldBreadcrumbTitle?: string
   objectId?: number
-  objectDataRegistry?: any
+  objectDataRegistry: any
   layoutsList?: any
   setLayoutsList?: any
 }): Promise<IFormattedFieldData[]> => {
@@ -134,19 +134,12 @@ export const createMergerFields = (
   touchedFields: Set<string>,
   currentVersions: { A: VersionData | null, B: VersionData | null }
 ): IMergerField[] => {
-  console.log('---->>>>> dataA: ', dataA)
-  console.log('---->>>>> dataB: ', dataB)
-
   const resultList: IMergerField[] = []
 
   const mapA = new Map(dataA.map(item => [getUniqFieldKey(item), item]))
   const mapB = new Map(dataB.map(item => [getUniqFieldKey(item), item]))
 
-  console.log('---->>>>> mapA: ', mapA)
-
   const allKeys = new Set([...mapA.keys(), ...mapB.keys()])
-
-  console.log('---->>>>> allKeys: ', allKeys)
 
   for (const key of allKeys) {
     const itemA = mapA.get(key)
@@ -159,8 +152,6 @@ export const createMergerFields = (
     const targetCurrentValue = roles.target === 'B'
       ? get(currentVersions.B, fieldName)
       : get(currentVersions.A, fieldName)
-    console.log('---->>>>> fieldName: ', fieldName)
-    console.log('---->>>>> targetCurrentValue: ', targetCurrentValue)
 
     const mainValue = mainItem?.fieldValue ?? null
     const targetValue = targetCurrentValue ?? targetItem?.fieldValue ?? null
@@ -193,8 +184,6 @@ export const createMergerFields = (
 
       field.fieldCollectionModifiedList = differences.map(item => item.type)
     }
-
-    console.log('---->>>>> field: ', field)
 
     resultList.push(field)
   }

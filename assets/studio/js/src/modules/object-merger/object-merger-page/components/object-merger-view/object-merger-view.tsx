@@ -16,6 +16,7 @@ import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { Content, Flex, Text, Switch } from '@pimcore/studio-ui-bundle/components'
 import { DataComponent, DataObjectProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/element'
+import { AutoHideEmptyContent } from '@pimcore/studio-ui-bundle/modules/app'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import {
   type CategoriesList,
@@ -33,21 +34,27 @@ export const ObjectMergerView = (): React.JSX.Element => {
 
   const [isExpandedUnmodifiedFields, setIsExpandedUnmodifiedFields] = useState(false)
 
-  const mergerModifiedFields = mergerFields.filter((item) => {
-    return !isEqual(item?.main, item?.target)
-  })
-  const mergerData = isExpandedUnmodifiedFields ? mergerFields : mergerModifiedFields
+  const mergerModifiedFields = useMemo(() => {
+    return mergerFields.filter((item) => {
+      return !isEqual(item?.main ?? null, item?.target ?? null)
+    })
+  }, [mergerFields])
+
+  const mergerData = useMemo(() => {
+    return isExpandedUnmodifiedFields ? mergerFields : mergerModifiedFields
+  }, [isExpandedUnmodifiedFields, mergerFields, mergerModifiedFields])
 
   const sectionsList = useMemo(() => {
-    return getObjectBreadcrumbsList(mergerData)
-  }, [mergerData])
+    return getObjectBreadcrumbsList(mergerFields)
+  }, [mergerFields])
 
   const breadcrumbsList = useMemo((): CategoriesList | undefined => {
     return getObjectBreadcrumbsListWithFields({
       data: mergerData,
       breadcrumbsList: sectionsList
     })
-  }, [isExpandedUnmodifiedFields, sectionsList])
+  }, [mergerData, sectionsList])
+
   const modifiedFields = useMemo(() => {
     if (!isEmpty(mergerModifiedFields)) {
       return mergerModifiedFields.map((item) => item.Field.title)
@@ -160,6 +167,10 @@ export const ObjectMergerView = (): React.JSX.Element => {
 
                       return (
                         isBreadcrumbKeyMatch && isFieldInBreadcrumbList && (
+                        <AutoHideEmptyContent
+                          contentSelector={ `.${styles.objectSectionFieldItemWrapper}` }
+                          key={ `${fieldIndex}-${fieldItem.Field.name}` }
+                        >
                           <div>
                             {renderFieldTitle({ key: fieldItem.Field.title!, locale: fieldItem.Field?.locale!, isCommonSection })}
                             <Flex gap="mini">
@@ -212,6 +223,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
                               })}
                             </Flex>
                           </div>
+                        </AutoHideEmptyContent>
                         )
                       )
                     })}
