@@ -33,7 +33,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds } = useObjectMergerContext()
+  const { selectedMergerObjects } = useObjectMergerContext()
 
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
     const isShowValueWithTranslation = ['systemData'].includes(key)
@@ -102,7 +102,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                             const isModifiedField = fieldItem?.isDifferent
                             const isMainVersion = index === 0
                             const isCompareVersion = index === 1
-                            const currentId = isMainVersion ? selectedIds?.A : selectedIds?.B
+                            const currentId = isMainVersion ? selectedMergerObjects?.A?.id : selectedMergerObjects?.B?.id
 
                             const isComplexType = ['block', 'fieldcollections'].includes(fieldItem.Field.fieldtype!)
                             const isEmptyModifiedStateForComplexTypes: boolean = isModifiedField && isComplexType && isEmptyValue(fieldItem[key])

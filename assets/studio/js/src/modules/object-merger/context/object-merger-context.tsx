@@ -12,38 +12,36 @@ import React, { createContext, useContext, useMemo, useState } from 'react'
 import { isUndefined } from 'lodash'
 import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type DynamicTypeObjectDataRegistry, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
-
-export type VersionId = number
+import { type IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
-  selectedIds: { A: VersionId | null, B: VersionId | null }
-  setSelectedIds: (ids: { A: VersionId | null, B: VersionId | null }) => void
+  selectedMergerObjects: IMergerObjectData
+  setSelectedMergerObjects: (ids: IMergerObjectData) => void
   canCompare: boolean
 }
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
 
 export const ObjectMergerProvider = ({ children }: any): React.JSX.Element => {
-  const [selectedIds, setSelectedIds] = useState<{ A: VersionId | null, B: VersionId | null }>({
-    A: null,
-    B: null
+  const [selectedMergerObjects, setSelectedMergerObjects] = useState<IMergerObjectData>({
+    A: undefined,
+    B: undefined
   })
 
   const canCompare = useMemo(
-    () => selectedIds?.A != null && selectedIds?.B != null,
-    [selectedIds?.A, selectedIds?.B]
+    () => !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B),
+    [selectedMergerObjects?.A, selectedMergerObjects?.B]
   )
   const objectDataRegistry = useInjection<DynamicTypeObjectDataRegistry>(serviceIds['DynamicTypes/ObjectDataRegistry'])
-  console.log('===== objectDataRegistry: ', objectDataRegistry)
 
-  const objectMergerDataValue = useObjectMergerData({ selectedIds, objectDataRegistry })
+  const objectMergerDataValue = useObjectMergerData({ selectedMergerObjects, objectDataRegistry })
 
   const contextValue: IObjectMergerDataContext = useMemo(() => ({
     ...objectMergerDataValue,
-    selectedIds,
-    setSelectedIds,
+    selectedMergerObjects,
+    setSelectedMergerObjects,
     canCompare
-  }), [objectMergerDataValue, selectedIds, setSelectedIds, canCompare])
+  }), [objectMergerDataValue, selectedMergerObjects, setSelectedMergerObjects, canCompare])
 
   return (
     <ObjectMergerDataContext.Provider value={ contextValue }>

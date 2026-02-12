@@ -10,7 +10,7 @@
 
 import React from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValueType, Button } from '@pimcore/studio-ui-bundle/components'
+import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValue, Button } from '@pimcore/studio-ui-bundle/components'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import { useStyles } from './object-merger-form.styles'
 
@@ -18,7 +18,7 @@ export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds, setSelectedIds, loadLayoutData, isLoading, canCompare } = useObjectMergerContext()
+  const { selectedMergerObjects, setSelectedMergerObjects, loadLayoutData, isLoading, canCompare } = useObjectMergerContext()
 
   return (
     <Content
@@ -40,20 +40,20 @@ export const ObjectMergerForm = (): React.JSX.Element => {
                 <ManyToOneRelationInput
                   dataObjectsAllowed
                   enableSearch
-                  onChange={ (value: ManyToOneRelationValueType) => {
-                    setSelectedIds({ A: value?.id ?? null, B: selectedIds?.B ?? null })
+                  onChange={ (value: ManyToOneRelationValue) => {
+                    setSelectedMergerObjects({ A: value, B: selectedMergerObjects?.B })
                   } }
-                  value={ selectedIds?.A }
+                  value={ selectedMergerObjects?.A }
                 />
               </Form.Item>
               <Form.Item name="compareObject">
                 <ManyToOneRelationInput
                   dataObjectsAllowed
                   enableSearch
-                  onChange={ (value: ManyToOneRelationValueType) => {
-                    setSelectedIds({ A: selectedIds?.A ?? null, B: value?.id ?? null })
+                  onChange={ (value: ManyToOneRelationValue) => {
+                    setSelectedMergerObjects({ A: selectedMergerObjects?.A, B: value })
                   } }
-                  value={ selectedIds?.B }
+                  value={ selectedMergerObjects?.B }
                 />
               </Form.Item>
             </FormKit>

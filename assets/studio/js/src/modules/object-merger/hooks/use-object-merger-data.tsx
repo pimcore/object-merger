@@ -9,10 +9,11 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { isEqual, get, isEmpty } from 'lodash'
+import { isEqual, get, isEmpty, isUndefined } from 'lodash'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, getUniqFieldKey, processLayoutData, getGeneralSystemData } from '../helpers/details-functions'
+import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 
 export type VersionData = Record<string, any>
 
@@ -48,7 +49,7 @@ export interface Roles {
 }
 
 export interface IUseObjectMergerDataProps {
-  selectedIds: { A: number | null, B: number | null }
+  selectedMergerObjects: IMergerObjectData
   objectDataRegistry?: any
 }
 
@@ -67,7 +68,7 @@ export interface IUseObjectMergerDataReturn {
   initialVersions: { A: VersionData | null, B: VersionData | null }
 }
 
-export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
+export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
@@ -85,7 +86,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
 
   const loadLayoutData = useCallback(async (): Promise<void> => {
-    if (selectedIds.A == null || selectedIds.B == null) {
+    if (isUndefined(selectedMergerObjects.A) || isUndefined(selectedMergerObjects.B)) {
       return
     }
 
@@ -98,23 +99,21 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
     try {
       const [layoutAResult, objectAResult, layoutBResult, objectBResult] =
         await Promise.all([
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedIds.A })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedIds.A })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedIds.B })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedIds.B })).unwrap()
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.A?.id })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.A?.id })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap()
         ])
 
       const layoutDataA = await processLayoutData({
         data: layoutAResult?.children ?? [],
         objectValuesData: objectAResult?.objectData ?? {},
         fieldBreadcrumbTitle: '',
-        objectId: selectedIds.A,
+        objectId: selectedMergerObjects?.A?.id,
         objectDataRegistry,
         layoutsList,
         setLayoutsList
       })
-      console.log('------- layoutDataA: ', layoutDataA)
-
       const generalSystemDataA = getGeneralSystemData(objectAResult)
       const formattedA = [...generalSystemDataA, ...layoutDataA]
 
@@ -122,13 +121,11 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         data: layoutBResult?.children ?? [],
         objectValuesData: objectBResult?.objectData ?? {},
         fieldBreadcrumbTitle: '',
-        objectId: selectedIds.B,
+        objectId: selectedMergerObjects?.B?.id,
         objectDataRegistry,
         layoutsList,
         setLayoutsList
       })
-      console.log('------- layoutDataB: ', layoutDataB)
-
       const generalSystemDataB = getGeneralSystemData(objectBResult)
       const formattedB = [...generalSystemDataB, ...layoutDataB]
 
@@ -149,7 +146,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
       setIsLoadingData(false)
       console.error('Failed to load merger data', error)
     }
-  }, [selectedIds])
+  }, [selectedMergerObjects])
 
   const mergerFields = useMemo(() => {
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
