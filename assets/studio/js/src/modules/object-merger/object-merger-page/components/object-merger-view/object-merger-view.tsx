@@ -9,6 +9,7 @@
  */
 
 import React, { useMemo, useState } from 'react'
+import cn from 'classnames'
 import { isEmpty, isEqual, isUndefined } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
@@ -21,14 +22,12 @@ import {
   getObjectBreadcrumbsList,
   getObjectBreadcrumbsListWithFields
 } from './helpers/objectBreadcrumbsHelper'
-
-export enum VersionCategoryName {
-  SYSTEM_DATA = 'systemData',
-  META = 'meta'
-}
+import { ComparisonCategoryName } from './constants'
+import { useStyles } from './object-merger-view.styles'
 
 export const ObjectMergerView = (): React.JSX.Element => {
   const { t } = useTranslation()
+  const { styles } = useStyles()
 
   const { selectedIds, canCompare, mergerFields, isLoading } = useObjectMergerContext()
 
@@ -58,9 +57,6 @@ export const ObjectMergerView = (): React.JSX.Element => {
   }, [mergerModifiedFields])
   const hasModifiedFields = !isUndefined(modifiedFields) && modifiedFields.length > 0
 
-  console.log('------ mergerFields: ', mergerFields)
-  console.log('------ mergerData: ', mergerData)
-
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
     const isShowValueWithTranslation = ['systemData'].includes(key)
     const textValue = isShowValueWithTranslation ? t(`version.category.title.${key}`) : key
@@ -74,9 +70,12 @@ export const ObjectMergerView = (): React.JSX.Element => {
     return (
       (!isEmptyValue(firstTitlePart) || !isEmptyValue(secondTitlePart))
         ? (
-          <Text strong>
+          <Text
+            className={ cn(styles.sectionTitle, { [styles.subSectionTitle]: !isCommonSection }) }
+            strong
+          >
             {firstTitlePart}
-            {!isEmptyValue(secondTitlePart) && <span>{secondTitlePart}</span>}
+            {!isEmptyValue(secondTitlePart) && <span className={ styles.subSectionText }>{secondTitlePart}</span>}
           </Text>
           )
         : null
@@ -89,7 +88,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
     const textValue = isCommonSection ? t(`version.${key}`) : t(key)
 
     return (
-      <Text>
+      <Text className={ styles.fieldTitle }>
         {textValue} {!isEmpty(locale) && <Text type="secondary">| {locale.toUpperCase()}</Text>}
       </Text>
     )
@@ -105,12 +104,13 @@ export const ObjectMergerView = (): React.JSX.Element => {
       {canCompare && !isEmpty(mergerData) && (
         <>
           {breadcrumbsList?.map((breadcrumb, index) => {
-            const isCommonSection = breadcrumb.key === VersionCategoryName.SYSTEM_DATA
+            const isCommonSection = breadcrumb.key === ComparisonCategoryName.SYSTEM_DATA
 
             return (
               <div key={ `${index}-${breadcrumb.key}` }>
                 {renderSectionTitle({ key: breadcrumb.key, isCommonSection })}
                 <Flex
+                  className={ cn(styles.sectionFields, { [styles.sectionFieldsWithoutBorder]: !isCommonSection }) }
                   gap="extra-small"
                   vertical
                 >
@@ -135,19 +135,28 @@ export const ObjectMergerView = (): React.JSX.Element => {
 
                             return (
                               <div
+                                className={ styles.objectSectionFieldItemWrapper }
                                 key={ `${index}-${key}` }
                               >
                                 {isEmptyModifiedStateForComplexTypes && (
                                 <Flex
                                   align="center"
+                                  className={ cn(styles.objectSectionFieldItem, styles.objectSectionEmptyState, {
+                                    [styles.objectSectionEmptyStateDisabled]: isMainVersion,
+                                    [styles.objectSectionEmptyStateHighlight]: isCompareVersion
+                                  }) }
                                   justify="center"
                                 >
                                   {t('empty')}
                                 </Flex>
                                 )}
-                                <DataObjectProvider id={ currentId }>
+                                <DataObjectProvider id={ currentId! }>
                                   <FieldCollectionProvider>
                                     <DataComponent
+                                      className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
+                                        [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion,
+                                        versionFieldItemHighlight: isModifiedField && isCompareVersion
+                                      }) }
                                       datatype={ 'data' }
                                       fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
                                       fieldType={ fieldItem.Field.fieldtype }

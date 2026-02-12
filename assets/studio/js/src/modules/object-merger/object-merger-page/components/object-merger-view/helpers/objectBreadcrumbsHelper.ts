@@ -10,21 +10,17 @@
 
 import { map, filter, intersection, isEmpty, isUndefined } from 'lodash'
 import { type IMergerField } from '../../../../hooks/use-object-merger-data'
+import { ComparisonCategoryName } from '../constants'
 
-enum VersionCategoryName {
-  SYSTEM_DATA = 'systemData',
-  META = 'meta'
-}
-
-export type CategoriesList = Array<{ key: VersionCategoryName, fieldKeys: string[] }>
+export type CategoriesList = Array<{ key: ComparisonCategoryName, fieldKeys: string[] }>
 
 const IGNORED_FIELDS = ['reverseObjectRelation']
 
 export const getObjectBreadcrumbsList = (data: IMergerField[]): CategoriesList => {
-  const breadcrumbMap: Partial<Record<VersionCategoryName, Set<string>>> = {}
+  const breadcrumbMap: Partial<Record<ComparisonCategoryName, Set<string>>> = {}
 
   data.forEach(item => {
-    const breadcrumbName = item.Field.fieldBreadcrumbTitle ?? VersionCategoryName.SYSTEM_DATA
+    const breadcrumbName = item.Field.fieldBreadcrumbTitle ?? ComparisonCategoryName.SYSTEM_DATA
 
     if (IGNORED_FIELDS.includes(item.Field.fieldtype!)) {
       return
@@ -38,7 +34,7 @@ export const getObjectBreadcrumbsList = (data: IMergerField[]): CategoriesList =
   })
 
   return Object.entries(breadcrumbMap).map(([key, fieldKeysSet]) => ({
-    key: key as VersionCategoryName,
+    key: key as ComparisonCategoryName,
     fieldKeys: Array.from(fieldKeysSet)
   }))
 }
