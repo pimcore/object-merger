@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValueType, Button } from '@pimcore/studio-ui-bundle/components'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
@@ -18,15 +18,7 @@ export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedIds, setSelectedIds, loadLayoutData, isLoading, mergerFields, versions } = useObjectMergerContext()
-
-  console.log('------- mergerFields: ', mergerFields)
-  console.log('------- versions: ', versions)
-
-  const canCompare = useMemo(
-    () => selectedIds?.A != null && selectedIds?.B != null,
-    [selectedIds?.A, selectedIds?.B]
-  )
+  const { selectedIds, setSelectedIds, loadLayoutData, isLoading, canCompare } = useObjectMergerContext()
 
   return (
     <Content

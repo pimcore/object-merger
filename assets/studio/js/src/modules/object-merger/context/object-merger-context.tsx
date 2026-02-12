@@ -11,15 +11,17 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
 import { isUndefined } from 'lodash'
 import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
+import { type DynamicTypeObjectDataRegistry, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
 
 export type VersionId = number
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
   selectedIds: { A: VersionId | null, B: VersionId | null }
   setSelectedIds: (ids: { A: VersionId | null, B: VersionId | null }) => void
+  canCompare: boolean
 }
 
-const ObjectMergerDataContext = createContext<ReturnType<any> | null>(null)
+const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
 
 export const ObjectMergerProvider = ({ children }: any): React.JSX.Element => {
   const [selectedIds, setSelectedIds] = useState<{ A: VersionId | null, B: VersionId | null }>({
@@ -27,13 +29,21 @@ export const ObjectMergerProvider = ({ children }: any): React.JSX.Element => {
     B: null
   })
 
-  const objectMergerDataValue = useObjectMergerData({ selectedIds })
+  const canCompare = useMemo(
+    () => selectedIds?.A != null && selectedIds?.B != null,
+    [selectedIds?.A, selectedIds?.B]
+  )
+  const objectDataRegistry = useInjection<DynamicTypeObjectDataRegistry>(serviceIds['DynamicTypes/ObjectDataRegistry'])
+  console.log('===== objectDataRegistry: ', objectDataRegistry)
 
-  const contextValue: any = useMemo(() => ({
+  const objectMergerDataValue = useObjectMergerData({ selectedIds, objectDataRegistry })
+
+  const contextValue: IObjectMergerDataContext = useMemo(() => ({
     ...objectMergerDataValue,
     selectedIds,
-    setSelectedIds
-  }), [objectMergerDataValue, selectedIds, setSelectedIds])
+    setSelectedIds,
+    canCompare
+  }), [objectMergerDataValue, selectedIds, setSelectedIds, canCompare])
 
   return (
     <ObjectMergerDataContext.Provider value={ contextValue }>

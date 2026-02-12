@@ -11,6 +11,7 @@
 import React from 'react'
 import { Divider, ContentLayout, Content } from '@pimcore/studio-ui-bundle/components'
 import { ObjectMergerForm } from './components/object-merger-form/object-merger-form'
+import { ObjectMergerView } from './components/object-merger-view/object-merger-view'
 
 export const ObjectMergerPage = (): React.JSX.Element => {
   return (
@@ -33,12 +34,7 @@ export const ObjectMergerPage = (): React.JSX.Element => {
         </>
       }
     >
-      <Content
-        padded
-        padding={ { x: 'small', y: 'extra-small' } }
-      >
-        Main Content
-      </Content>
+      <ObjectMergerView />
     </ContentLayout>
   )
 }

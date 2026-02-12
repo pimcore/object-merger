@@ -113,6 +113,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         layoutsList,
         setLayoutsList
       })
+      console.log('------- layoutDataA: ', layoutDataA)
 
       const generalSystemDataA = getGeneralSystemData(objectAResult)
       const formattedA = [...generalSystemDataA, ...layoutDataA]
@@ -126,6 +127,7 @@ export const useObjectMergerData = ({ selectedIds, objectDataRegistry }: IUseObj
         layoutsList,
         setLayoutsList
       })
+      console.log('------- layoutDataB: ', layoutDataB)
 
       const generalSystemDataB = getGeneralSystemData(objectBResult)
       const formattedB = [...generalSystemDataB, ...layoutDataB]

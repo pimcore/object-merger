@@ -62,15 +62,7 @@ export const processLayoutData = async ({ data, objectValuesData = {}, fieldBrea
     if (item.datatype === DATATYPE_LIST.LAYOUT) {
       const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, item.title as string)
 
-      return await processLayoutData({
-        data: item.children ?? [],
-        fieldBreadcrumbTitle: breadcrumbTitle,
-        objectValuesData,
-        objectId,
-        objectDataRegistry,
-        layoutsList,
-        setLayoutsList
-      })
+      return await processLayoutData({ data: item.children ?? [], fieldBreadcrumbTitle: breadcrumbTitle, objectValuesData, objectDataRegistry })
     }
 
     if (item.datatype === DATATYPE_LIST.DATA) {
@@ -78,71 +70,46 @@ export const processLayoutData = async ({ data, objectValuesData = {}, fieldBrea
       const fieldValueByName = get(objectValuesData, fieldName)
       const currentFieldType: string = item.fieldtype
 
-      if (objectDataRegistry != null && objectDataRegistry.hasDynamicType?.(currentFieldType) === true) {
-        const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
+      console.log('------ objectDataRegistry: ', objectDataRegistry)
+      console.log('------ currentFieldType: ', currentFieldType)
 
-        const processedDataList = await objectDataType.processVersionFieldData({
-          objectId,
-          item,
-          fieldBreadcrumbTitle,
-          fieldValueByName,
-          layoutsList,
-          setLayoutsList
-        })
-
-        const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
-          const nestedObjectData = {}
-
-          if (!isEmpty(processedDataItem?.fieldData?.children) &&
-                        !fieldTypesRequiringChildren.includes(String(processedDataItem?.fieldData?.fieldtype ?? ''))) {
-            const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(processedDataItem?.fieldData?.title ?? ''))
-
-            return await processLayoutData({
-              data: [processedDataItem?.fieldData],
-              objectValuesData: { ...nestedObjectData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
-              fieldBreadcrumbTitle: breadcrumbTitle,
-              objectId,
-              objectDataRegistry,
-              layoutsList,
-              setLayoutsList
-            })
-          }
-
-          return [{
-            fieldBreadcrumbTitle: processedDataItem.fieldBreadcrumbTitle,
-            fieldData: processedDataItem.fieldData,
-            fieldValue: processedDataItem.fieldValue
-          }]
-        })
-
-        const processedResults = await Promise.all(processedPromises ?? [])
-        return processedResults.reduce((acc, val) => acc.concat(val), [])
+      if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
+        return []
       }
 
-      const result: IFormattedFieldData = {
+      const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
+
+      const processedDataList = await objectDataType.processVersionFieldData({
+        objectId,
+        item,
         fieldBreadcrumbTitle,
-        fieldData: item,
-        fieldValue: fieldValueByName
-      }
+        fieldValueByName,
+        layoutsList,
+        setLayoutsList
+      })
 
-      const childResults: IFormattedFieldData[] = [result]
+      const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
+        const nestedObjectData = {}
 
-      if (item.children != null && Array.isArray(item.children) && item.children.length > 0) {
-        const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(item.title ?? ''))
-        const childObjectData = typeof fieldValueByName === 'object' ? fieldValueByName : {}
-        const nestedResults = await processLayoutData({
-          data: item.children,
-          objectValuesData: childObjectData,
-          fieldBreadcrumbTitle: breadcrumbTitle,
-          objectId,
-          objectDataRegistry,
-          layoutsList,
-          setLayoutsList
-        })
-        childResults.push(...nestedResults)
-      }
+        if (!isEmpty(processedDataItem?.fieldData?.children) &&
+                      !fieldTypesRequiringChildren.includes(String(processedDataItem?.fieldData?.fieldtype ?? ''))) {
+          const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(processedDataItem?.fieldData?.title ?? ''))
 
-      return childResults
+          return await processLayoutData({
+            data: [processedDataItem?.fieldData],
+            objectValuesData: { ...nestedObjectData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
+            fieldBreadcrumbTitle: breadcrumbTitle,
+            objectId,
+            objectDataRegistry,
+            layoutsList,
+            setLayoutsList
+          })
+        }
+
+        return [processedDataItem]
+      })
+
+      return (await Promise.all(processedPromises ?? [])).reduce((acc, val) => acc.concat(val), [])
     }
 
     return []
@@ -167,12 +134,19 @@ export const createMergerFields = (
   touchedFields: Set<string>,
   currentVersions: { A: VersionData | null, B: VersionData | null }
 ): IMergerField[] => {
+  console.log('---->>>>> dataA: ', dataA)
+  console.log('---->>>>> dataB: ', dataB)
+
   const resultList: IMergerField[] = []
 
   const mapA = new Map(dataA.map(item => [getUniqFieldKey(item), item]))
   const mapB = new Map(dataB.map(item => [getUniqFieldKey(item), item]))
 
+  console.log('---->>>>> mapA: ', mapA)
+
   const allKeys = new Set([...mapA.keys(), ...mapB.keys()])
+
+  console.log('---->>>>> allKeys: ', allKeys)
 
   for (const key of allKeys) {
     const itemA = mapA.get(key)
@@ -185,6 +159,8 @@ export const createMergerFields = (
     const targetCurrentValue = roles.target === 'B'
       ? get(currentVersions.B, fieldName)
       : get(currentVersions.A, fieldName)
+    console.log('---->>>>> fieldName: ', fieldName)
+    console.log('---->>>>> targetCurrentValue: ', targetCurrentValue)
 
     const mainValue = mainItem?.fieldValue ?? null
     const targetValue = targetCurrentValue ?? targetItem?.fieldValue ?? null
@@ -192,10 +168,7 @@ export const createMergerFields = (
     const field: IMergerField = {
       Field: {
         fieldBreadcrumbTitle: (mainItem?.fieldBreadcrumbTitle ?? targetItem?.fieldBreadcrumbTitle)!,
-        name: fieldName,
-        title: (mainItem?.fieldData?.title ?? targetItem?.fieldData?.title),
-        fieldtype: (mainItem?.fieldData?.fieldtype ?? targetItem?.fieldData?.fieldtype),
-        locale: (mainItem?.fieldData?.locale ?? targetItem?.fieldData?.locale)
+        ...(mainItem?.fieldData ?? targetItem?.fieldData)
       },
       main: mainValue,
       target: targetValue,
@@ -203,28 +176,25 @@ export const createMergerFields = (
       isDifferent: !isEqual(mainValue, targetValue)
     }
 
-    if (field.isDifferent && field.Field.fieldtype === 'fieldcollections') {
-      const mainFieldValue = mainValue as IFieldCollectionValue[] | null
-      const targetFieldValue = targetValue as IFieldCollectionValue[] | null
+    if (field.Field.fieldtype === 'fieldcollections') {
+      const mainLength = mainValue?.length ?? 0
+      const targetLength = targetValue?.length ?? 0
 
-      if (Array.isArray(mainFieldValue) || Array.isArray(targetFieldValue)) {
-        const mainLength = mainFieldValue?.length ?? 0
-        const targetLength = targetFieldValue?.length ?? 0
+      const mainList = targetLength > mainLength ? itemB : itemA
+      const targetList = mainLength < targetLength ? itemA : itemB
 
-        const mainList = targetLength > mainLength ? targetFieldValue : mainFieldValue
-        const compareList = mainLength < targetLength ? mainFieldValue : targetFieldValue
+      const differences = differenceWith(
+        mainList?.fieldValue as IFieldCollectionValue[] ?? [],
+        targetList?.fieldValue as IFieldCollectionValue[] ?? [],
+        (item1, item2) => {
+          return item1?.type === item2?.type && isEqual(item1?.data, item2?.data)
+        }
+      )
 
-        const differences = differenceWith(
-          mainList ?? [],
-          compareList ?? [],
-          (item1, item2) => {
-            return item1?.type === item2?.type && isEqual(item1?.data, item2?.data)
-          }
-        )
-
-        field.fieldCollectionModifiedList = differences.map(item => item.type)
-      }
+      field.fieldCollectionModifiedList = differences.map(item => item.type)
     }
+
+    console.log('---->>>>> field: ', field)
 
     resultList.push(field)
   }
