@@ -233,14 +233,14 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     setTouchedFields(new Set())
   }, [roles, initialVersions])
 
-  const mirror = useCallback(() => {
+  const mirror = (): void => {
     setRoles(prev => ({
       main: prev.target,
       target: prev.main
     }))
 
     setTouchedFields(new Set())
-  }, [roles])
+  }
 
   return {
     loadLayoutData,

@@ -22,7 +22,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedMergerObjects, canCompare, mergerFields, isLoading } = useObjectMergerContext()
+  const { selectedMergerObjects, canCompare, mergerFields, isLoading, roles } = useObjectMergerContext()
   const { openElement } = useElementHelper()
 
   const [isExpandedUnmodifiedFields, setIsExpandedUnmodifiedFields] = useState(false)
@@ -58,23 +58,33 @@ export const ObjectMergerView = (): React.JSX.Element => {
   const hasModifiedFields = !isUndefined(modifiedFields) && modifiedFields.length > 0
 
   const renderHeaderItem = (): React.JSX.Element => {
+    const orderedKeys = [roles.main, roles.target]
+
     return (
       <>
-        {Object.entries(selectedMergerObjects).map(([key, value]) => (
-          <Flex
-            align="center"
-            className={ styles.headerItem }
-            justify="space-between"
-            key={ value?.id }
-          >
-            <Text strong>{value?.fullPath} {`(id:${value?.id})`}</Text>
-            <IconButton
-              icon={ { value: 'open-folder' } }
-              onClick={ () => { void openElement({ id: Number(value?.id), type: 'data-object' }) } }
-              type="link"
-            />
-          </Flex>
-        ))}
+        {orderedKeys.map((key) => {
+          const currentValue = selectedMergerObjects[key]
+
+          return (
+            <Flex
+              align="center"
+              className={ styles.headerItem }
+              justify="space-between"
+              key={ `${key}-${currentValue?.id}` }
+            >
+              <Text strong>
+                {currentValue?.fullPath} (id:{currentValue?.id})
+              </Text>
+              <IconButton
+                icon={ { value: 'open-folder' } }
+                onClick={ () => {
+                  void openElement({ id: Number(currentValue?.id), type: 'data-object' })
+                } }
+                type="link"
+              />
+            </Flex>
+          )
+        })}
       </>
     )
   }

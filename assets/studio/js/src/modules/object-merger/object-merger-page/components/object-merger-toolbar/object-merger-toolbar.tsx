@@ -18,7 +18,7 @@ import { useObjectMergerContext } from '../../../context/object-merger-context'
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields, refetch, isFetching } = useObjectMergerContext()
+  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -34,7 +34,7 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
         <Flex gap="extra-small">
           <IconTextButton
             icon={ { value: 'contrast-01' } }
-            onClick={ () => { } }
+            onClick={ mirror }
           >
             {t('compare_objects.toolbar.mirror_view')}
           </IconTextButton>
@@ -50,12 +50,14 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
       </Split>
       <Flex gap="extra-small">
         <IconTextButton
+          disabled={ isEmpty(touchedFields) }
           icon={ { value: 'corner-up-left' } }
           onClick={ () => { } }
         >
           {t('compare_objects.toolbar.reset')}
         </IconTextButton>
         <Button
+          disabled={ isEmpty(touchedFields) }
           onClick={ () => { } }
           type="primary"
         >
