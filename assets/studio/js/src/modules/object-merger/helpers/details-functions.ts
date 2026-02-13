@@ -29,94 +29,83 @@ export const getBreadcrumbTitle = (value1: string, value2: string): string => {
 
 const fieldTypesRequiringChildren = ['block']
 
-export const getGeneralSystemData = (objectValuesData: any): IFormattedFieldData[] => {
-  const formattedSystemData = {
-    fullPath: objectValuesData?.fullPath ?? '',
-    creationDate: formatDateTime({ timestamp: objectValuesData?.creationDate ?? null, dateStyle: 'short', timeStyle: 'medium' }),
-    modificationDate: formatDateTime({ timestamp: objectValuesData?.modificationDate ?? null, dateStyle: 'short', timeStyle: 'medium' })
-  }
-
-  const result: IFormattedFieldData[] = []
-
-  Object.entries(formattedSystemData).forEach(([key, value]): void => {
-    result.push({
-      fieldBreadcrumbTitle: 'systemData',
-      fieldData: { title: key, name: key, fieldtype: 'input' } as any,
-      fieldValue: value
-    })
-  })
-
-  return result
-}
-
-export const processLayoutData = async ({ data, objectValuesData = {}, fieldBreadcrumbTitle = '', objectId, objectDataRegistry, layoutsList, setLayoutsList }: {
-  data: any[]
-  objectValuesData?: any
-  fieldBreadcrumbTitle?: string
+export const processData = async ({ objectId, layout, objectData, objectDataRegistry, layoutsList, setLayoutsList }: {
   objectId?: number
+  layout: any[]
+  objectData?: any
   objectDataRegistry: any
   layoutsList?: any
   setLayoutsList?: any
 }): Promise<IFormattedFieldData[]> => {
-  const promises = data.map(async (item: any) => {
-    if (item.datatype === DATATYPE_LIST.LAYOUT) {
-      const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, item.title as string)
+  const formattedSystemData = {
+    fullPath: objectData?.fullPath ?? '',
+    creationDate: formatDateTime({ timestamp: objectData?.creationDate ?? null, dateStyle: 'short', timeStyle: 'medium' }),
+    modificationDate: formatDateTime({ timestamp: objectData?.modificationDate ?? null, dateStyle: 'short', timeStyle: 'medium' })
+  }
 
-      return await processLayoutData({ data: item.children ?? [], fieldBreadcrumbTitle: breadcrumbTitle, objectValuesData, objectDataRegistry })
-    }
+  const processLayoutData = async ({ data, objectValuesData = objectData?.objectData, fieldBreadcrumbTitle = '' }: {
+    data: any[]
+    objectValuesData?: any
+    fieldBreadcrumbTitle?: string
+  }): Promise<IFormattedFieldData[]> => {
+    const promises = data.map(async (item: any) => {
+      if (item.datatype === DATATYPE_LIST.LAYOUT) {
+        const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, item.title as string)
 
-    if (item.datatype === DATATYPE_LIST.DATA) {
-      const fieldName = item.name
-      const fieldValueByName = get(objectValuesData, fieldName)
-      const currentFieldType: string = item.fieldtype
-
-      console.log('------ objectDataRegistry: ', objectDataRegistry)
-      console.log('------ currentFieldType: ', currentFieldType)
-
-      if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
-        return []
+        return await processLayoutData({ data: item.children, fieldBreadcrumbTitle: breadcrumbTitle, objectValuesData })
       }
 
-      const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
+      if (item.datatype === DATATYPE_LIST.DATA) {
+        const fieldName = item.name
+        const fieldValueByName = get(objectValuesData, fieldName)
+        const currentFieldType: string = item.fieldtype
 
-      const processedDataList = await objectDataType.processVersionFieldData({
-        objectId,
-        item,
-        fieldBreadcrumbTitle,
-        fieldValueByName,
-        layoutsList,
-        setLayoutsList
-      })
-
-      const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
-        const nestedObjectData = {}
-
-        if (!isEmpty(processedDataItem?.fieldData?.children) &&
-                      !fieldTypesRequiringChildren.includes(String(processedDataItem?.fieldData?.fieldtype ?? ''))) {
-          const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(processedDataItem?.fieldData?.title ?? ''))
-
-          return await processLayoutData({
-            data: [processedDataItem?.fieldData],
-            objectValuesData: { ...nestedObjectData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
-            fieldBreadcrumbTitle: breadcrumbTitle,
-            objectId,
-            objectDataRegistry,
-            layoutsList,
-            setLayoutsList
-          })
+        if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
+          return []
         }
 
-        return [processedDataItem]
-      })
+        const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
 
-      return (await Promise.all(processedPromises ?? [])).reduce((acc, val) => acc.concat(val), [])
-    }
+        const processedDataList = await objectDataType.processVersionFieldData({ objectId, item, fieldBreadcrumbTitle, fieldValueByName, layoutsList, setLayoutsList })
+        const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
+          objectValuesData = {}
 
-    return []
-  })
+          if (!isEmpty(processedDataItem?.fieldData?.children) && !fieldTypesRequiringChildren.includes(String(processedDataItem?.fieldData?.fieldtype ?? ''))) {
+            const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, String(processedDataItem?.fieldData?.title ?? ''))
 
-  const layoutData = await Promise.all(promises)
-  return layoutData.reduce((acc, val) => acc.concat(val), [])
+            return await processLayoutData({
+              data: [processedDataItem?.fieldData],
+              objectValuesData: { ...objectValuesData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
+              fieldBreadcrumbTitle: breadcrumbTitle
+            })
+          }
+
+          return [processedDataItem]
+        })
+
+        return (await Promise.all(processedPromises)).reduce((acc, val) => acc.concat(val), [])
+      }
+
+      return []
+    })
+
+    return (await Promise.all(promises)).reduce((acc, val) => acc.concat(val), [])
+  }
+
+  const getGeneralSystemData = (): IFormattedFieldData[] => {
+    const result: IFormattedFieldData[] = []
+
+    Object.entries(formattedSystemData).forEach(([key, value]): void => {
+      result.push({ fieldBreadcrumbTitle: 'systemData', fieldData: { title: key, name: key, fieldtype: 'input' } as any, fieldValue: value })
+    })
+
+    return result
+  }
+
+  const layoutData = await processLayoutData({ data: layout })
+  const generalSystemData = getGeneralSystemData()
+
+  return [...generalSystemData, ...layoutData]
 }
 
 export const getUniqFieldKey = (item: any): string => {

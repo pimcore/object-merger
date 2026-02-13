@@ -12,7 +12,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, isEmpty, isUndefined } from 'lodash'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
-import { createMergerFields, getUniqFieldKey, processLayoutData, getGeneralSystemData } from '../helpers/details-functions'
+import { createMergerFields, getUniqFieldKey, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 
 export type VersionData = Record<string, any>
@@ -80,7 +80,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
-  const [layoutsList, setLayoutsList] = useState<any>({})
+  const [layoutsList, setLayoutsList] = useState<any>([])
 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
@@ -105,32 +105,26 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
           dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap()
         ])
 
-      const layoutDataA = await processLayoutData({
-        data: layoutAResult?.children ?? [],
-        objectValuesData: objectAResult?.objectData ?? {},
-        fieldBreadcrumbTitle: '',
+      const formattedDataA = await processData({
         objectId: selectedMergerObjects?.A?.id,
+        layout: layoutAResult?.children ?? [],
+        objectData: objectAResult ?? {},
         objectDataRegistry,
         layoutsList,
         setLayoutsList
       })
-      const generalSystemDataA = getGeneralSystemData(objectAResult)
-      const formattedA = [...generalSystemDataA, ...layoutDataA]
 
-      const layoutDataB = await processLayoutData({
-        data: layoutBResult?.children ?? [],
-        objectValuesData: objectBResult?.objectData ?? {},
-        fieldBreadcrumbTitle: '',
+      const formattedDataB = await processData({
         objectId: selectedMergerObjects?.B?.id,
+        layout: layoutBResult?.children ?? [],
+        objectData: objectBResult ?? {},
         objectDataRegistry,
         layoutsList,
         setLayoutsList
       })
-      const generalSystemDataB = getGeneralSystemData(objectBResult)
-      const formattedB = [...generalSystemDataB, ...layoutDataB]
 
-      setFormattedDataA(formattedA)
-      setFormattedDataB(formattedB)
+      setFormattedDataA(formattedDataA)
+      setFormattedDataB(formattedDataB)
 
       setInitialVersions({
         A: objectAResult?.objectData ?? {},
