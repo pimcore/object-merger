@@ -2,25 +2,25 @@
   "entrypoints": {
     "main": {
       "js": [
-        "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_antd-style_es_index_js.js",
-        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
         "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
         "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_lodash_lodash_js.js",
+        "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_antd-style_es_index_js.js",
+        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
         "http://localhost:3033/static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-studio-ui-bundle_assets_n-e2c73a.js",
         "http://localhost:3033/static/js/main.js",
-        "http://localhost:3033/main.3e43e02496d56fb9.hot-update.js"
+        "http://localhost:3033/main.b44a6d0bff2f6dcc.hot-update.js"
       ],
       "css": []
     },
     "pimcore_objectmerger_bundle": {
       "js": [
-        "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_antd-style_es_index_js.js",
-        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
+        "http://localhost:3033/static/js/async/vendors-node_modules_react_jsx-dev-runtime_js-node_modules_classnames_index_js.js",
         "http://localhost:3033/static/js/async/__federation_expose_default_export.js",
         "http://localhost:3033/static/js/async/vendors-node_modules_lodash_lodash_js.js",
         "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_lodash_lodash_js.js",
-        "http://localhost:3033/static/js/async/vendors-node_modules_react_jsx-dev-runtime_js-node_modules_classnames_index_js.js",
-        "http://localhost:3033/pimcore_objectmerger_bundle.3e43e02496d56fb9.hot-update.js",
+        "http://localhost:3033/static/js/async/vendors-studio-ui-bundle_assets_node_modules_antd-style_es_index_js.js",
+        "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js",
+        "http://localhost:3033/pimcore_objectmerger_bundle.b44a6d0bff2f6dcc.hot-update.js",
         "http://localhost:3033/static/js/remoteEntry.js"
       ],
       "css": []
