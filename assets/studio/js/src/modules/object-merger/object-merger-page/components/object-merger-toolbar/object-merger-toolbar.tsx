@@ -18,7 +18,7 @@ import { useObjectMergerContext } from '../../../context/object-merger-context'
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields } = useObjectMergerContext()
+  const { canCompare, mergerFields, refetch, isFetching } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -28,8 +28,8 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
     <Toolbar justify="space-between">
       <Split size='extra-small'>
         <Refetch
-          isFetching={ false }
-          refetch={ () => { } }
+          isFetching={ isFetching }
+          refetch={ refetch }
         />
         <Flex gap="extra-small">
           <IconTextButton

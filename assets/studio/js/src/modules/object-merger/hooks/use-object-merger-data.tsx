@@ -55,6 +55,8 @@ export interface IUseObjectMergerDataProps {
 
 export interface IUseObjectMergerDataReturn {
   loadLayoutData: () => void
+  isFetching: boolean
+  refetch: () => void
   isLoading: boolean
   mergerFields: IMergerField[]
   roles: Roles
@@ -85,7 +87,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
 
-  const loadLayoutData = useCallback(async (): Promise<void> => {
+  const loadLayoutData = async (): Promise<void> => {
     if (isUndefined(selectedMergerObjects.A) || isUndefined(selectedMergerObjects.B)) {
       return
     }
@@ -134,13 +136,12 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
         A: objectAResult?.objectData ?? {},
         B: objectBResult?.objectData ?? {}
       })
-
-      setIsLoadingData(false)
     } catch (error) {
-      setIsLoadingData(false)
       console.error('Failed to load merger data', error)
+    } finally {
+      setIsLoadingData(false)
     }
-  }, [selectedMergerObjects])
+  }
 
   const mergerFields = useMemo(() => {
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
@@ -148,6 +149,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     }
     return createMergerFields(formattedDataA, formattedDataB, roles, touchedFields, versions)
   }, [formattedDataA, formattedDataB, roles, touchedFields, versions])
+
+  const refetch = (): void => { void loadLayoutData() }
 
   const copyFieldToTarget = useCallback((fieldKey: string) => {
     const formattedDataMain = roles.main === 'A' ? formattedDataA : formattedDataB
@@ -241,6 +244,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
   return {
     loadLayoutData,
+    refetch,
+    isFetching: isLoadingData,
     isLoading: isLoadingData,
     mergerFields,
     roles,
