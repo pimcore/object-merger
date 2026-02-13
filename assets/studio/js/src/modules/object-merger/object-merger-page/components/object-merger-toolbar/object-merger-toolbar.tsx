@@ -9,12 +9,20 @@
  */
 
 import React from 'react'
+import { isEmpty } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Toolbar, Flex, IconTextButton, Button, Tooltip, Split } from '@pimcore/studio-ui-bundle/components'
 import { Refetch } from '../refetch/refetch'
+import { useObjectMergerContext } from '../../../context/object-merger-context'
 
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
+
+  const { canCompare, mergerFields } = useObjectMergerContext()
+
+  if (!canCompare || isEmpty(mergerFields)) {
+    return <></>
+  }
 
   return (
     <Toolbar justify="space-between">

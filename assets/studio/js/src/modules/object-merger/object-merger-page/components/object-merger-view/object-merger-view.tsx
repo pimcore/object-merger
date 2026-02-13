@@ -81,11 +81,14 @@ export const ObjectMergerView = (): React.JSX.Element => {
 
   return (
     <Content
+      centered={ !canCompare }
       loading={ isLoading }
       padded
       padding={ { x: 'small', y: 'extra-small' } }
     >
-      {!canCompare && <div>Please select two objects to compare.</div>}
+      {!canCompare && (
+        <Text type="secondary">{t('compare_objects.initial_description')}</Text>
+      )}
       {canCompare && !isEmpty(mergerData) && (
         <Flex vertical>
           <Flex
