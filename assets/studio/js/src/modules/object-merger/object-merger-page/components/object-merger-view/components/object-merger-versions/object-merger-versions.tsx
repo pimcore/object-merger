@@ -13,7 +13,7 @@ import cn from 'classnames'
 import { isEmpty } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
-import { Flex, Text } from '@pimcore/studio-ui-bundle/components'
+import { Flex, Text, IconButton } from '@pimcore/studio-ui-bundle/components'
 import { DataComponent, DataObjectProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/element'
 import { AutoHideEmptyContent } from '@pimcore/studio-ui-bundle/modules/app'
@@ -37,6 +37,8 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
   const { styles } = useStyles()
 
   const { selectedMergerObjects, roles } = useObjectMergerContext()
+
+  console.log('====== mergerData: ', mergerData)
 
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
     const isShowValueWithTranslation = SECTIONS_WITH_TRANSLATION.includes(key)
@@ -63,15 +65,45 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
     )
   }
 
-  const renderFieldTitle = ({ key, locale, isCommonSection }: { key: string, locale: string, isCommonSection: boolean }): React.JSX.Element => {
+  const renderFieldTitle = ({ fieldItem, isCommonSection, isMainVersion, isCompareVersion }: { fieldItem: IMergerField, isCommonSection: boolean, isMainVersion: boolean, isCompareVersion: boolean }): React.JSX.Element => {
+    const key = fieldItem.Field.title!
+    const locale = fieldItem.Field.locale!
+
     if (isEmptyValue(key)) return <></>
 
     const textValue = isCommonSection ? t(`version.${key}`) : t(key)
 
     return (
-      <Text className={ styles.fieldTitle }>
-        {textValue} {!isEmpty(locale) && <Text type="secondary">| {locale.toUpperCase()}</Text>}
-      </Text>
+      <div className={ styles.fieldTitle }>
+        <Flex
+          align="center"
+          justify="space-between"
+        >
+          {isMainVersion && (
+            <Text>
+              {textValue} {!isEmpty(locale) && <Text type="secondary">| {locale.toUpperCase()}</Text>}
+            </Text>
+          )}
+          {!isCommonSection && isMainVersion && fieldItem.isDifferent && (
+            <IconButton
+              icon={ { value: 'arrow-square-right' } }
+              size="small"
+            />
+          )}
+          {!isCommonSection && isMainVersion && !fieldItem.isDifferent && (
+            <IconButton
+              icon={ { value: 'lock' } }
+              size="small"
+            />
+          )}
+          {!isCommonSection && isCompareVersion && fieldItem.isTouched && (
+            <IconButton
+              icon={ { value: 'corner-up-left' } }
+              size="small"
+            />
+          )}
+        </Flex>
+      </div>
     )
   }
 
@@ -99,7 +131,6 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                       key={ `${fieldIndex}-${fieldItem.Field.name}` }
                     >
                       <div>
-                        {renderFieldTitle({ key: fieldItem.Field.title!, locale: fieldItem.Field.locale!, isCommonSection })}
                         <Flex gap="mini">
                           {MERGE_SOURCES.map((key, index) => {
                             const isModifiedField = fieldItem?.isDifferent
@@ -113,41 +144,48 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                             const isEmptyModifiedStateForComplexTypes: boolean = isModifiedField && isComplexType && isEmptyValue(fieldItem[key])
 
                             return (
-                              <div
+                              <Flex
                                 className={ styles.objectSectionFieldItemWrapper }
+                                gap="mini"
                                 key={ `${index}-${key}` }
+                                vertical
                               >
-                                {isEmptyModifiedStateForComplexTypes && (
-                                <Flex
-                                  align="center"
-                                  className={ cn(styles.objectSectionFieldItem, styles.objectSectionEmptyState, {
-                                    [styles.objectSectionEmptyStateDisabled]: isMainVersion,
-                                    [styles.objectSectionEmptyStateHighlight]: isCompareVersion
-                                  }) }
-                                  justify="center"
-                                >
-                                  {t('empty')}
-                                </Flex>
-                                )}
-                                <DataObjectProvider id={ currentId! }>
-                                  <FieldCollectionProvider>
-                                    <DataComponent
-                                      className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
-                                        [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion && !isCommonSection,
-                                        versionFieldItemHighlight: isModifiedField && isCompareVersion && !isCommonSection
+                                <div>
+                                  {renderFieldTitle({ fieldItem, isCommonSection, isMainVersion, isCompareVersion })}
+                                </div>
+                                <div style={ { height: '100%' } }>
+                                  {isEmptyModifiedStateForComplexTypes && (
+                                    <Flex
+                                      align="center"
+                                      className={ cn(styles.objectSectionFieldItem, styles.objectSectionEmptyState, {
+                                        [styles.objectSectionEmptyStateDisabled]: isMainVersion,
+                                        [styles.objectSectionEmptyStateHighlight]: isCompareVersion
                                       }) }
-                                      datatype={ 'data' }
-                                      fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
-                                      fieldType={ fieldItem.Field.fieldtype }
-                                      isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
-                                      key={ `${index}-${key}` }
-                                      { ...fieldItem.Field }
-                                      name={ fieldItem.Field.name }
-                                      value={ fieldItem[key] }
-                                    />
-                                  </FieldCollectionProvider>
-                                </DataObjectProvider>
-                              </div>
+                                      justify="center"
+                                    >
+                                      {t('empty')}
+                                    </Flex>
+                                  )}
+                                  <DataObjectProvider id={ currentId! }>
+                                    <FieldCollectionProvider>
+                                      <DataComponent
+                                        className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
+                                          [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion && !isCommonSection,
+                                          versionFieldItemHighlight: isModifiedField && isCompareVersion && !isCommonSection
+                                        }) }
+                                        datatype={ 'data' }
+                                        fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
+                                        fieldType={ fieldItem.Field.fieldtype }
+                                        isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
+                                        key={ `${index}-${key}` }
+                                        { ...fieldItem.Field }
+                                        name={ fieldItem.Field.name }
+                                        value={ fieldItem[key] }
+                                      />
+                                    </FieldCollectionProvider>
+                                  </DataObjectProvider>
+                                </div>
+                              </Flex>
                             )
                           })}
                         </Flex>

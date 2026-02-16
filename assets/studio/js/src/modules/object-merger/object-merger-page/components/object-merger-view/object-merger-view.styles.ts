@@ -108,8 +108,7 @@ export const useStyles = createStyles(({ token, css }: { token: FullToken, css: 
     `,
 
     fieldTitle: css`
-      display: block;
-      margin-bottom: 4px;
+      min-height: 24px;
     `,
 
     sectionFieldItem: css`
