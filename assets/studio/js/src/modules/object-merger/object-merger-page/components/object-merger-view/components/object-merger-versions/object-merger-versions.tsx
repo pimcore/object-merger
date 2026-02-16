@@ -29,6 +29,9 @@ interface IObjectMergerVersions {
   isExpandedUnmodifiedFields: boolean
 }
 
+const SECTIONS_WITH_TRANSLATION: string[] = [ComparisonCategoryName.SYSTEM_DATA]
+const SECTIONS_WITH_COMPLEX_TYPES: string[] = ['block', 'fieldcollections']
+
 export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUnmodifiedFields }: IObjectMergerVersions): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
@@ -36,7 +39,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
   const { selectedMergerObjects, roles } = useObjectMergerContext()
 
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
-    const isShowValueWithTranslation = ['systemData'].includes(key)
+    const isShowValueWithTranslation = SECTIONS_WITH_TRANSLATION.includes(key)
     const textValue = isShowValueWithTranslation ? t(`version.category.title.${key}`) : key
 
     const titleParts = textValue.split('/')
@@ -106,7 +109,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                             const sourceKey = index === 0 ? roles.main : roles.target
                             const currentId = selectedMergerObjects?.[sourceKey]?.id
 
-                            const isComplexType = ['block', 'fieldcollections'].includes(fieldItem.Field.fieldtype!)
+                            const isComplexType = SECTIONS_WITH_COMPLEX_TYPES.includes(fieldItem.Field.fieldtype!)
                             const isEmptyModifiedStateForComplexTypes: boolean = isModifiedField && isComplexType && isEmptyValue(fieldItem[key])
 
                             return (
@@ -130,17 +133,17 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                   <FieldCollectionProvider>
                                     <DataComponent
                                       className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
-                                        [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion,
-                                        versionFieldItemHighlight: isModifiedField && isCompareVersion
+                                        [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion && !isCommonSection,
+                                        versionFieldItemHighlight: isModifiedField && isCompareVersion && !isCommonSection
                                       }) }
                                       datatype={ 'data' }
                                       fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
                                       fieldType={ fieldItem.Field.fieldtype }
                                       isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
                                       key={ `${index}-${key}` }
+                                      { ...fieldItem.Field }
                                       name={ fieldItem.Field.name }
                                       value={ fieldItem[key] }
-                                      { ...fieldItem.Field }
                                     />
                                   </FieldCollectionProvider>
                                 </DataObjectProvider>
