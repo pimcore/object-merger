@@ -16,7 +16,7 @@ import {
   type Roles,
   type VersionData
 } from '../hooks/use-object-merger-data'
-import { formatDateTime } from '@pimcore/studio-ui-bundle/utils'
+import { formatDateTime, isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 
 enum DATATYPE_LIST {
   LAYOUT = 'layout',
@@ -43,16 +43,17 @@ export const processData = async ({ objectId, layout, objectData, objectDataRegi
     modificationDate: formatDateTime({ timestamp: objectData?.modificationDate ?? null, dateStyle: 'short', timeStyle: 'medium' })
   }
 
-  const processLayoutData = async ({ data, objectValuesData = objectData?.objectData, fieldBreadcrumbTitle = '' }: {
+  const processLayoutData = async ({ data, objectValuesData = objectData?.objectData, fieldBreadcrumbTitle = '', fieldPath = '' }: {
     data: any[]
     objectValuesData?: any
     fieldBreadcrumbTitle?: string
+    fieldPath?: string
   }): Promise<IFormattedFieldData[]> => {
     const promises = data.map(async (item: any) => {
       if (item.datatype === DATATYPE_LIST.LAYOUT) {
         const breadcrumbTitle = getBreadcrumbTitle(fieldBreadcrumbTitle, item.title as string)
 
-        return await processLayoutData({ data: item.children, fieldBreadcrumbTitle: breadcrumbTitle, objectValuesData })
+        return await processLayoutData({ data: item.children, fieldBreadcrumbTitle: breadcrumbTitle, objectValuesData, fieldPath })
       }
 
       if (item.datatype === DATATYPE_LIST.DATA) {
@@ -60,13 +61,15 @@ export const processData = async ({ objectId, layout, objectData, objectDataRegi
         const fieldValueByName = get(objectValuesData, fieldName)
         const currentFieldType: string = item.fieldtype
 
-        if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
+        const getFieldPathValue = isEmptyValue(fieldPath) ? fieldName : `${fieldPath}.${fieldName}`
+
+        if (objectDataRegistry.hasDynamicType(currentFieldType) === false) {
           return []
         }
 
         const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
 
-        const processedDataList = await objectDataType.processVersionFieldData({ objectId, item, fieldBreadcrumbTitle, fieldValueByName, layoutsList, setLayoutsList })
+        const processedDataList = await objectDataType.processVersionFieldData({ objectId, item, fieldBreadcrumbTitle, fieldValueByName, layoutsList, setLayoutsList, fieldPath: getFieldPathValue })
         const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
           objectValuesData = {}
 
@@ -76,7 +79,8 @@ export const processData = async ({ objectId, layout, objectData, objectDataRegi
             return await processLayoutData({
               data: [processedDataItem?.fieldData],
               objectValuesData: { ...objectValuesData, [processedDataItem?.fieldData?.name]: processedDataItem?.fieldValue },
-              fieldBreadcrumbTitle: breadcrumbTitle
+              fieldBreadcrumbTitle: breadcrumbTitle,
+              fieldPath: processedDataItem?.fieldPath ?? ''
             })
           }
 
@@ -137,10 +141,11 @@ export const createMergerFields = (
     const mainItem = roles.main === 'A' ? itemA : itemB
     const targetItem = roles.target === 'B' ? itemB : itemA
 
-    const fieldName = (mainItem?.fieldData?.name ?? targetItem?.fieldData?.name)!
+    const fieldPath = (mainItem?.fieldPath ?? targetItem?.fieldPath)!
+
     const targetCurrentValue = roles.target === 'B'
-      ? get(currentVersions.B, fieldName)
-      : get(currentVersions.A, fieldName)
+      ? get(currentVersions.B, fieldPath)
+      : get(currentVersions.A, fieldPath)
 
     const mainValue = mainItem?.fieldValue ?? null
     const targetValue = targetCurrentValue ?? targetItem?.fieldValue ?? null
@@ -153,7 +158,8 @@ export const createMergerFields = (
       main: mainValue,
       target: targetValue,
       isTouched: touchedFields.has(key),
-      isDifferent: !isEqual(mainValue, targetValue)
+      isDifferent: !isEqual(mainValue, targetValue),
+      fieldPath: mainItem?.fieldPath ?? targetItem?.fieldPath
     }
 
     if (field.Field.fieldtype === 'fieldcollections') {

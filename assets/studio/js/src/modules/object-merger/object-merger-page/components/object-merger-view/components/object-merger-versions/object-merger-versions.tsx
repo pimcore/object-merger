@@ -21,6 +21,7 @@ import { type IMergerField } from '../../../../../hooks/use-object-merger-data'
 import { type CategoriesList } from '../../helpers'
 import { ComparisonCategoryName, MERGE_SOURCES } from '../../constants'
 import { useObjectMergerContext } from '../../../../../context/object-merger-context'
+import { getUniqFieldKey } from '../../../../../helpers/details-functions'
 import { useStyles } from '../../object-merger-view.styles'
 
 interface IObjectMergerVersions {
@@ -36,9 +37,9 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedMergerObjects, roles } = useObjectMergerContext()
+  const { selectedMergerObjects, roles, copyFieldToTarget } = useObjectMergerContext()
 
-  console.log('====== mergerData: ', mergerData)
+  console.log('----- mergerData: ', mergerData)
 
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
     const isShowValueWithTranslation = SECTIONS_WITH_TRANSLATION.includes(key)
@@ -87,11 +88,13 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
           {!isCommonSection && isMainVersion && fieldItem.isDifferent && (
             <IconButton
               icon={ { value: 'arrow-square-right' } }
+              onClick={ () => { copyFieldToTarget(getUniqFieldKey(fieldItem)) } }
               size="small"
             />
           )}
           {!isCommonSection && isMainVersion && !fieldItem.isDifferent && (
             <IconButton
+              disabled
               icon={ { value: 'lock' } }
               size="small"
             />
@@ -127,7 +130,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                 return (
                   isBreadcrumbKeyMatch && isFieldInBreadcrumbList && (
                     <AutoHideEmptyContent
-                      contentSelector={ `.${styles.objectSectionFieldItemWrapper}` }
+                      contentSelector={ '.test1' }
                       key={ `${fieldIndex}-${fieldItem.Field.name}` }
                     >
                       <div>
@@ -153,7 +156,10 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                 <div>
                                   {renderFieldTitle({ fieldItem, isCommonSection, isMainVersion, isCompareVersion })}
                                 </div>
-                                <div style={ { height: '100%' } }>
+                                <div
+                                  className="test1"
+                                  style={ { height: '100%' } }
+                                >
                                   {isEmptyModifiedStateForComplexTypes && (
                                     <Flex
                                       align="center"

@@ -14,6 +14,7 @@ import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, getUniqFieldKey, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
+import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 
 export type VersionData = Record<string, any>
 
@@ -21,6 +22,7 @@ export interface IFormattedFieldData {
   fieldBreadcrumbTitle: string
   fieldData: any
   fieldValue: any
+  fieldPath?: string
 }
 
 export interface IFieldCollectionValue {
@@ -40,6 +42,7 @@ export interface IMergerField {
   target: any
   isDifferent: boolean
   isTouched: boolean
+  fieldPath?: string
   fieldCollectionModifiedList?: string[]
 }
 
@@ -158,11 +161,13 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
     if (fieldMain != null) {
       const targetKey = roles.target
+      const fieldPath = !isEmptyValue(fieldMain.fieldPath) ? fieldMain.fieldPath : fieldMain.fieldData.name
+
       setVersions(prev => ({
         ...prev,
         [targetKey]: {
           ...prev[targetKey],
-          [fieldMain.fieldData.name]: fieldMain.fieldValue
+          [fieldPath]: fieldMain.fieldValue
         }
       }))
 
@@ -184,7 +189,9 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       const targetItem = formattedDataTarget.find(item => getUniqFieldKey(item) === fieldKey)
 
       if (!isEqual(mainItem.fieldValue, targetItem?.fieldValue)) {
-        updatedTargetData[mainItem.fieldData.name] = mainItem.fieldValue
+        const fieldPath = !isEmptyValue(mainItem.fieldPath) ? mainItem.fieldPath : mainItem.fieldData.name
+
+        updatedTargetData[fieldPath] = mainItem.fieldValue
         newTouchedFields.add(fieldKey)
       }
     })
@@ -205,12 +212,13 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     if (fieldTarget != null) {
       const targetKey = roles.target
       const initialValue = get(initialVersions[targetKey], fieldTarget.fieldData.name)
+      const fieldPath = !isEmptyValue(fieldTarget.fieldPath) ? fieldTarget.fieldPath : fieldTarget.fieldData.name
 
       setVersions(prev => ({
         ...prev,
         [targetKey]: {
           ...prev[targetKey],
-          [fieldTarget.fieldData.name]: initialValue
+          [fieldPath]: initialValue
         }
       }))
 
@@ -225,6 +233,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
   const resetAll = useCallback(() => {
     const targetKey = roles.target
+
     setVersions(prev => ({
       ...prev,
       [targetKey]: initialVersions[targetKey]
