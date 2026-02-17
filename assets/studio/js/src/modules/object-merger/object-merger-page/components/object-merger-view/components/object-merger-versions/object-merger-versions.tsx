@@ -144,7 +144,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                             const currentId = selectedMergerObjects?.[sourceKey]?.id
 
                             const isComplexType = SECTIONS_WITH_COMPLEX_TYPES.includes(fieldItem.Field.fieldtype!)
-                            const isEmptyModifiedStateForComplexTypes: boolean = isModifiedField && isComplexType && isEmptyValue(fieldItem[key])
+                            const isEmptyModifiedStateForComplexTypes: boolean = (isModifiedField || fieldItem.isTouched) && isComplexType && isEmptyValue(fieldItem[key])
 
                             return (
                               <Flex
