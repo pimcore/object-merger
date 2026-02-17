@@ -71,21 +71,25 @@ export interface IUseObjectMergerDataReturn {
   mirror: () => void
   versions: { A: VersionData | null, B: VersionData | null }
   initialVersions: { A: VersionData | null, B: VersionData | null }
+  isSameObjectType: boolean
+  setIsSameObjectType: (isSameObjectType: boolean) => void
+  canCompare: boolean
+  setCanCompare: (canCompare: boolean) => void
 }
 
 export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const [roles, setRoles] = useState<Roles>({
-    main: 'A',
-    target: 'B'
-  })
+  const [roles, setRoles] = useState<Roles>({ main: 'A', target: 'B' })
 
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
   const [layoutsList, setLayoutsList] = useState<any>([])
+
+  const [isSameObjectType, setIsSameObjectType] = useState(false)
+  const [canCompare, setCanCompare] = useState<boolean>(false)
 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
@@ -109,6 +113,17 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
           dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap(),
           dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap()
         ])
+
+      const isSameObjectType = objectAResult?.className === objectBResult?.className
+
+      if (!isSameObjectType) {
+        setIsSameObjectType(false)
+        setCanCompare(false)
+
+        setIsLoadingData(false)
+
+        return
+      }
 
       const formattedDataA = await processData({
         objectId: selectedMergerObjects?.A?.id,
@@ -142,6 +157,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
         A: cloneDeep(initialA),
         B: cloneDeep(initialB)
       })
+      setCanCompare(true)
     } catch (error) {
       console.error('Failed to load merger data', error)
     } finally {
@@ -269,6 +285,10 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     resetAll,
     mirror,
     versions,
-    initialVersions
+    initialVersions,
+    isSameObjectType,
+    setIsSameObjectType,
+    canCompare,
+    setCanCompare
   }
 }

@@ -1,6 +1,7 @@
 compare_objects.nav.compare_objects: Compare Objects
 compare_objects.title: Compare Objects
 compare_objects.form.compare_btn: Compare
+compare_objects.form.error.different_object_types: The selected objects have different types and cannot be compared.
 compare_objects.toolbar.mirror_view: Mirror view
 compare_objects.toolbar.apply_all: Apply all
 compare_objects.toolbar.apply_all.description: Apply all copies values from the left to the right, updating only those that are different.

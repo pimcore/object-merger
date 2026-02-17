@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { isUndefined } from 'lodash'
 import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type DynamicTypeObjectDataRegistry, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
@@ -18,6 +18,7 @@ interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
   selectedMergerObjects: IMergerObjectData
   setSelectedMergerObjects: (ids: IMergerObjectData) => void
   canCompare: boolean
+  setCanCompare: (canCompare: boolean) => void
 }
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
@@ -28,20 +29,24 @@ export const ObjectMergerProvider = ({ children }: any): React.JSX.Element => {
     B: undefined
   })
 
-  const canCompare = useMemo(
-    () => !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B),
-    [selectedMergerObjects?.A, selectedMergerObjects?.B]
-  )
   const objectDataRegistry = useInjection<DynamicTypeObjectDataRegistry>(serviceIds['DynamicTypes/ObjectDataRegistry'])
 
   const objectMergerDataValue = useObjectMergerData({ selectedMergerObjects, objectDataRegistry })
 
+  const { setCanCompare, setIsSameObjectType } = objectMergerDataValue
+
+  useEffect(() => {
+    const bothObjectsSelected = !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B)
+
+    setIsSameObjectType(true)
+    setCanCompare(bothObjectsSelected)
+  }, [selectedMergerObjects?.A, selectedMergerObjects?.B])
+
   const contextValue: IObjectMergerDataContext = useMemo(() => ({
     ...objectMergerDataValue,
     selectedMergerObjects,
-    setSelectedMergerObjects,
-    canCompare
-  }), [objectMergerDataValue, selectedMergerObjects, setSelectedMergerObjects, canCompare])
+    setSelectedMergerObjects
+  }), [objectMergerDataValue, selectedMergerObjects, setSelectedMergerObjects])
 
   return (
     <ObjectMergerDataContext.Provider value={ contextValue }>
