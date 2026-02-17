@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { differenceWith, get, isEmpty, isEqual } from 'lodash'
+import { differenceWith, get, isEmpty, isEqual, isUndefined } from 'lodash'
 import {
   type IFieldCollectionValue,
   type IFormattedFieldData,
@@ -141,14 +141,16 @@ export const createMergerFields = (
     const mainItem = roles.main === 'A' ? itemA : itemB
     const targetItem = roles.target === 'B' ? itemB : itemA
 
-    const fieldPath = (mainItem?.fieldPath ?? targetItem?.fieldPath)!
-
+    const mainCurrentValue = roles.main === 'B'
+      ? get(currentVersions.B, itemB?.fieldPath ?? '')
+      : get(currentVersions.A, itemA?.fieldPath ?? '')
     const targetCurrentValue = roles.target === 'B'
-      ? get(currentVersions.B, fieldPath)
-      : get(currentVersions.A, fieldPath)
+      ? get(currentVersions.B, itemB?.fieldPath ?? '')
+      : get(currentVersions.A, itemA?.fieldPath ?? '')
 
-    const mainValue = mainItem?.fieldValue ?? null
-    const targetValue = targetCurrentValue ?? targetItem?.fieldValue ?? null
+    const mainValue = isUndefined(mainCurrentValue) ? (mainItem?.fieldValue ?? null) : mainCurrentValue
+    const targetValue = isUndefined(targetCurrentValue) ? (targetItem?.fieldValue ?? null) : targetCurrentValue
+    const fieldPath = (mainItem?.fieldPath ?? targetItem?.fieldPath) ?? (mainItem?.fieldData?.name ?? targetItem?.fieldData?.name)
 
     const field: IMergerField = {
       Field: {
@@ -157,7 +159,7 @@ export const createMergerFields = (
       },
       main: mainValue,
       target: targetValue,
-      isTouched: touchedFields.has(key),
+      isTouched: touchedFields.has(fieldPath as string),
       isDifferent: !isEqual(mainValue, targetValue),
       fieldPath: mainItem?.fieldPath ?? targetItem?.fieldPath
     }

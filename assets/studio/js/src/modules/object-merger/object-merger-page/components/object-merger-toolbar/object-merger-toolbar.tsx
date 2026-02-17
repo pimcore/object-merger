@@ -18,7 +18,7 @@ import { useObjectMergerContext } from '../../../context/object-merger-context'
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror } = useObjectMergerContext()
+  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror, applyAll, resetAll } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -41,7 +41,7 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
           <Tooltip title={ t('compare_objects.toolbar.apply_all.description') }>
             <IconTextButton
               icon={ { value: 'corner-up-left' } }
-              onClick={ () => { } }
+              onClick={ applyAll }
             >
               {t('compare_objects.toolbar.apply_all')}
             </IconTextButton>
@@ -52,7 +52,7 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
         <IconTextButton
           disabled={ isEmpty(touchedFields) }
           icon={ { value: 'corner-up-left' } }
-          onClick={ () => { } }
+          onClick={ resetAll }
         >
           {t('compare_objects.toolbar.reset')}
         </IconTextButton>

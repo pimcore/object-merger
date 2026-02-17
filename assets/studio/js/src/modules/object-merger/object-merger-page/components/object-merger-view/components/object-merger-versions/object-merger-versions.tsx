@@ -21,7 +21,6 @@ import { type IMergerField } from '../../../../../hooks/use-object-merger-data'
 import { type CategoriesList } from '../../helpers'
 import { ComparisonCategoryName, MERGE_SOURCES } from '../../constants'
 import { useObjectMergerContext } from '../../../../../context/object-merger-context'
-import { getUniqFieldKey } from '../../../../../helpers/details-functions'
 import { useStyles } from '../../object-merger-view.styles'
 
 interface IObjectMergerVersions {
@@ -37,7 +36,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const { selectedMergerObjects, roles, copyFieldToTarget } = useObjectMergerContext()
+  const { selectedMergerObjects, roles, copyFieldToTarget, resetField } = useObjectMergerContext()
 
   console.log('----- mergerData: ', mergerData)
 
@@ -88,11 +87,11 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
           {!isCommonSection && isMainVersion && fieldItem.isDifferent && (
             <IconButton
               icon={ { value: 'arrow-square-right' } }
-              onClick={ () => { copyFieldToTarget(getUniqFieldKey(fieldItem)) } }
+              onClick={ () => { copyFieldToTarget(fieldItem?.fieldPath ?? '') } }
               size="small"
             />
           )}
-          {!isCommonSection && isMainVersion && !fieldItem.isDifferent && (
+          {!isCommonSection && isMainVersion && !fieldItem.isDifferent && !fieldItem.isTouched && (
             <IconButton
               disabled
               icon={ { value: 'lock' } }
@@ -102,6 +101,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
           {!isCommonSection && isCompareVersion && fieldItem.isTouched && (
             <IconButton
               icon={ { value: 'corner-up-left' } }
+              onClick={ () => { resetField(fieldItem?.fieldPath ?? '') } }
               size="small"
             />
           )}
@@ -172,8 +172,14 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                       {t('empty')}
                                     </Flex>
                                   )}
-                                  <DataObjectProvider id={ currentId! }>
-                                    <FieldCollectionProvider>
+                                  <DataObjectProvider
+                                    id={ currentId! }
+                                    key={ `${currentId}-${fieldItem[key]}` }
+                                  >
+                                    <FieldCollectionProvider
+                                      id={ currentId }
+                                      key={ `${currentId}-${fieldItem[key]}` }
+                                    >
                                       <DataComponent
                                         className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
                                           [styles.objectSectionFieldItemHighlight]: isModifiedField && isCompareVersion && !isCommonSection,
@@ -183,7 +189,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                         fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
                                         fieldType={ fieldItem.Field.fieldtype }
                                         isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
-                                        key={ `${index}-${key}` }
+                                        key={ `${index}-${key}-${fieldItem[key]}` }
                                         { ...fieldItem.Field }
                                         name={ fieldItem.Field.name }
                                         value={ fieldItem[key] }

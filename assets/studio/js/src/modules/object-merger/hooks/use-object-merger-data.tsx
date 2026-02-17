@@ -9,10 +9,10 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { isEqual, get, isEmpty, isUndefined } from 'lodash'
+import { isEqual, get, set, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
-import { createMergerFields, getUniqFieldKey, processData } from '../helpers/details-functions'
+import { createMergerFields, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 
@@ -64,9 +64,9 @@ export interface IUseObjectMergerDataReturn {
   mergerFields: IMergerField[]
   roles: Roles
   touchedFields: Set<string>
-  copyFieldToTarget: (fieldKey: string) => void
+  copyFieldToTarget: (fieldPath: string) => void
   applyAll: () => void
-  resetField: (fieldKey: string) => void
+  resetField: (fieldPath: string) => void
   resetAll: () => void
   mirror: () => void
   versions: { A: VersionData | null, B: VersionData | null }
@@ -150,49 +150,49 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
       return []
     }
+
     return createMergerFields(formattedDataA, formattedDataB, roles, touchedFields, versions)
   }, [formattedDataA, formattedDataB, roles, touchedFields, versions])
 
   const refetch = (): void => { void loadLayoutData() }
 
-  const copyFieldToTarget = useCallback((fieldKey: string) => {
-    const formattedDataMain = roles.main === 'A' ? formattedDataA : formattedDataB
-    const fieldMain = formattedDataMain.find(item => getUniqFieldKey(item) === fieldKey)
+  const copyFieldToTarget = useCallback((fieldPath: string) => {
+    const mainKey = roles.main
+    const targetKey = roles.target
 
-    if (fieldMain != null) {
-      const targetKey = roles.target
-      const fieldPath = !isEmptyValue(fieldMain.fieldPath) ? fieldMain.fieldPath : fieldMain.fieldData.name
+    const mainValue = get(versions[mainKey], fieldPath)
 
-      setVersions(prev => ({
-        ...prev,
-        [targetKey]: {
-          ...prev[targetKey],
-          [fieldPath]: fieldMain.fieldValue
-        }
-      }))
+    setVersions(prev => {
+      const newVersions = cloneDeep(prev)
 
-      setTouchedFields(prev => new Set([...prev, fieldKey]))
-      console.log(`Copied field "${fieldMain.fieldData.name}" from ${roles.main} to ${roles.target}`)
-    }
-  }, [formattedDataA, formattedDataB, roles])
+      set(newVersions[targetKey] as object, fieldPath, mainValue)
+
+      return newVersions
+    })
+
+    setTouchedFields(prev => new Set([...prev, fieldPath]))
+  }, [roles, versions])
 
   const applyAll = useCallback(() => {
     const formattedDataMain = roles.main === 'A' ? formattedDataA : formattedDataB
     const formattedDataTarget = roles.target === 'B' ? formattedDataB : formattedDataA
 
-    const newTouchedFields = new Set<string>()
+    const mainKey = roles.main
     const targetKey = roles.target
-    const updatedTargetData = { ...versions[targetKey] }
+
+    const newTouchedFields = new Set<string>()
+    const updatedTargetData = cloneDeep(versions[targetKey])
 
     formattedDataMain.forEach((mainItem) => {
-      const fieldKey = getUniqFieldKey(mainItem)
-      const targetItem = formattedDataTarget.find(item => getUniqFieldKey(item) === fieldKey)
+      const targetItem = formattedDataTarget.find(item => item.fieldPath === mainItem.fieldPath)
 
       if (!isEqual(mainItem.fieldValue, targetItem?.fieldValue)) {
         const fieldPath = !isEmptyValue(mainItem.fieldPath) ? mainItem.fieldPath : mainItem.fieldData.name
+        const mainValue = get(versions[mainKey], fieldPath)
 
-        updatedTargetData[fieldPath] = mainItem.fieldValue
-        newTouchedFields.add(fieldKey)
+        set(updatedTargetData as object, fieldPath as string, mainValue)
+
+        newTouchedFields.add(fieldPath as string)
       }
     })
 
@@ -202,41 +202,37 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     }))
 
     setTouchedFields(prev => new Set([...prev, ...newTouchedFields]))
-    console.log(`Applied all changes from ${roles.main} to ${roles.target}. Total fields: ${newTouchedFields.size}`)
   }, [formattedDataA, formattedDataB, roles, versions])
 
-  const resetField = useCallback((fieldKey: string) => {
-    const formattedDataTarget = roles.target === 'B' ? formattedDataB : formattedDataA
-    const fieldTarget = formattedDataTarget.find(item => getUniqFieldKey(item) === fieldKey)
+  const resetField = useCallback((fieldPath: string) => {
+    const targetKey = roles.target
+    const initialValue = get(initialVersions[targetKey], fieldPath)
 
-    if (fieldTarget != null) {
-      const targetKey = roles.target
-      const initialValue = get(initialVersions[targetKey], fieldTarget.fieldData.name)
-      const fieldPath = !isEmptyValue(fieldTarget.fieldPath) ? fieldTarget.fieldPath : fieldTarget.fieldData.name
+    setVersions(prev => {
+      const newVersions = cloneDeep(prev)
 
-      setVersions(prev => ({
-        ...prev,
-        [targetKey]: {
-          ...prev[targetKey],
-          [fieldPath]: initialValue
-        }
-      }))
+      if (newVersions[targetKey] !== null) {
+        set(newVersions[targetKey] as object, fieldPath, initialValue)
+      }
 
-      setTouchedFields(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(fieldKey)
-        return newSet
-      })
-      console.log(`Reset field "${fieldTarget.fieldData.name}" in ${roles.target} to initial value`)
-    }
-  }, [formattedDataA, formattedDataB, roles, initialVersions])
+      return newVersions
+    })
+
+    setTouchedFields(prev => {
+      const newSet = new Set(prev)
+
+      newSet.delete(fieldPath)
+
+      return newSet
+    })
+  }, [roles, initialVersions])
 
   const resetAll = useCallback(() => {
     const targetKey = roles.target
 
     setVersions(prev => ({
       ...prev,
-      [targetKey]: initialVersions[targetKey]
+      [targetKey]: cloneDeep(initialVersions[targetKey])
     }))
 
     setTouchedFields(new Set())
