@@ -29,7 +29,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
 
   const mergerModifiedFields = useMemo(() => {
     return mergerFields.filter((item) => {
-      return !isEqual(item?.main ?? null, item?.target ?? null)
+      return !isEqual(item?.main ?? null, item?.target ?? null) || item.isTouched
     })
   }, [mergerFields])
 

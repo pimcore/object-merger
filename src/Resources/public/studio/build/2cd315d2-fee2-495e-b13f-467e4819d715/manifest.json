@@ -14,18 +14,18 @@
     "http://localhost:3033/static/js/async/vendors-node_modules_antd-style_es_index_js.js.map",
     "http://localhost:3033/static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rsbuild_core-3904be.js.map",
     "http://localhost:3033/static/js/async/vendors-node_modules_react_jsx-dev-runtime_js-node_modules_classnames_index_js.js.map",
-    "http://localhost:3033/main.ed9ba0b01bbff967.hot-update.js.map",
     "http://localhost:3033/static/js/main.js.map",
-    "http://localhost:3033/pimcore_objectmerger_bundle.ed9ba0b01bbff967.hot-update.js.map",
+    "http://localhost:3033/main.a33a2ef399e511a5.hot-update.js.map",
+    "http://localhost:3033/pimcore_objectmerger_bundle.a33a2ef399e511a5.hot-update.js.map",
     "http://localhost:3033/static/js/remoteEntry.js.map",
-    "http://localhost:3033/static/js/async/__federation_expose_default_export.js.map",
-    "http://localhost:3033/__federation_expose_default_export.ed9ba0b01bbff967.hot-update.js.map"
+    "http://localhost:3033/__federation_expose_default_export.a33a2ef399e511a5.hot-update.js.map",
+    "http://localhost:3033/static/js/async/__federation_expose_default_export.js.map"
   ],
   "entries": {
     "main": {
       "assets": [
-        "main.ed9ba0b01bbff967.hot-update.js.map",
         "static/js/main.js.map",
+        "main.a33a2ef399e511a5.hot-update.js.map",
         "static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rsbuild_core-3904be.js.map",
         "static/js/async/vendors-node_modules_antd-style_es_index_js.js.map",
         "static/js/async/vendors-node_modules_lodash_lodash_js.js.map"
@@ -36,7 +36,7 @@
       "initial": {
         "js": [
           "http://localhost:3033/static/js/vendors-node_modules_react-dom_index_js-node_modules_react_index_js-node_modules_rsbuild_core-3904be.js",
-          "http://localhost:3033/main.ed9ba0b01bbff967.hot-update.js",
+          "http://localhost:3033/main.a33a2ef399e511a5.hot-update.js",
           "http://localhost:3033/static/js/main.js"
         ]
       },
@@ -49,9 +49,9 @@
     },
     "pimcore_objectmerger_bundle": {
       "assets": [
+        "__federation_expose_default_export.a33a2ef399e511a5.hot-update.js.map",
         "static/js/async/__federation_expose_default_export.js.map",
-        "__federation_expose_default_export.ed9ba0b01bbff967.hot-update.js.map",
-        "pimcore_objectmerger_bundle.ed9ba0b01bbff967.hot-update.js.map",
+        "pimcore_objectmerger_bundle.a33a2ef399e511a5.hot-update.js.map",
         "static/js/remoteEntry.js.map",
         "static/js/async/vendors-node_modules_react_jsx-dev-runtime_js-node_modules_classnames_index_js.js.map",
         "static/js/async/vendors-node_modules_antd-style_es_index_js.js.map",
@@ -59,7 +59,7 @@
       ],
       "initial": {
         "js": [
-          "http://localhost:3033/pimcore_objectmerger_bundle.ed9ba0b01bbff967.hot-update.js",
+          "http://localhost:3033/pimcore_objectmerger_bundle.a33a2ef399e511a5.hot-update.js",
           "http://localhost:3033/static/js/remoteEntry.js"
         ]
       },

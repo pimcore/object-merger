@@ -155,6 +155,7 @@ export const useStyles = createStyles(({ token, css }: { token: FullToken, css: 
       width: 100%;
       min-width: 100px;
       height: 100%;
+      background-color: ${token.colorBgContainerDisabled};
       border: 1px solid transparent !important;
     `,
 

@@ -38,8 +38,6 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
 
   const { selectedMergerObjects, roles, copyFieldToTarget, resetField } = useObjectMergerContext()
 
-  console.log('----- mergerData: ', mergerData)
-
   const renderSectionTitle = ({ key, isCommonSection }: { key: string, isCommonSection: boolean }): React.JSX.Element | null => {
     const isShowValueWithTranslation = SECTIONS_WITH_TRANSLATION.includes(key)
     const textValue = isShowValueWithTranslation ? t(`version.category.title.${key}`) : key
@@ -165,7 +163,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                       align="center"
                                       className={ cn(styles.objectSectionFieldItem, styles.objectSectionEmptyState, {
                                         [styles.objectSectionEmptyStateDisabled]: isMainVersion,
-                                        [styles.objectSectionEmptyStateHighlight]: isCompareVersion
+                                        [styles.objectSectionEmptyStateHighlight]: isCompareVersion && isModifiedField
                                       }) }
                                       justify="center"
                                     >
@@ -174,11 +172,11 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                   )}
                                   <DataObjectProvider
                                     id={ currentId! }
-                                    key={ `${currentId}-${fieldItem[key]}` }
+                                    key={ `${currentId}-${fieldItem.fieldPath}-${fieldItem.isTouched}-${key}` }
                                   >
                                     <FieldCollectionProvider
                                       id={ currentId }
-                                      key={ `${currentId}-${fieldItem[key]}` }
+                                      key={ `${currentId}-${fieldItem.fieldPath}-${fieldItem.isTouched}-${key}` }
                                     >
                                       <DataComponent
                                         className={ cn(styles.objectSectionFieldItem, 'versionFieldItem', {
@@ -189,7 +187,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                         fieldCollectionModifiedList={ fieldItem?.fieldCollectionModifiedList }
                                         fieldType={ fieldItem.Field.fieldtype }
                                         isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
-                                        key={ `${index}-${key}-${fieldItem[key]}` }
+                                        key={ `${fieldItem.fieldPath}-${fieldItem.isTouched}-${key}` }
                                         { ...fieldItem.Field }
                                         name={ fieldItem.Field.name }
                                         value={ fieldItem[key] }
