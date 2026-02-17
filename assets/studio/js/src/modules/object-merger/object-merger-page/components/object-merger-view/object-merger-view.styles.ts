@@ -111,6 +111,10 @@ export const useStyles = createStyles(({ token, css }: { token: FullToken, css: 
       min-height: 24px;
     `,
 
+    fieldTitleContent: css`
+      min-height: 24px;
+    `,
+
     sectionFieldItem: css`
       flex: 1 1 50%;
       min-width: 50%;
@@ -133,6 +137,10 @@ export const useStyles = createStyles(({ token, css }: { token: FullToken, css: 
       min-width: 50%;
       max-width: 900px;
       width: 100%;
+    `,
+
+    objectSectionFieldItemContent: css`
+      height: 100%;
     `,
 
     objectSectionFieldItem: css`

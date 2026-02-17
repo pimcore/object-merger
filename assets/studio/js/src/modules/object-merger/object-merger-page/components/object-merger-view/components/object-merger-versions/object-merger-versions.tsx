@@ -75,6 +75,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
       <div className={ styles.fieldTitle }>
         <Flex
           align="center"
+          className={ styles.fieldTitleContent }
           justify="space-between"
         >
           {isMainVersion && (
@@ -98,6 +99,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
           )}
           {!isCommonSection && isCompareVersion && fieldItem.isTouched && (
             <IconButton
+              danger
               icon={ { value: 'corner-up-left' } }
               onClick={ () => { resetField(fieldItem?.fieldPath ?? '') } }
               size="small"
@@ -128,7 +130,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                 return (
                   isBreadcrumbKeyMatch && isFieldInBreadcrumbList && (
                     <AutoHideEmptyContent
-                      contentSelector={ '.test1' }
+                      contentSelector={ `.${styles.objectSectionFieldItemContent}` }
                       key={ `${fieldIndex}-${fieldItem.Field.name}` }
                     >
                       <div>
@@ -154,10 +156,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                 <div>
                                   {renderFieldTitle({ fieldItem, isCommonSection, isMainVersion, isCompareVersion })}
                                 </div>
-                                <div
-                                  className="test1"
-                                  style={ { height: '100%' } }
-                                >
+                                <div className={ styles.objectSectionFieldItemContent }>
                                   {isEmptyModifiedStateForComplexTypes && (
                                     <Flex
                                       align="center"
