@@ -131,13 +131,16 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       setFormattedDataA(formattedDataA)
       setFormattedDataB(formattedDataB)
 
+      const initialA = objectAResult?.objectData ?? {}
+      const initialB = objectBResult?.objectData ?? {}
+
       setInitialVersions({
-        A: objectAResult?.objectData ?? {},
-        B: objectBResult?.objectData ?? {}
+        A: initialA,
+        B: initialB
       })
       setVersions({
-        A: objectAResult?.objectData ?? {},
-        B: objectBResult?.objectData ?? {}
+        A: cloneDeep(initialA),
+        B: cloneDeep(initialB)
       })
     } catch (error) {
       console.error('Failed to load merger data', error)
@@ -243,6 +246,11 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       main: prev.target,
       target: prev.main
     }))
+
+    setVersions({
+      A: cloneDeep(initialVersions.A),
+      B: cloneDeep(initialVersions.B)
+    })
 
     setTouchedFields(new Set())
   }
