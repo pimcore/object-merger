@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { isEqual, get, set, cloneDeep, isEmpty, isUndefined } from 'lodash'
+import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, processData } from '../helpers/details-functions'
@@ -186,7 +186,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     setVersions(prev => {
       const newVersions = cloneDeep(prev)
 
-      set(newVersions[targetKey] as object, fieldPath, mainValue)
+      setWith(newVersions[targetKey] as object, fieldPath, mainValue, Object)
 
       return newVersions
     })
@@ -202,7 +202,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     const targetKey = roles.target
 
     const newTouchedFields = new Set<string>()
-    const updatedTargetData = versions[targetKey]
+    const updatedTargetData = cloneDeep(versions[targetKey])
     const formattedFullData = formattedDataMain?.length > formattedDataTarget?.length ? formattedDataMain : formattedDataTarget
 
     formattedFullData.forEach((fieldItem) => {
@@ -215,7 +215,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
         const getMainValue = get(versions[mainKey], fieldPath)
         const mainValue = !isUndefined(getMainValue) ? getMainValue : null
 
-        set(updatedTargetData as object, fieldPath as string, mainValue)
+        setWith(updatedTargetData as object, fieldPath as string, mainValue, Object)
 
         newTouchedFields.add(fieldPath as string)
       }
@@ -237,7 +237,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       const newVersions = cloneDeep(prev)
 
       if (newVersions[targetKey] !== null) {
-        set(newVersions[targetKey] as object, fieldPath, initialValue)
+        setWith(newVersions[targetKey] as object, fieldPath, initialValue, Object)
       }
 
       return newVersions
@@ -275,7 +275,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       const initialValue = get(initialTargetVersion, fieldPath)
 
       if (!isEqual(currentValue, initialValue)) {
-        set(changedData, fieldPath, currentValue)
+        setWith(changedData, fieldPath, currentValue, Object)
       }
     })
 
