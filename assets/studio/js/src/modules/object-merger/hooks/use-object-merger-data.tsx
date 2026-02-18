@@ -69,6 +69,7 @@ export interface IUseObjectMergerDataReturn {
   resetField: (fieldPath: string) => void
   resetAll: () => void
   mirror: () => void
+  save: () => void
   versions: { A: VersionData | null, B: VersionData | null }
   initialVersions: { A: VersionData | null, B: VersionData | null }
   isSameObjectType: boolean
@@ -257,6 +258,25 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     setTouchedFields(new Set())
   }, [roles, initialVersions])
 
+  const save = useCallback(() => {
+    const targetKey = roles.target
+
+    const changedData: VersionData = {}
+    const initialTargetVersion = initialVersions[targetKey]
+    const targetVersion = versions[targetKey]
+
+    touchedFields.forEach((fieldPath) => {
+      const currentValue = get(targetVersion, fieldPath)
+      const initialValue = get(initialTargetVersion, fieldPath)
+
+      if (!isEqual(currentValue, initialValue)) {
+        set(changedData, fieldPath, currentValue)
+      }
+    })
+
+    console.log('------>>>>> changedData', changedData)
+  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects])
+
   const mirror = (): void => {
     setRoles(prev => ({
       main: prev.target,
@@ -284,6 +304,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     resetField,
     resetAll,
     mirror,
+    save,
     versions,
     initialVersions,
     isSameObjectType,
