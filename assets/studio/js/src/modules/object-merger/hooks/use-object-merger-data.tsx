@@ -180,7 +180,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     const mainKey = roles.main
     const targetKey = roles.target
 
-    const mainValue = get(versions[mainKey], fieldPath)
+    const getMainValue = get(versions[mainKey], fieldPath)
+    const mainValue = !isUndefined(getMainValue) ? getMainValue : null
 
     setVersions(prev => {
       const newVersions = cloneDeep(prev)
@@ -201,14 +202,18 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     const targetKey = roles.target
 
     const newTouchedFields = new Set<string>()
-    const updatedTargetData = cloneDeep(versions[targetKey])
+    const updatedTargetData = versions[targetKey]
+    const formattedFullData = formattedDataMain?.length > formattedDataTarget?.length ? formattedDataMain : formattedDataTarget
 
-    formattedDataMain.forEach((mainItem) => {
-      const targetItem = formattedDataTarget.find(item => item.fieldPath === mainItem.fieldPath)
+    formattedFullData.forEach((fieldItem) => {
+      const mainItem = formattedDataMain.find(item => item.fieldPath === fieldItem.fieldPath)
+      const targetItem = formattedDataTarget.find(item => item.fieldPath === fieldItem.fieldPath)
 
-      if (!isEqual(mainItem.fieldValue, targetItem?.fieldValue)) {
-        const fieldPath = !isEmptyValue(mainItem.fieldPath) ? mainItem.fieldPath : mainItem.fieldData.name
-        const mainValue = get(versions[mainKey], fieldPath)
+      if (!isEqual(mainItem?.fieldValue, targetItem?.fieldValue)) {
+        const fieldPath = !isEmptyValue(fieldItem?.fieldPath) ? fieldItem?.fieldPath : fieldItem?.fieldData.name
+
+        const getMainValue = get(versions[mainKey], fieldPath)
+        const mainValue = !isUndefined(getMainValue) ? getMainValue : null
 
         set(updatedTargetData as object, fieldPath as string, mainValue)
 

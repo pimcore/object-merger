@@ -25,6 +25,8 @@ export const ObjectMergerView = (): React.JSX.Element => {
   const { selectedMergerObjects, canCompare, mergerFields, isLoading, roles } = useObjectMergerContext()
   const { openElement } = useElementHelper()
 
+  console.log('----- mergerFields: ', mergerFields)
+
   const [isExpandedUnmodifiedFields, setIsExpandedUnmodifiedFields] = useState(false)
 
   const mergerModifiedFields = useMemo(() => {
