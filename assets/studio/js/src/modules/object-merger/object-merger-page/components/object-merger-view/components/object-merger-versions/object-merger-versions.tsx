@@ -166,7 +166,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                       }) }
                                       justify="center"
                                     >
-                                      {t('empty')}
+                                      {t('compare_objects.empty')}
                                     </Flex>
                                   )}
                                   <DataObjectProvider

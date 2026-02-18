@@ -1,3 +1,4 @@
+compare_objects.empty: Empty
 compare_objects.nav.compare_objects: Compare Objects
 compare_objects.title: Compare Objects
 compare_objects.form.compare_btn: Compare
@@ -8,3 +9,5 @@ compare_objects.toolbar.apply_all.description: Apply all copies values from the 
 compare_objects.toolbar.reset: Reset changes
 compare_objects.toolbar.save: Save
 compare_objects.initial_description: Please select two objects to compare.
+compare_objects.expand_unmodified_fields: Expand all
+compare_objects.no_difference: There is no difference between the selected versions

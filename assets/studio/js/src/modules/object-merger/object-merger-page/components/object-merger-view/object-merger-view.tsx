@@ -115,7 +115,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
           >
             <div className={ styles.switchContainer }>
               <Switch
-                labelLeft={ <Text>{t('version.expand-unmodified-fields')}</Text> }
+                labelLeft={ <Text>{t('compare_objects.expand_unmodified_fields')}</Text> }
                 onChange={ () => { setIsExpandedUnmodifiedFields(!isExpandedUnmodifiedFields) } }
                 value={ isExpandedUnmodifiedFields }
               />
@@ -123,7 +123,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
             {!hasModifiedFields && !isExpandedUnmodifiedFields && (
               <Flex justify="center">
                 <Text className={ styles.emptyState }>
-                  {t('version.no-difference')}
+                  {t('compare_objects.no_difference')}
                 </Text>
               </Flex>
             )}
