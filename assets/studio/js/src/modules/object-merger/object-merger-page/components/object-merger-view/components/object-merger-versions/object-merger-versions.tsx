@@ -17,10 +17,10 @@ import { Flex, Text, IconButton } from '@pimcore/studio-ui-bundle/components'
 import { DataComponent, DataObjectProvider } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/element'
 import { AutoHideEmptyContent } from '@pimcore/studio-ui-bundle/modules/app'
-import { type IMergerField } from '../../../../../hooks/use-object-merger-data'
 import { type CategoriesList } from '../../helpers'
 import { ComparisonCategoryName, MERGE_SOURCES } from '../../constants'
 import { useObjectMergerContext } from '../../../../../context/object-merger-context'
+import { type IMergerField } from '../../../../../types'
 import { useStyles } from '../../object-merger-view.styles'
 
 interface IObjectMergerVersions {

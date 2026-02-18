@@ -10,9 +10,9 @@
 
 import { type ManyToOneRelationValue } from '@pimcore/studio-ui-bundle/components'
 
-export type ObjectData = ManyToOneRelationValue
+type ObjectData = ManyToOneRelationValue
 
 export interface IMergerObjectData {
-  A: ObjectData | undefined
-  B: ObjectData | undefined
+  A?: ObjectData
+  B?: ObjectData
 }

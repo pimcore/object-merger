@@ -9,8 +9,8 @@
  */
 
 import { map, filter, intersection, isEmpty, isUndefined } from 'lodash'
-import { type IMergerField } from '../../../hooks/use-object-merger-data'
 import { ComparisonCategoryName } from './constants'
+import { type IMergerField } from '../../../types'
 
 export type CategoriesList = Array<{ key: ComparisonCategoryName, fieldKeys: string[] }>
 

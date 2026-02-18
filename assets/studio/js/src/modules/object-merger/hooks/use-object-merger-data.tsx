@@ -10,46 +10,12 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
+import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
-import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
-
-export type VersionData = Record<string, any>
-
-export interface IFormattedFieldData {
-  fieldBreadcrumbTitle: string
-  fieldData: any
-  fieldValue: any
-  fieldPath?: string
-}
-
-export interface IFieldCollectionValue {
-  type: string
-  data: any
-}
-
-export interface IMergerField {
-  Field: {
-    fieldBreadcrumbTitle: string
-    name: string
-    title?: string
-    fieldtype?: string
-    locale?: string
-  }
-  main: any
-  target: any
-  isDifferent: boolean
-  isTouched: boolean
-  fieldPath?: string
-  fieldCollectionModifiedList?: string[]
-}
-
-export interface Roles {
-  main: 'A' | 'B'
-  target: 'A' | 'B'
-}
+import { type IFormattedFieldData, type IMergerField, type Roles, type VersionData } from '../types'
 
 export interface IUseObjectMergerDataProps {
   selectedMergerObjects: IMergerObjectData

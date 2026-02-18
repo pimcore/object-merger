@@ -10,15 +10,13 @@
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { isUndefined } from 'lodash'
-import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type DynamicTypeObjectDataRegistry, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
   selectedMergerObjects: IMergerObjectData
   setSelectedMergerObjects: (ids: IMergerObjectData) => void
-  canCompare: boolean
-  setCanCompare: (canCompare: boolean) => void
 }
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)

@@ -9,14 +9,13 @@
  */
 
 import { differenceWith, get, isEmpty, isEqual, isUndefined } from 'lodash'
-import {
-  type IFieldCollectionValue,
-  type IFormattedFieldData,
-  type IMergerField,
-  type Roles,
-  type VersionData
-} from '../hooks/use-object-merger-data'
 import { formatDateTime, isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
+import { type IFormattedFieldData, type IMergerField, type Roles, type VersionData } from '../types'
+
+interface IFieldCollectionValue {
+  type: string
+  data: any
+}
 
 enum DATATYPE_LIST {
   LAYOUT = 'layout',
