@@ -11,6 +11,7 @@
 import { type MainNavRegistry } from '@pimcore/studio-ui-bundle/modules/app'
 import { container, type AbstractModule } from '@pimcore/studio-ui-bundle'
 import { type WidgetRegistry } from '@pimcore/studio-ui-bundle/modules/widget-manager'
+import { UserPermission } from '@pimcore/studio-ui-bundle/modules/auth'
 import { serviceIds } from '@pimcore/studio-ui-bundle/app'
 import { ObjectMergerPageWrapper } from './object-merger-page/object-merger-page-wrapper'
 
@@ -22,6 +23,7 @@ export const ObjectMergerModule: AbstractModule = {
       path: 'DataManagement/Compare Objects',
       label: 'compare_objects.nav.compare_objects',
       order: 500,
+      permission: UserPermission.Objects,
       widgetConfig: {
         name: 'ObjectMergerPage',
         id: 'object-merger-page',
