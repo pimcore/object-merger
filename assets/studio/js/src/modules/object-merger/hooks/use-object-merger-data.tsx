@@ -24,7 +24,7 @@ export interface IUseObjectMergerDataProps {
 }
 
 export interface IUseObjectMergerDataReturn {
-  loadLayoutData: () => void
+  loadLayoutData: () => Promise<void>
   isFetching: boolean
   refetch: () => void
   isLoading: boolean
