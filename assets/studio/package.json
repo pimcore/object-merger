@@ -60,7 +60,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260219-144428-f840b57",
+    "@pimcore/studio-ui-bundle": "1.0.0-canary.20260219-144428-f840b57",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-table": "^8.20.5",
     "antd-style": "3.7.x",
