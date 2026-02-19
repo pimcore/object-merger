@@ -18,7 +18,7 @@ import { useObjectMergerContext } from '../../../context/object-merger-context'
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror, applyAll, resetAll, save } = useObjectMergerContext()
+  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror, applyAll, resetAll, save, isSaving } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -58,6 +58,7 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
         </IconTextButton>
         <Button
           disabled={ isEmpty(touchedFields) }
+          loading={ isSaving }
           onClick={ save }
           type="primary"
         >

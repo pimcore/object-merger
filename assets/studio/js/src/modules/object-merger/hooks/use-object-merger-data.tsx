@@ -28,6 +28,7 @@ export interface IUseObjectMergerDataReturn {
   isFetching: boolean
   refetch: () => void
   isLoading: boolean
+  isSaving: boolean
   mergerFields: IMergerField[]
   roles: Roles
   touchedFields: Set<string>
@@ -49,9 +50,11 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
-  const [roles, setRoles] = useState<Roles>({ main: 'A', target: 'B' })
+  const [isSaving, setIsSaving] = useState(false)
 
+  const [roles, setRoles] = useState<Roles>({ main: 'A', target: 'B' })
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
+
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
   const [layoutsList, setLayoutsList] = useState<any>([])
@@ -76,10 +79,10 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     try {
       const [layoutAResult, objectAResult, layoutBResult, objectBResult] =
         await Promise.all([
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.A?.id })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.A?.id })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id })).unwrap()
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.A?.id }, { forceRefetch: true })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.A?.id }, { forceRefetch: true })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.B?.id }, { forceRefetch: true })).unwrap(),
+          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id }, { forceRefetch: true })).unwrap()
         ])
 
       const isSameObjectType = objectAResult?.className === objectBResult?.className
@@ -230,7 +233,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     setTouchedFields(new Set())
   }, [roles, initialVersions])
 
-  const save = useCallback(() => {
+  const save = useCallback(async () => {
     const targetKey = roles.target
 
     const changedData: VersionData = {}
@@ -246,8 +249,31 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       }
     })
 
-    console.log('------>>>>> changedData', changedData)
-  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects])
+    setIsSaving(true)
+
+    try {
+      await dispatch(dataObjectApi.endpoints.dataObjectPatchById.initiate({
+        body: {
+          data: [{
+            id: selectedMergerObjects?.[targetKey]?.id,
+            task: 'save',
+            editableData: changedData
+          }]
+        }
+      })).unwrap()
+
+      setInitialVersions(prev => ({
+        ...prev,
+        [targetKey]: cloneDeep(versions[targetKey])
+      }))
+
+      setTouchedFields(new Set())
+    } catch (error) {
+      console.error('Failed to save object', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch])
 
   const mirror = (): void => {
     setRoles(prev => ({
@@ -268,6 +294,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     refetch,
     isFetching: isLoadingData,
     isLoading: isLoadingData,
+    isSaving,
     mergerFields,
     roles,
     touchedFields,
