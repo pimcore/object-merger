@@ -126,7 +126,7 @@ export const ObjectMergerView = (): React.JSX.Element => {
               </Flex>
             )}
             <ObjectMergerVersions
-              breadcrumbsList={ breadcrumbsList! }
+              breadcrumbsList={ breadcrumbsList }
               isExpandedUnmodifiedFields={ isExpandedUnmodifiedFields }
               mergerData={ mergerData }
             />

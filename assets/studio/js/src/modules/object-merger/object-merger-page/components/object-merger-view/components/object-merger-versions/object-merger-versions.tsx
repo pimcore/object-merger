@@ -24,7 +24,7 @@ import { type IMergerField } from '../../../../../types'
 import { useStyles } from '../../object-merger-view.styles'
 
 interface IObjectMergerVersions {
-  breadcrumbsList: CategoriesList
+  breadcrumbsList?: CategoriesList
   mergerData: IMergerField[]
   isExpandedUnmodifiedFields: boolean
 }
