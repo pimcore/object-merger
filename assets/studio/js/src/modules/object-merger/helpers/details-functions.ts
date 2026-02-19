@@ -9,7 +9,9 @@
  */
 
 import { differenceWith, get, isEmpty, isEqual, isUndefined } from 'lodash'
+import { type Layout } from '@pimcore/studio-ui-bundle/api/data-object'
 import { formatDateTime, isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
+import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { type IFormattedFieldData, type IMergerField, type Roles, type VersionData } from '../types'
 
 interface IFieldCollectionValue {
@@ -22,6 +24,11 @@ enum DATATYPE_LIST {
   DATA = 'data'
 }
 
+interface ILayoutItem {
+  type: string
+  data: any
+}
+
 export const getBreadcrumbTitle = (value1: string, value2: string): string => {
   return [value1, value2].filter(Boolean).join('/')
 }
@@ -29,12 +36,12 @@ export const getBreadcrumbTitle = (value1: string, value2: string): string => {
 const fieldTypesRequiringChildren = ['block']
 
 export const processData = async ({ objectId, layout, objectData, objectDataRegistry, layoutsList, setLayoutsList }: {
-  objectId?: number
-  layout: any[]
+  objectId: number
+  layout: Layout['children']
   objectData?: any
-  objectDataRegistry: any
-  layoutsList?: any
-  setLayoutsList?: any
+  objectDataRegistry: DynamicTypeObjectDataRegistry
+  layoutsList: ILayoutItem[]
+  setLayoutsList: (layout: ILayoutItem[]) => void
 }): Promise<IFormattedFieldData[]> => {
   const formattedSystemData = {
     fullPath: objectData?.fullPath ?? '',
@@ -60,15 +67,15 @@ export const processData = async ({ objectId, layout, objectData, objectDataRegi
         const fieldValueByName = get(objectValuesData, fieldName)
         const currentFieldType: string = item.fieldtype
 
-        const getFieldPathValue = isEmptyValue(fieldPath) ? fieldName : `${fieldPath}.${fieldName}`
+        const getFieldPathValue: string = isEmptyValue(fieldPath) ? fieldName : `${fieldPath}.${fieldName}`
 
-        if (objectDataRegistry.hasDynamicType(currentFieldType) === false) {
+        if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
           return []
         }
 
         const objectDataType = objectDataRegistry.getDynamicType(currentFieldType)
 
-        const processedDataList = await objectDataType.processVersionFieldData({ objectId, item, fieldBreadcrumbTitle, fieldValueByName, layoutsList, setLayoutsList, fieldPath: getFieldPathValue })
+        const processedDataList = await objectDataType.processVersionFieldData({ objectId, item, fieldBreadcrumbTitle, fieldValueByName, fieldPath: getFieldPathValue, layoutsList, setLayoutsList, versionId: objectId, versionCount: 1 })
         const processedPromises = processedDataList?.map(async (processedDataItem: any): Promise<IFormattedFieldData[]> => {
           objectValuesData = {}
 

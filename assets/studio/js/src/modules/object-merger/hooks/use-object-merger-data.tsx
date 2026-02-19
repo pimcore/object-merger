@@ -12,6 +12,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
+import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
@@ -19,7 +20,7 @@ import { type IFormattedFieldData, type IMergerField, type Roles, type VersionDa
 
 export interface IUseObjectMergerDataProps {
   selectedMergerObjects: IMergerObjectData
-  objectDataRegistry?: any
+  objectDataRegistry: DynamicTypeObjectDataRegistry
 }
 
 export interface IUseObjectMergerDataReturn {

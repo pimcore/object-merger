@@ -8,11 +8,16 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { isUndefined } from 'lodash'
-import { type DynamicTypeObjectDataRegistry, serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
+import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
+
+interface IObjectMergerProviderProps {
+  children: ReactNode
+}
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
   selectedMergerObjects: IMergerObjectData
@@ -21,7 +26,7 @@ interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
 
-export const ObjectMergerProvider = ({ children }: any): React.JSX.Element => {
+export const ObjectMergerProvider = ({ children }: IObjectMergerProviderProps): React.JSX.Element => {
   const [selectedMergerObjects, setSelectedMergerObjects] = useState<IMergerObjectData>({
     A: undefined,
     B: undefined
