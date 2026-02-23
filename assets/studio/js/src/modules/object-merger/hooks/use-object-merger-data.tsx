@@ -44,6 +44,7 @@ export interface IUseObjectMergerDataReturn {
   setIsSameObjectType: (isSameObjectType: boolean) => void
   canCompare: boolean
   setCanCompare: (canCompare: boolean) => void
+  hasUnsavedChanges: boolean
 }
 
 export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
@@ -63,6 +64,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
   const [canCompare, setCanCompare] = useState<boolean>(false)
 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
+  const [lastSavedVersions, setLastSavedVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
 
   const loadLayoutData = async (): Promise<void> => {
@@ -124,6 +126,10 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
         A: initialA,
         B: initialB
       })
+      setLastSavedVersions({
+        A: cloneDeep(initialA),
+        B: cloneDeep(initialB)
+      })
       setVersions({
         A: cloneDeep(initialA),
         B: cloneDeep(initialB)
@@ -143,6 +149,15 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
     return createMergerFields(formattedDataA, formattedDataB, roles, touchedFields, versions)
   }, [formattedDataA, formattedDataB, roles, touchedFields, versions])
+
+  const hasUnsavedChanges = useMemo(() => {
+    const targetKey = roles.target
+
+    return !isEqual(
+      versions[targetKey],
+      lastSavedVersions[targetKey]
+    )
+  }, [versions, lastSavedVersions, roles])
 
   const refetch = (): void => { void loadLayoutData() }
 
@@ -237,17 +252,25 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     const targetKey = roles.target
 
     const changedData: VersionData = {}
-    const initialTargetVersion = initialVersions[targetKey]
+
     const targetVersion = versions[targetKey]
+    const lastSavedTargetVersion = lastSavedVersions[targetKey]
+    const formattedDataTarget = targetKey === 'A' ? formattedDataA : formattedDataB
 
-    touchedFields.forEach((fieldPath) => {
+    formattedDataTarget.forEach((item) => {
+      const fieldPath: string = !isEmptyValue(item.fieldPath) ? item.fieldPath : item.fieldData.name
+
       const currentValue = get(targetVersion, fieldPath)
-      const initialValue = get(initialTargetVersion, fieldPath)
+      const lastSavedValue = get(lastSavedTargetVersion, fieldPath)
 
-      if (!isEqual(currentValue, initialValue)) {
+      if (!isEqual(currentValue, lastSavedValue)) {
         setWith(changedData, fieldPath, currentValue, Object)
       }
     })
+
+    if (isEmpty(changedData)) {
+      return
+    }
 
     setIsSaving(true)
 
@@ -264,6 +287,11 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     } catch (error) {
       console.error('Failed to save object', error)
     } finally {
+      setLastSavedVersions(prev => ({
+        ...prev,
+        [targetKey]: cloneDeep(versions[targetKey])
+      }))
+
       setIsSaving(false)
     }
   }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch])
@@ -302,6 +330,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     isSameObjectType,
     setIsSameObjectType,
     canCompare,
-    setCanCompare
+    setCanCompare,
+    hasUnsavedChanges
   }
 }
