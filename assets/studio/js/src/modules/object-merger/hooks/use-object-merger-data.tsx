@@ -261,13 +261,6 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
           }]
         }
       })).unwrap()
-
-      setInitialVersions(prev => ({
-        ...prev,
-        [targetKey]: cloneDeep(versions[targetKey])
-      }))
-
-      setTouchedFields(new Set())
     } catch (error) {
       console.error('Failed to save object', error)
     } finally {
