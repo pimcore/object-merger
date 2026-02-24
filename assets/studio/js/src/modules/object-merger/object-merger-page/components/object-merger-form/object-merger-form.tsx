@@ -64,7 +64,7 @@ export const ObjectMergerForm = (): React.JSX.Element => {
           <Button
             disabled={ !canCompare }
             loading={ isLoading }
-            onClick={ () => { loadLayoutData() } }
+            onClick={ () => { void loadLayoutData() } }
             type="primary"
           >
             {t('compare_objects.form.compare_btn')}
