@@ -15,9 +15,10 @@ namespace Pimcore\Bundle\ObjectMergerBundle\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class ObjectMergerExtension extends Extension
+class ObjectMergerExtension extends Extension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
@@ -27,5 +28,17 @@ class ObjectMergerExtension extends Extension
         );
 
         $loader->load('config.yml');
+    }
+
+    public function prepend(ContainerBuilder $container): void
+    {
+        $loader = new YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__ . '/../Resources/config')
+        );
+
+        if ($container->hasExtension('pimcore_studio_ui')) {
+            $loader->load('studio_ui.yaml');
+        }
     }
 }
