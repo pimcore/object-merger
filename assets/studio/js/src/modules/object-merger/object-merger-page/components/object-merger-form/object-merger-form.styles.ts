@@ -7,3 +7,13 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
+
+import { createStyles, type FullToken } from 'antd-style'
+
+export const useStyles = createStyles(({ token, css }: { token: FullToken, css: any }) => {
+  return {
+    formWrapper: css`
+      min-width: 400px;
+    `
+  }
+})

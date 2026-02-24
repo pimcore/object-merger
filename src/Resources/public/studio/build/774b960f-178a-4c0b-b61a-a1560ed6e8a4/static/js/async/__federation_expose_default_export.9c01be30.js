@@ -1,2 +1,0 @@
-/*! For license information please see __federation_expose_default_export.9c01be30.js.LICENSE.txt */
-"use strict";(self.webpackChunkpimcore_objectmerger_bundle=self.webpackChunkpimcore_objectmerger_bundle||[]).push([["525"],{966(e,t,o){o.r(t),o.d(t,{ObjectMergerPlugin:()=>l});let r={onInit:()=>{}};void 0!==(e=o.hmd(e)).hot&&e.hot.accept();let l={name:"object-merger-plugin",onInit:e=>{let{container:t}=e},onStartup:e=>{let{moduleSystem:t}=e;t.registerModule(r),console.log("Hello from object merger bundle.")}}}}]);

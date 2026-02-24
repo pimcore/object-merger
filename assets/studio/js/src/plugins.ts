@@ -9,7 +9,7 @@
  */
 
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
-import { ObjectMergerModule } from './modules/object-merger/index'
+import { ObjectMergerModule } from './modules/object-merger'
 
 if (module.hot !== undefined) {
   module.hot.accept()

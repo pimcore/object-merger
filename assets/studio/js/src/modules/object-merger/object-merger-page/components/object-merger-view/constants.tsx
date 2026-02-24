@@ -7,3 +7,10 @@
  *  @copyright  Copyright (c) Pimcore GmbH (https://www.pimcore.com)
  *  @license    Pimcore Open Core License (POCL)
  */
+
+export enum ComparisonCategoryName {
+  SYSTEM_DATA = 'systemData',
+  META = 'meta'
+}
+
+export const MERGE_SOURCES = ['main', 'target']
