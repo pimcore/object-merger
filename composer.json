@@ -14,14 +14,14 @@
   "minimum-stability": "dev",
   "require": {
     "php": "~8.4.0 || ~8.5.0",
-    "pimcore/pimcore": "^12.3"
+    "pimcore/pimcore": "^2026.1"
   },
   "require-dev": {
     "phpstan/phpstan": "^1.12.15"
   },
   "extra": {
     "branch-alias": {
-      "dev-2026.x": "5.1.x-dev"
+      "dev-2026.x": "2026.1.x-dev"
     },
     "pimcore": {
       "bundles": [
