@@ -36,19 +36,11 @@ class ObjectMergerBundle extends AbstractPimcoreBundle implements PimcoreBundleA
 
     public function getCssPaths(): array
     {
-        return [
-            '/bundles/objectmerger/css/admin.css',
-            '/bundles/objectmerger/css/icons.css',
-        ];
+        return [];
     }
 
     public function getJsPaths(): array
     {
-        return [
-            '/bundles/objectmerger/js/plugin.js',
-            '/bundles/objectmerger/js/panel.js',
-            '/bundles/objectmerger/js/grideditor.js',
-
-        ];
+        return [];
     }
 }
