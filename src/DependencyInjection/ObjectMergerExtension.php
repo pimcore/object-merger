@@ -37,8 +37,6 @@ class ObjectMergerExtension extends Extension implements PrependExtensionInterfa
             new FileLocator(__DIR__ . '/../Resources/config')
         );
 
-        if ($container->hasExtension('pimcore_studio_ui')) {
-            $loader->load('studio_ui.yaml');
-        }
+        $loader->load('studio_ui.yaml');
     }
 }
