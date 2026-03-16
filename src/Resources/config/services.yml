@@ -3,8 +3,3 @@ services:
         public: true
         autowire: true
         autoconfigure: true
-
-    Pimcore\Bundle\ObjectMergerBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: ['controller.service_arguments']

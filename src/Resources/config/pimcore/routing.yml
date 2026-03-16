@@ -1,3 +1,0 @@
-app:
-    resource: "@ObjectMergerBundle/Controller/"
-    type:     attribute
