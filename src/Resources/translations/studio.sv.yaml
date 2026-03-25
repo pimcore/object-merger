@@ -1,0 +1,13 @@
+compare_objects.empty: Inget värde
+compare_objects.nav.compare_objects: Jämför objekt
+compare_objects.title: Jämför objekt
+compare_objects.form.compare_btn: Jämför
+compare_objects.form.error.different_object_types: 'De valda objekten har olika typer och kan inte jämföras.'
+compare_objects.toolbar.mirror_view: Spegelvänd vy
+compare_objects.toolbar.apply_all: Tillämpa alla
+compare_objects.toolbar.apply_all.description: 'Tillämpa alla kopierar värden från vänster till höger och uppdaterar bara de som är olika.'
+compare_objects.toolbar.reset: Återställ ändringar
+compare_objects.toolbar.save: Spara
+compare_objects.initial_description: 'Välj två objekt att jämföra.'
+compare_objects.expand_unmodified_fields: Expandera alla
+compare_objects.no_difference: Det finns inga skillnader mellan de valda versionerna
