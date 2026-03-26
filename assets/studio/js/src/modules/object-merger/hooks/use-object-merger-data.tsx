@@ -8,6 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+/* eslint-disable max-lines */
 import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
