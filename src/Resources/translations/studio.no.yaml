@@ -2,12 +2,12 @@ compare_objects.empty: Ingen verdi
 compare_objects.nav.compare_objects: Sammenlign objekter
 compare_objects.title: Sammenlign objekter
 compare_objects.form.compare_btn: Sammenlign
-compare_objects.form.error.different_object_types: 'De valgte objektene har forskjellige typer og kan ikke sammenlignes.'
+compare_objects.form.error.different_object_types: De valgte objektene har forskjellige typer og kan ikke sammenlignes.
 compare_objects.toolbar.mirror_view: Speilvend visning
 compare_objects.toolbar.apply_all: Bruk alle
-compare_objects.toolbar.apply_all.description: 'Bruk alle kopierer verdier fra venstre til høyre, og oppdaterer bare de som er forskjellige.'
+compare_objects.toolbar.apply_all.description: Bruk alle kopierer verdier fra venstre til høyre, og oppdaterer bare de som er forskjellige.
 compare_objects.toolbar.reset: Tilbakestill endringer
 compare_objects.toolbar.save: Lagre
-compare_objects.initial_description: 'Velg to objekter å sammenligne.'
+compare_objects.initial_description: Velg to objekter å sammenligne.
 compare_objects.expand_unmodified_fields: Utvid alle
 compare_objects.no_difference: Det er ingen forskjeller mellom de valgte versjonene
