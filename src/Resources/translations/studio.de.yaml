@@ -2,12 +2,12 @@ compare_objects.empty: Kein Wert
 compare_objects.nav.compare_objects: Objekte vergleichen
 compare_objects.title: Objekte vergleichen
 compare_objects.form.compare_btn: Vergleichen
-compare_objects.form.error.different_object_types: 'Die ausgewählten Objekte haben unterschiedliche Typen und können nicht verglichen werden.'
+compare_objects.form.error.different_object_types: Die ausgewählten Objekte haben unterschiedliche Typen und können nicht verglichen werden.
 compare_objects.toolbar.mirror_view: Ansicht spiegeln
 compare_objects.toolbar.apply_all: Alle übernehmen
-compare_objects.toolbar.apply_all.description: 'Alle übernehmen kopiert die Werte von links nach rechts und aktualisiert nur diejenigen, die sich unterscheiden.'
+compare_objects.toolbar.apply_all.description: Alle übernehmen kopiert die Werte von links nach rechts und aktualisiert nur diejenigen, die sich unterscheiden.
 compare_objects.toolbar.reset: Änderungen zurücksetzen
 compare_objects.toolbar.save: Speichern
-compare_objects.initial_description: 'Bitte wählen Sie zwei Objekte zum Vergleichen aus.'
+compare_objects.initial_description: Bitte wählen Sie zwei Objekte zum Vergleichen aus.
 compare_objects.expand_unmodified_fields: Alle aufklappen
 compare_objects.no_difference: Es gibt keinen Unterschied zwischen den ausgewählten Versionen
