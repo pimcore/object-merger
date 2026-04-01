@@ -9,7 +9,7 @@
  */
 
 import { isUndefined } from 'lodash'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValue, Button, Alert } from '@pimcore/studio-ui-bundle/components'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
@@ -18,10 +18,18 @@ import { useStyles } from './object-merger-form.styles'
 export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
+  const hasAutoCompared = useRef(false)
 
-  const { selectedMergerObjects, setSelectedMergerObjects, loadLayoutData, isLoading, canCompare, isSameObjectType } = useObjectMergerContext()
+  const { selectedMergerObjects, setSelectedMergerObjects, loadLayoutData, isLoading, canCompare, isSameObjectType, autoCompare } = useObjectMergerContext()
 
   const showError = !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B) && !isSameObjectType
+
+  useEffect(() => {
+    if (autoCompare && canCompare && !hasAutoCompared.current) {
+      hasAutoCompared.current = true
+      void loadLayoutData()
+    }
+  }, [autoCompare, canCompare])
 
   return (
     <Content

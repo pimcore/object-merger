@@ -17,19 +17,21 @@ import { type IMergerObjectData } from '../object-merger-page/components/object-
 
 interface IObjectMergerProviderProps {
   children: ReactNode
+  initialObjects?: IMergerObjectData
 }
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
   selectedMergerObjects: IMergerObjectData
   setSelectedMergerObjects: (ids: IMergerObjectData) => void
+  autoCompare: boolean
 }
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
 
-export const ObjectMergerProvider = ({ children }: IObjectMergerProviderProps): React.JSX.Element => {
+export const ObjectMergerProvider = ({ children, initialObjects }: IObjectMergerProviderProps): React.JSX.Element => {
   const [selectedMergerObjects, setSelectedMergerObjects] = useState<IMergerObjectData>({
-    A: undefined,
-    B: undefined
+    A: initialObjects?.A,
+    B: initialObjects?.B
   })
 
   const objectDataRegistry = useInjection<DynamicTypeObjectDataRegistry>(serviceIds['DynamicTypes/ObjectDataRegistry'])
@@ -37,6 +39,8 @@ export const ObjectMergerProvider = ({ children }: IObjectMergerProviderProps): 
   const objectMergerDataValue = useObjectMergerData({ selectedMergerObjects, objectDataRegistry })
 
   const { setCanCompare, setIsSameObjectType } = objectMergerDataValue
+
+  const autoCompare = !isUndefined(initialObjects?.A) && !isUndefined(initialObjects?.B)
 
   useEffect(() => {
     const bothObjectsSelected = !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B)
@@ -48,8 +52,9 @@ export const ObjectMergerProvider = ({ children }: IObjectMergerProviderProps): 
   const contextValue: IObjectMergerDataContext = useMemo(() => ({
     ...objectMergerDataValue,
     selectedMergerObjects,
-    setSelectedMergerObjects
-  }), [objectMergerDataValue, selectedMergerObjects, setSelectedMergerObjects])
+    setSelectedMergerObjects,
+    autoCompare
+  }), [objectMergerDataValue, selectedMergerObjects, setSelectedMergerObjects, autoCompare])
 
   return (
     <ObjectMergerDataContext.Provider value={ contextValue }>
