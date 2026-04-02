@@ -22,7 +22,7 @@
     "globalName": "pimcore_objectmerger_bundle",
     "pluginVersion": "2.3.0",
     "prefetchInterface": false,
-    "publicPath": "/bundles/objectmerger/studio/build/cc04d719-59b7-4cfa-ad6a-3b7e12642e7b/"
+    "publicPath": "/bundles/objectmerger/studio/build/63c4d1d0-31c7-4bc3-9c73-3565def93e5c/"
   },
   "shared": [
     {
@@ -207,7 +207,7 @@
       "alias": "@pimcore/studio-ui-bundle",
       "consumingFederationContainerName": "pimcore_objectmerger_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
-      "moduleName": "modules/element",
+      "moduleName": "modules/data-object",
       "usedIn": [
         "js/src/plugins.ts + 15 modules"
       ],
@@ -217,7 +217,7 @@
       "alias": "@pimcore/studio-ui-bundle",
       "consumingFederationContainerName": "pimcore_objectmerger_bundle",
       "federationContainerName": "promise new Promise((resolve) => {\n    const emptyContainer = {\n      get: () => Promise.resolve(() => ({})),\n      init: () => {}\n    }\n\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n\n    if (!remoteUrl) {\n      throw new Error('Required remote \"pimcore_studio_ui_bundle\" is not available');\n      return\n    }\n\n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    script.onerror = () => {\n      throw new Error('Failed to load required remote \"pimcore_studio_ui_bundle\" from ' + remoteUrl);\n    }\n    document.head.appendChild(script);\n  })\n  ",
-      "moduleName": "modules/data-object",
+      "moduleName": "modules/element",
       "usedIn": [
         "js/src/plugins.ts + 15 modules"
       ],
@@ -248,7 +248,7 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/__federation_expose_default_export.a60e4d6a.js"
+            "static/js/async/__federation_expose_default_export.da7c0cd8.js"
           ],
           "async": []
         },

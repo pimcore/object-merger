@@ -7,7 +7,7 @@
         window.alternativePluginExportPaths = {}
       }
 
-      window.pluginRemotes.pimcore_objectmerger_bundle = "/bundles/objectmerger/studio/build/cc04d719-59b7-4cfa-ad6a-3b7e12642e7b/static/js/remoteEntry.js"
+      window.pluginRemotes.pimcore_objectmerger_bundle = "/bundles/objectmerger/studio/build/63c4d1d0-31c7-4bc3-9c73-3565def93e5c/static/js/remoteEntry.js"
 
       
     
