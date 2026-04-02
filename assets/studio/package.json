@@ -37,7 +37,7 @@
     "typescript-eslint": "^8"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260325-113631-293aa9b",
+    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260402-091140-20a56e6",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-table": "^8.20.5",
     "antd-style": "3.7.x",
