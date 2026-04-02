@@ -8,6 +8,7 @@ compare_objects.toolbar.apply_all: Aplicar todo
 compare_objects.toolbar.apply_all.description: Aplicar todo copia los valores de izquierda a derecha, actualizando solo los que son diferentes.
 compare_objects.toolbar.reset: Restablecer cambios
 compare_objects.toolbar.save: Guardar
+compare_objects.toolbar.save.no_permission: No tiene permiso para guardar este objeto.
 compare_objects.initial_description: Seleccione dos objetos para comparar.
 compare_objects.expand_unmodified_fields: Expandir todo
 compare_objects.no_difference: No hay diferencias entre las versiones seleccionadas
