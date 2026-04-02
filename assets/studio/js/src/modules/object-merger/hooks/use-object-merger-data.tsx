@@ -14,6 +14,7 @@ import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
+import { BatchAppendMode, addBatchAppendMode } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
@@ -275,7 +276,17 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       const lastSavedValue = get(lastSavedTargetVersion, fieldPath)
 
       if (!isEqual(currentValue, lastSavedValue)) {
-        setWith(changedData, fieldPath, currentValue, Object)
+        const fieldType: string = item.fieldData?.fieldtype
+
+        const dynamicType = objectDataRegistry.hasDynamicType(fieldType)
+          ? objectDataRegistry.getDynamicType(fieldType)
+          : null
+
+        const valueToSave = dynamicType?.supportsBatchAppendModes === true
+          ? addBatchAppendMode(currentValue, BatchAppendMode.Replace)
+          : currentValue
+
+        setWith(changedData, fieldPath, valueToSave, Object)
       }
     })
 
