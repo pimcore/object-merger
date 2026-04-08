@@ -8,11 +8,13 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+/* eslint-disable max-lines */
 import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
+import { BatchAppendMode, addBatchAppendMode } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
 import { createMergerFields, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
@@ -45,6 +47,7 @@ export interface IUseObjectMergerDataReturn {
   canCompare: boolean
   setCanCompare: (canCompare: boolean) => void
   hasUnsavedChanges: boolean
+  canSaveTarget: boolean
 }
 
 export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
@@ -62,6 +65,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
   const [isSameObjectType, setIsSameObjectType] = useState(false)
   const [canCompare, setCanCompare] = useState<boolean>(false)
+
+  const [objectSavePermissions, setObjectSavePermissions] = useState<{ A: boolean, B: boolean }>({ A: true, B: true })
 
   const [initialVersions, setInitialVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [lastSavedVersions, setLastSavedVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
@@ -119,6 +124,11 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       setFormattedDataA(formattedDataA)
       setFormattedDataB(formattedDataB)
 
+      setObjectSavePermissions({
+        A: objectAResult?.permissions?.save !== false,
+        B: objectBResult?.permissions?.save !== false
+      })
+
       const initialA = objectAResult?.objectData ?? {}
       const initialB = objectBResult?.objectData ?? {}
 
@@ -158,6 +168,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       lastSavedVersions[targetKey]
     )
   }, [versions, lastSavedVersions, roles])
+
+  const canSaveTarget = useMemo(() => objectSavePermissions[roles.target], [objectSavePermissions, roles])
 
   const refetch = (): void => { void loadLayoutData() }
 
@@ -264,7 +276,17 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
       const lastSavedValue = get(lastSavedTargetVersion, fieldPath)
 
       if (!isEqual(currentValue, lastSavedValue)) {
-        setWith(changedData, fieldPath, currentValue, Object)
+        const fieldType: string = item.fieldData?.fieldtype
+
+        const dynamicType = objectDataRegistry.hasDynamicType(fieldType)
+          ? objectDataRegistry.getDynamicType(fieldType)
+          : null
+
+        const valueToSave = dynamicType?.supportsBatchAppendModes === true
+          ? addBatchAppendMode(currentValue, BatchAppendMode.Replace)
+          : currentValue
+
+        setWith(changedData, fieldPath, valueToSave, Object)
       }
     })
 
@@ -331,6 +353,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
     setIsSameObjectType,
     canCompare,
     setCanCompare,
-    hasUnsavedChanges
+    hasUnsavedChanges,
+    canSaveTarget
   }
 }

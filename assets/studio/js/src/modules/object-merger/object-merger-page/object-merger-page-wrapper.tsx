@@ -9,12 +9,24 @@
  */
 
 import React from 'react'
+import { isUndefined } from 'lodash'
+import { type ManyToOneRelationValue } from '@pimcore/studio-ui-bundle/components'
 import { ObjectMergerProvider } from '../context/object-merger-context'
 import { ObjectMergerPage } from './object-merger-page'
 
-export const ObjectMergerPageWrapper = (): React.JSX.Element => {
+interface ObjectMergerPageWrapperProps {
+  initialObjectA?: ManyToOneRelationValue
+  initialObjectB?: ManyToOneRelationValue
+  [key: string]: any
+}
+
+export const ObjectMergerPageWrapper = ({ initialObjectA, initialObjectB }: ObjectMergerPageWrapperProps): React.JSX.Element => {
+  const initialObjects = (!isUndefined(initialObjectA) && !isUndefined(initialObjectB))
+    ? { A: initialObjectA, B: initialObjectB }
+    : undefined
+
   return (
-    <ObjectMergerProvider>
+    <ObjectMergerProvider initialObjects={ initialObjects }>
       <ObjectMergerPage />
     </ObjectMergerProvider>
   )

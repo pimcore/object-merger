@@ -1,0 +1,14 @@
+compare_objects.empty: Sin valor
+compare_objects.nav.compare_objects: Comparar objetos
+compare_objects.title: Comparar objetos
+compare_objects.form.compare_btn: Comparar
+compare_objects.form.error.different_object_types: Los objetos seleccionados tienen tipos diferentes y no se pueden comparar.
+compare_objects.toolbar.mirror_view: Vista espejo
+compare_objects.toolbar.apply_all: Aplicar todo
+compare_objects.toolbar.apply_all.description: Aplicar todo copia los valores de izquierda a derecha, actualizando solo los que son diferentes.
+compare_objects.toolbar.reset: Restablecer cambios
+compare_objects.toolbar.save: Guardar
+compare_objects.toolbar.save.no_permission: No tiene permiso para guardar este objeto.
+compare_objects.initial_description: Seleccione dos objetos para comparar.
+compare_objects.expand_unmodified_fields: Expandir todo
+compare_objects.no_difference: No hay diferencias entre las versiones seleccionadas
