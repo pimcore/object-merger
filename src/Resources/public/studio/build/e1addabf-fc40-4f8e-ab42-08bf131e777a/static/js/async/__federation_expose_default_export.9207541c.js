@@ -1,0 +1,126 @@
+/*! For license information please see __federation_expose_default_export.9207541c.js.LICENSE.txt */
+(self["chunk_pimcore_objectmerger_bundle "]=self["chunk_pimcore_objectmerger_bundle "]||[]).push([["525"],{1020(e,t,i){"use strict";var l=i(6798),n=Symbol.for("react.element"),a=Symbol.for("react.fragment"),o=Object.prototype.hasOwnProperty,r=l.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,d={key:!0,ref:!0,__self:!0,__source:!0};function s(e,t,i){var l,a={},s=null,c=null;for(l in void 0!==i&&(s=""+i),void 0!==t.key&&(s=""+t.key),void 0!==t.ref&&(c=t.ref),t)o.call(t,l)&&!d.hasOwnProperty(l)&&(a[l]=t[l]);if(e&&e.defaultProps)for(l in t=e.defaultProps)void 0===a[l]&&(a[l]=t[l]);return{$$typeof:n,type:e,key:s,ref:c,props:a,_owner:r.current}}t.Fragment=a,t.jsx=s,t.jsxs=s},4848(e,t,i){"use strict";e.exports=i(1020)},8187(e,t,i){"use strict";i.r(t),i.d(t,{ObjectMergerPlugin:()=>W});var l=i(2977),n=i(8972),a=i(4781),o=i(2028),r=i(4848),d=i(6798),s=i(4471),c=i(8267),u=i(1161),p=i(3090);let m=(e,t)=>[e,t].filter(Boolean).join("/"),f=["block"],h=async e=>{let t,{objectId:i,layout:l,objectData:n,objectDataRegistry:a,layoutsList:o,setLayoutsList:r}=e,d={fullPath:(null==n?void 0:n.fullPath)??"",creationDate:(0,c.formatDateTime)({timestamp:(null==n?void 0:n.creationDate)??null,dateStyle:"short",timeStyle:"medium"}),modificationDate:(0,c.formatDateTime)({timestamp:(null==n?void 0:n.modificationDate)??null,dateStyle:"short",timeStyle:"medium"})},u=async e=>{let{data:t,objectValuesData:l=null==n?void 0:n.objectData,fieldBreadcrumbTitle:d="",fieldPath:p=""}=e,h=t.map(async e=>{if("layout"===e.datatype){let t=m(d,e.title);return await u({data:e.children,fieldBreadcrumbTitle:t,objectValuesData:l,fieldPath:p})}if("data"===e.datatype){let t=e.name,n=(0,s.get)(l,t),h=e.fieldtype,b=(0,c.isEmptyValue)(p)?t:`${p}.${t}`;if(!a.hasDynamicType(h))return[];let g=a.getDynamicType(h),j=await g.processVersionFieldData({objectId:i,item:e,fieldBreadcrumbTitle:d,fieldValueByName:n,fieldPath:b,layoutsList:o,setLayoutsList:r,versionId:i,versionCount:1}),v=null==j?void 0:j.map(async e=>{var t,i,n,a;if(l={},!(0,s.isEmpty)(null==e||null==(t=e.fieldData)?void 0:t.children)&&!f.includes(String((null==e||null==(i=e.fieldData)?void 0:i.fieldtype)??""))){let t=m(d,String((null==e||null==(n=e.fieldData)?void 0:n.title)??""));return await u({data:[null==e?void 0:e.fieldData],objectValuesData:{...l,[null==e||null==(a=e.fieldData)?void 0:a.name]:null==e?void 0:e.fieldValue},fieldBreadcrumbTitle:t,fieldPath:(null==e?void 0:e.fieldPath)??""})}return[e]});return(await Promise.all(v)).reduce((e,t)=>e.concat(t),[])}return[]});return(await Promise.all(h)).reduce((e,t)=>e.concat(t),[])},p=await u({data:l});return[...(t=[],Object.entries(d).forEach(e=>{let[i,l]=e;t.push({fieldBreadcrumbTitle:"systemData",fieldData:{title:i,name:i,fieldtype:"input"},fieldValue:l})}),t),...p]},b=e=>{var t,i;let l=e.fieldBreadcrumbTitle??"",n=(null==(t=e.fieldData)?void 0:t.name)??"",a=(null==(i=e.fieldData)?void 0:i.locale)??"default";return`${l}-${n}-${a}`},g=(0,d.createContext)(void 0),j=e=>{let{children:t,initialObjects:i,initialRoles:l,onMerged:n}=e,[o,m]=(0,d.useState)({A:null==i?void 0:i.A,B:null==i?void 0:i.B}),f=(e=>{let{selectedMergerObjects:t,objectDataRegistry:i,initialRoles:l,onMerged:n}=e,o=(0,a.useAppDispatch)(),[r,m]=(0,d.useState)(!1),[f,g]=(0,d.useState)(!1),[j,v]=(0,d.useState)(l??{main:"A",target:"B"}),[x,y]=(0,d.useState)(new Set),[S,B]=(0,d.useState)([]),[w,F]=(0,d.useState)([]),[D,T]=(0,d.useState)([]),[$,A]=(0,d.useState)(!1),[C,P]=(0,d.useState)(!1),[_,E]=(0,d.useState)({A:!0,B:!0}),[I,O]=(0,d.useState)({A:null,B:null}),[k,M]=(0,d.useState)({A:null,B:null}),[N,U]=(0,d.useState)({A:null,B:null}),R=async()=>{if(!((0,s.isUndefined)(t.A)||(0,s.isUndefined)(t.B))){m(!0),B([]),F([]),y(new Set);try{var e,l,n,a,r,d,c,p;let[f,b,g,j]=await Promise.all([o(u.api.endpoints.dataObjectGetLayoutById.initiate({id:null==t||null==(e=t.A)?void 0:e.id},{forceRefetch:!0})).unwrap(),o(u.api.endpoints.dataObjectGetById.initiate({id:null==t||null==(l=t.A)?void 0:l.id},{forceRefetch:!0})).unwrap(),o(u.api.endpoints.dataObjectGetLayoutById.initiate({id:null==t||null==(n=t.B)?void 0:n.id},{forceRefetch:!0})).unwrap(),o(u.api.endpoints.dataObjectGetById.initiate({id:null==t||null==(a=t.B)?void 0:a.id},{forceRefetch:!0})).unwrap()]);if((null==b?void 0:b.className)!==(null==j?void 0:j.className)){A(!1),P(!1),m(!1);return}let v=await h({objectId:null==t||null==(r=t.A)?void 0:r.id,layout:(null==f?void 0:f.children)??[],objectData:b??{},objectDataRegistry:i,layoutsList:D,setLayoutsList:T}),x=await h({objectId:null==t||null==(d=t.B)?void 0:d.id,layout:(null==g?void 0:g.children)??[],objectData:j??{},objectDataRegistry:i,layoutsList:D,setLayoutsList:T});B(v),F(x),E({A:(null==b||null==(c=b.permissions)?void 0:c.save)!==!1,B:(null==j||null==(p=j.permissions)?void 0:p.save)!==!1});let y=(null==b?void 0:b.objectData)??{},S=(null==j?void 0:j.objectData)??{};O({A:y,B:S}),M({A:(0,s.cloneDeep)(y),B:(0,s.cloneDeep)(S)}),U({A:(0,s.cloneDeep)(y),B:(0,s.cloneDeep)(S)}),P(!0)}catch(e){console.error("Failed to load merger data",e)}finally{m(!1)}}},V=(0,d.useMemo)(()=>(0,s.isEmpty)(S)||(0,s.isEmpty)(w)?[]:((e,t,i,l,n)=>{let a=[],o=new Map(e.map(e=>[b(e),e])),r=new Map(t.map(e=>[b(e),e]));for(let e of new Set([...o.keys(),...r.keys()])){var d,c;let t=o.get(e),u=r.get(e),p="A"===i.main?t:u,m="B"===i.target?u:t,f="B"===i.main?(0,s.get)(n.B,(null==u?void 0:u.fieldPath)??""):(0,s.get)(n.A,(null==t?void 0:t.fieldPath)??""),h="B"===i.target?(0,s.get)(n.B,(null==u?void 0:u.fieldPath)??""):(0,s.get)(n.A,(null==t?void 0:t.fieldPath)??""),b=(0,s.isUndefined)(f)?(null==p?void 0:p.fieldValue)??null:f,g=(0,s.isUndefined)(h)?(null==m?void 0:m.fieldValue)??null:h,j=(null==p?void 0:p.fieldPath)??(null==m?void 0:m.fieldPath)??(null==p||null==(d=p.fieldData)?void 0:d.name)??(null==m||null==(c=m.fieldData)?void 0:c.name),v={Field:{fieldBreadcrumbTitle:(null==p?void 0:p.fieldBreadcrumbTitle)??(null==m?void 0:m.fieldBreadcrumbTitle),...(null==p?void 0:p.fieldData)??(null==m?void 0:m.fieldData)},main:b,target:g,isTouched:l.has(j),isDifferent:!(0,s.isEqual)(b,g),fieldPath:(null==p?void 0:p.fieldPath)??(null==m?void 0:m.fieldPath)};if("fieldcollections"===v.Field.fieldtype){let e=(null==b?void 0:b.length)??0,i=(null==g?void 0:g.length)??0,l=i>e?u:t,n=e<i?t:u;v.fieldCollectionModifiedList=(0,s.differenceWith)((null==l?void 0:l.fieldValue)??[],(null==n?void 0:n.fieldValue)??[],(e,t)=>(null==e?void 0:e.type)===(null==t?void 0:t.type)&&(0,s.isEqual)(null==e?void 0:e.data,null==t?void 0:t.data)).map(e=>e.type)}a.push(v)}return a})(S,w,j,x,N),[S,w,j,x,N]),W=(0,d.useMemo)(()=>{let e=j.target;return!(0,s.isEqual)(N[e],k[e])},[N,k,j]),L=(0,d.useMemo)(()=>_[j.target],[_,j]),z=(0,d.useCallback)(e=>{let t=j.main,i=j.target,l=(0,s.get)(N[t],e),n=(0,s.isUndefined)(l)?null:l;U(t=>{let l=(0,s.cloneDeep)(t);return(0,s.setWith)(l[i],e,n,Object),l}),y(t=>new Set([...t,e]))},[j,N]),H=(0,d.useCallback)(()=>{let e="A"===j.main?S:w,t="B"===j.target?w:S,i=j.main,l=j.target,n=new Set,a=(0,s.cloneDeep)(N[l]);((null==e?void 0:e.length)>(null==t?void 0:t.length)?e:t).forEach(l=>{let o=e.find(e=>e.fieldPath===l.fieldPath),r=t.find(e=>e.fieldPath===l.fieldPath);if(!(0,s.isEqual)(null==o?void 0:o.fieldValue,null==r?void 0:r.fieldValue)){let e=(0,c.isEmptyValue)(null==l?void 0:l.fieldPath)?null==l?void 0:l.fieldData.name:null==l?void 0:l.fieldPath,t=(0,s.get)(N[i],e),o=(0,s.isUndefined)(t)?null:t;(0,s.setWith)(a,e,o,Object),n.add(e)}}),U(e=>({...e,[l]:a})),y(e=>new Set([...e,...n]))},[S,w,j,N]),X=(0,d.useCallback)(e=>{let t=j.target,i=(0,s.get)(I[t],e);U(l=>{let n=(0,s.cloneDeep)(l);return null!==n[t]&&(0,s.setWith)(n[t],e,i,Object),n}),y(t=>{let i=new Set(t);return i.delete(e),i})},[j,I]),K=(0,d.useCallback)(()=>{let e=j.target;U(t=>({...t,[e]:(0,s.cloneDeep)(I[e])})),y(new Set)},[j,I]),q=(0,d.useCallback)(async()=>{let e=j.target,l={},a=N[e],r=k[e];if(("A"===e?S:w).forEach(e=>{let t=(0,c.isEmptyValue)(e.fieldPath)?e.fieldData.name:e.fieldPath,n=(0,s.get)(a,t),o=(0,s.get)(r,t);if(!(0,s.isEqual)(n,o)){var d;let a=null==(d=e.fieldData)?void 0:d.fieldtype,o=i.hasDynamicType(a)?i.getDynamicType(a):null,r=(null==o?void 0:o.supportsBatchAppendModes)===!0?(0,p.addBatchAppendMode)(n,p.BatchAppendMode.Replace):n;(0,s.setWith)(l,t,r,Object)}}),!(0,s.isEmpty)(l)){g(!0);try{var d;await o(u.api.endpoints.dataObjectPatchById.initiate({body:{data:[{id:null==t||null==(d=t[e])?void 0:d.id,task:"save",editableData:l}]}})).unwrap(),null==n||n()}catch(e){console.error("Failed to save object",e)}finally{M(t=>({...t,[e]:(0,s.cloneDeep)(N[e])})),g(!1)}}},[j,N,I,x,t,o,n]);return{loadLayoutData:R,refetch:()=>{R()},isFetching:r,isLoading:r,isSaving:f,mergerFields:V,roles:j,touchedFields:x,copyFieldToTarget:z,applyAll:H,resetField:X,resetAll:K,mirror:()=>{v(e=>({main:e.target,target:e.main})),U({A:(0,s.cloneDeep)(I.A),B:(0,s.cloneDeep)(I.B)}),y(new Set)},save:q,versions:N,initialVersions:I,isSameObjectType:$,setIsSameObjectType:A,canCompare:C,setCanCompare:P,hasUnsavedChanges:W,canSaveTarget:L}})({selectedMergerObjects:o,objectDataRegistry:(0,a.useInjection)(a.serviceIds["DynamicTypes/ObjectDataRegistry"]),initialRoles:l,onMerged:n}),{setCanCompare:j,setIsSameObjectType:v}=f,x=!(0,s.isUndefined)(null==i?void 0:i.A)&&!(0,s.isUndefined)(null==i?void 0:i.B);(0,d.useEffect)(()=>{let e=!(0,s.isUndefined)(null==o?void 0:o.A)&&!(0,s.isUndefined)(null==o?void 0:o.B);v(!0),j(e)},[null==o?void 0:o.A,null==o?void 0:o.B]);let y=(0,d.useMemo)(()=>({...f,selectedMergerObjects:o,setSelectedMergerObjects:m,autoCompare:x}),[f,o,m,x]);return(0,r.jsx)(g.Provider,{value:y,children:t})},v=()=>{let e=(0,d.useContext)(g);if((0,s.isUndefined)(e))throw Error("useObjectMergerContext must be used within a ObjectMergerProvider");return e};var x=i(2696),y=i(9432);let S=(0,y.createStyles)(e=>{let{token:t,css:i}=e;return{formWrapper:i`
+      min-width: 400px;
+    `}}),B=()=>{var e,t;let{t:i}=(0,a.useTranslation)(),{styles:l}=S(),n=(0,a.useAppDispatch)(),o=(0,d.useRef)(!1),{selectedMergerObjects:c,setSelectedMergerObjects:p,loadLayoutData:m,isLoading:f,canCompare:h,isSameObjectType:b,autoCompare:g}=v(),j=!(0,s.isUndefined)(null==c?void 0:c.A)&&!(0,s.isUndefined)(null==c?void 0:c.B)&&!b;return(0,d.useEffect)(()=>{var e,t,i,l;!g||(0,s.isUndefined)(null==c||null==(e=c.A)?void 0:e.id)||(0,s.isUndefined)(null==c||null==(t=c.B)?void 0:t.id)||!(0,s.isNil)(null==c||null==(i=c.A)?void 0:i.fullPath)&&!(0,s.isNil)(null==c||null==(l=c.B)?void 0:l.fullPath)||(async()=>{let[e,t]=await Promise.all([n(u.api.endpoints.dataObjectGetById.initiate({id:c.A.id},{forceRefetch:!1})).unwrap(),n(u.api.endpoints.dataObjectGetById.initiate({id:c.B.id},{forceRefetch:!1})).unwrap()]);p({A:{...c.A,fullPath:(null==e?void 0:e.fullPath)??""},B:{...c.B,fullPath:(null==t?void 0:t.fullPath)??""}})})()},[g,null==c||null==(e=c.A)?void 0:e.id,null==c||null==(t=c.B)?void 0:t.id]),(0,d.useEffect)(()=>{g&&h&&!o.current&&(o.current=!0,m())},[g,h]),(0,r.jsx)(x.Content,{padded:!0,padding:{x:"small",y:"extra-small"},children:(0,r.jsxs)(x.Flex,{gap:"extra-small",vertical:!0,children:[(0,r.jsx)(x.Title,{children:i("compare_objects.title")}),(0,r.jsxs)(x.Flex,{align:"flex-end",gap:"extra-small",children:[(0,r.jsx)("div",{className:l.formWrapper,children:(0,r.jsxs)(x.FormKit,{children:[(0,r.jsx)(x.Form.Item,{name:"mainObject",children:(0,r.jsx)(x.ManyToOneRelationInput,{dataObjectsAllowed:!0,enableSearch:!0,onChange:e=>{p({A:e,B:null==c?void 0:c.B})},value:null==c?void 0:c.A})}),(0,r.jsx)(x.Form.Item,{name:"compareObject",children:(0,r.jsx)(x.ManyToOneRelationInput,{dataObjectsAllowed:!0,enableSearch:!0,onChange:e=>{p({A:null==c?void 0:c.A,B:e})},value:null==c?void 0:c.B})})]})}),(0,r.jsx)(x.Button,{disabled:!h,loading:f,onClick:()=>{m()},type:"primary",children:i("compare_objects.form.compare_btn")})]}),j&&(0,r.jsx)(x.Alert,{message:i("compare_objects.form.error.different_object_types"),type:"error"})]})})};var w=i(3842);let F=["reverseObjectRelation"];var D=i(6942),T=i.n(D),$=i(2703);let A=["main","target"],C=(0,y.createStyles)(e=>{let{token:t,css:i}=e;return{headerContainer:i`
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 999999999;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -15px;
+        bottom: 0;
+        width: 100%;
+        height: 20px;
+        background-color: #fff;
+        z-index: -1;
+      }
+    `,headerItem:i`
+      flex: 1 1 50%;
+      padding: ${t.paddingXXS}px ${t.paddingXS}px;
+      background-color: ${t.Table.headerBg};
+      border: 0.5px solid ${t.Table.colorBorderSecondary};
+      border-top-width: 0;
+      box-shadow: 0 2px 4px 0 rgba(35, 11, 100, .2);
+
+      &:first-child {
+        border-right: 0;
+      }
+
+      &:last-child {
+        border-left: 0;
+      }
+
+      &:only-child {
+        flex: 1 1 100%;
+        border-right: 0.5px;
+        border-left: 0.5px;
+      }
+    `,content:i`
+      position: relative;
+      min-width: 220px;
+    `,emptyState:i`
+      margin-top: 40px;
+      max-width: 200px;
+      text-align: center;
+    `,switchContainer:i`
+      position: absolute;
+      top: 10px;
+      right: ${t.paddingXS}px;
+      z-index: 1;
+    `,sectionTitle:i`
+      position: relative;
+      display: block;
+      padding: ${t.paddingSM}px ${t.paddingXS}px ${t.paddingXS}px ${t.paddingXS}px;
+      font-size: 14px;
+      font-weight: 900;
+    `,subSectionTitle:i`
+      margin-left: 5px;
+        
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 2px;
+          width: 2px;
+          height: 22px;
+          background-color: ${t.Colors.Neutral.Fill.colorFill};
+        }
+    `,subSectionText:i`
+      font-weight: 400;
+    `,sectionFields:i`
+      padding: ${t.paddingXS}px;
+      border: 1px solid ${t.colorBorderContainer};
+      border-radius: ${t.borderRadius}px;
+    `,sectionFieldsWithoutBorder:i`
+      border-width: 0;
+    `,fieldTitle:i`
+      min-height: 24px;
+    `,fieldTitleContent:i`
+      min-height: 24px;
+    `,sectionFieldItem:i`
+      flex: 1 1 50%;
+      min-width: 50%;
+      width: 100%;
+      padding: ${t.paddingXS}px;
+      background-color: ${t.colorBgContainerDisabled};
+      border-radius: ${t.borderRadius}px;
+
+      &:only-child {
+        flex: 1 1 100%;
+      }
+    `,sectionFieldItemHighlight:i`
+      background-color: ${t.Colors.Brand.Warning.colorWarningBg} !important;
+    `,objectSectionFieldItemWrapper:i`
+      flex: 1 1 50%;
+      min-width: 50%;
+      max-width: 900px;
+      width: 100%;
+    `,objectSectionFieldItemContent:i`
+      height: 100%;
+    `,objectSectionFieldItem:i`
+      justify-content: flex-start;
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: ${t.borderRadius}px !important;
+      border-color: transparent !important;
+      color: ${t.colorText} !important;
+    `,objectSectionFieldItemHighlight:i`
+      &.versionFieldItem {
+        border-color: ${t.colorBorder} !important;
+      }
+    `,objectSectionEmptyState:i`
+      justify-content: center !important;
+      width: 100%;
+      min-width: 100px;
+      height: 100%;
+      background-color: ${t.colorBgContainerDisabled};
+      border: 1px solid transparent !important;
+    `,objectSectionEmptyStateDisabled:i`
+      background-color: ${t.colorBgContainerDisabled} !important;
+    `,objectSectionEmptyStateHighlight:i`
+      background-color: ${t.Colors.Brand.Warning.colorWarningBg} !important;
+      border-color: ${t.colorBorder} !important;
+    `}}),P=["systemData"],_=["block","fieldcollections"],E=e=>{let{breadcrumbsList:t,mergerData:i,isExpandedUnmodifiedFields:l}=e,{t:n}=(0,a.useTranslation)(),{styles:o}=C(),{selectedMergerObjects:d,roles:u,copyFieldToTarget:m,resetField:f}=v();return(0,r.jsx)(r.Fragment,{children:null==t?void 0:t.map((e,t)=>{let a="systemData"===e.key;return(0,r.jsxs)("div",{children:[(e=>{let{key:t,isCommonSection:i}=e,l=P.includes(t),a=(l?n(`version.category.title.${t}`):t).split("/"),[d,...s]=l?a:a.map(e=>n(e)),u=s.length>0?` | ${s.join(" | ")}`:"";return(0,c.isEmptyValue)(d)&&(0,c.isEmptyValue)(u)?null:(0,r.jsxs)(x.Text,{className:T()(o.sectionTitle,{[o.subSectionTitle]:!i}),strong:!0,children:[d,!(0,c.isEmptyValue)(u)&&(0,r.jsx)("span",{className:o.subSectionText,children:u})]})})({key:e.key,isCommonSection:a}),(0,r.jsx)(x.Flex,{className:T()(o.sectionFields,{[o.sectionFieldsWithoutBorder]:!a}),gap:"extra-small",vertical:!0,children:i.map((t,i)=>{let h=e.key===t.Field.fieldBreadcrumbTitle,b=e.fieldKeys.includes(t.Field.name);return h&&b&&(0,r.jsx)($.AutoHideEmptyContent,{contentSelector:`.${o.objectSectionFieldItemContent}`,children:(0,r.jsx)("div",{children:(0,r.jsx)(x.Flex,{gap:"mini",children:A.map((e,i)=>{var h;let b=null==t?void 0:t.isDifferent,g=0===i,j=1===i,v=0===i?u.main:u.target,y=null==d||null==(h=d[v])?void 0:h.id,S=_.includes(t.Field.fieldtype),B=(b||t.isTouched)&&S&&(0,c.isEmptyValue)(t[e]);return(0,r.jsxs)(x.Flex,{className:o.objectSectionFieldItemWrapper,gap:"mini",vertical:!0,children:[(0,r.jsx)("div",{children:(e=>{let{fieldItem:t,isCommonSection:i,isMainVersion:l,isCompareVersion:a}=e,d=t.Field.title,u=t.Field.locale;if((0,c.isEmptyValue)(d))return(0,r.jsx)(r.Fragment,{});let p=i?n(`version.${d}`):n(d);return(0,r.jsx)("div",{className:o.fieldTitle,children:(0,r.jsxs)(x.Flex,{align:"center",className:o.fieldTitleContent,justify:"space-between",children:[l&&(0,r.jsxs)(x.Text,{children:[p," ",!(0,s.isEmpty)(u)&&(0,r.jsxs)(x.Text,{type:"secondary",children:["| ",u.toUpperCase()]})]}),!i&&l&&t.isDifferent&&(0,r.jsx)(x.IconButton,{icon:{value:"arrow-square-right"},onClick:()=>{m((null==t?void 0:t.fieldPath)??"")},size:"small"}),!i&&l&&!t.isDifferent&&!t.isTouched&&(0,r.jsx)(x.IconButton,{disabled:!0,icon:{value:"lock"},size:"small"}),!i&&a&&t.isTouched&&(0,r.jsx)(x.IconButton,{danger:!0,icon:{value:"corner-up-left"},onClick:()=>{f((null==t?void 0:t.fieldPath)??"")},size:"small"})]})})})({fieldItem:t,isCommonSection:a,isMainVersion:g,isCompareVersion:j})}),(0,r.jsxs)("div",{className:o.objectSectionFieldItemContent,children:[B&&(0,r.jsx)(x.Flex,{align:"center",className:T()(o.objectSectionFieldItem,o.objectSectionEmptyState,{[o.objectSectionEmptyStateDisabled]:g,[o.objectSectionEmptyStateHighlight]:j&&b}),justify:"center",children:n("compare_objects.empty")}),(0,r.jsx)(p.DataObjectProvider,{id:y,children:(0,r.jsx)(w.FieldCollectionProvider,{id:y,children:(0,r.jsx)(p.DataComponent,{className:T()(o.objectSectionFieldItem,"versionFieldItem",{[o.objectSectionFieldItemHighlight]:b&&j&&!a,versionFieldItemHighlight:b&&j&&!a}),datatype:"data",fieldCollectionModifiedList:null==t?void 0:t.fieldCollectionModifiedList,fieldType:t.Field.fieldtype,isExpandedUnmodifiedFields:l,...t.Field,name:t.Field.name,value:t[e]},`${t.fieldPath}-${t.isTouched}-${e}`)},`${y}-${t.fieldPath}-${t.isTouched}-${e}`)},`${y}-${t.fieldPath}-${t.isTouched}-${e}`)]})]},`${i}-${e}`)})})})},`${i}-${t.Field.name}`)})})]},`${t}-${e.key}`)})})},I=()=>{let e,{t}=(0,a.useTranslation)(),{styles:i}=C(),{selectedMergerObjects:l,canCompare:n,mergerFields:o,isLoading:c,roles:u}=v(),{openElement:p}=(0,w.useElementHelper)(),[m,f]=(0,d.useState)(!1),h=(0,d.useMemo)(()=>o.filter(e=>!(0,s.isEqual)((null==e?void 0:e.main)??null,(null==e?void 0:e.target)??null)||e.isTouched),[o]),b=(0,d.useMemo)(()=>m?o:h,[m,o,h]),g=(0,d.useMemo)(()=>{let e;return e={},o.forEach(t=>{let i=t.Field.fieldBreadcrumbTitle??"systemData";F.includes(t.Field.fieldtype)||((0,s.isUndefined)(e[i])&&(e[i]=new Set),e[i].add(t.Field.name))}),Object.entries(e).map(e=>{let[t,i]=e;return{key:t,fieldKeys:Array.from(i)}})},[o]),j=(0,d.useMemo)(()=>(e=>{let{data:t,breadcrumbsList:i}=e,l=(0,s.map)(t,"Field.name"),n=(0,s.map)(t,"Field.fieldBreadcrumbTitle");return(0,s.isEmpty)(i)?[]:(0,s.filter)((0,s.map)(i,e=>({...e,fieldKeys:(0,s.intersection)(e.fieldKeys,l)})),e=>!(0,s.isEmpty)(e.fieldKeys)&&n.includes(e.key))})({data:b,breadcrumbsList:g}),[b,g]),y=(0,d.useMemo)(()=>(0,s.isEmpty)(h)?[]:h.map(e=>e.Field.title),[h]),S=!(0,s.isUndefined)(y)&&y.length>0;return(0,r.jsxs)(x.Content,{centered:!n,loading:c,padded:!0,padding:{x:"small",y:"extra-small"},children:[!n&&(0,r.jsx)(x.Text,{type:"secondary",children:t("compare_objects.initial_description")}),n&&!(0,s.isEmpty)(b)&&(0,r.jsxs)(x.Flex,{vertical:!0,children:[(0,r.jsx)(x.Flex,{className:i.headerContainer,wrap:"wrap",children:(e=[u.main,u.target],(0,r.jsx)(r.Fragment,{children:e.map(e=>{let t=l[e];return(0,r.jsxs)(x.Flex,{align:"center",className:i.headerItem,justify:"space-between",children:[(0,r.jsxs)(x.Text,{strong:!0,children:[null==t?void 0:t.fullPath," (id:",null==t?void 0:t.id,")"]}),(0,r.jsx)(x.IconButton,{icon:{value:"open-folder"},onClick:()=>{p({id:Number(null==t?void 0:t.id),type:"data-object"})},type:"link"})]},`${e}-${null==t?void 0:t.id}`)})}))}),(0,r.jsxs)(x.Flex,{className:i.content,vertical:!0,children:[(0,r.jsx)("div",{className:i.switchContainer,children:(0,r.jsx)(x.Switch,{labelLeft:(0,r.jsx)(x.Text,{children:t("compare_objects.expand_unmodified_fields")}),onChange:()=>{f(!m)},value:m})}),!S&&!m&&(0,r.jsx)(x.Flex,{justify:"center",children:(0,r.jsx)(x.Text,{className:i.emptyState,children:t("compare_objects.no_difference")})}),(0,r.jsx)(E,{breadcrumbsList:j,isExpandedUnmodifiedFields:m,mergerData:b})]})]})]})},O=e=>{let{isFetching:t,refetch:i}=e;return t?(0,r.jsx)(x.Box,{padding:{x:"extra-small",y:"extra-small"},children:(0,r.jsx)(x.Spin,{})}):(0,r.jsx)(x.IconButton,{icon:{value:"refresh"},onClick:async()=>{i()}})},k=()=>{let{t:e}=(0,a.useTranslation)(),{canCompare:t,mergerFields:i,refetch:l,isFetching:n,touchedFields:o,mirror:d,applyAll:c,resetAll:u,save:p,isSaving:m,hasUnsavedChanges:f,canSaveTarget:h}=v();return!t||(0,s.isEmpty)(i)?(0,r.jsx)(r.Fragment,{}):(0,r.jsxs)(x.Toolbar,{justify:"space-between",children:[(0,r.jsxs)(x.Split,{size:"extra-small",children:[(0,r.jsx)(O,{isFetching:n,refetch:l}),(0,r.jsxs)(x.Flex,{gap:"extra-small",children:[(0,r.jsx)(x.IconTextButton,{icon:{value:"contrast-01"},onClick:d,children:e("compare_objects.toolbar.mirror_view")}),(0,r.jsx)(x.Tooltip,{title:e("compare_objects.toolbar.apply_all.description"),children:(0,r.jsx)(x.IconTextButton,{icon:{value:"corner-up-left"},onClick:c,children:e("compare_objects.toolbar.apply_all")})})]})]}),(0,r.jsxs)(x.Flex,{gap:"extra-small",children:[(0,r.jsx)(x.IconTextButton,{disabled:(0,s.isEmpty)(o),icon:{value:"corner-up-left"},onClick:u,children:e("compare_objects.toolbar.reset")}),(0,r.jsx)(x.Tooltip,{title:h?"":e("compare_objects.toolbar.save.no_permission"),children:(0,r.jsx)(x.Button,{disabled:!f||!h,loading:m,onClick:p,type:"primary",children:e("compare_objects.toolbar.save")})})]})]})},M=e=>{let{hideForm:t=!1}=e;return(0,r.jsx)(x.ContentLayout,{renderToolbar:(0,r.jsx)(k,{}),renderTopBar:t?void 0:(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(B,{}),(0,r.jsx)(x.Divider,{size:"none",theme:"secondary"})]}),children:(0,r.jsx)(I,{})})},N=(e,t)=>{a.store.dispatch((0,o.openMainWidget)({name:"ObjectMergerPage",id:`object-merger-page-${e}-${t}`,component:"object-merger-page",config:{translationKey:"compare_objects.nav.compare_objects",icon:{type:"name",value:"compare"},initialObjectA:{type:"object",id:e},initialObjectB:{type:"object",id:t}}}))},U={mergeObjects:N,EmbeddedComponent:e=>{let{objectAId:t,objectBId:i,initialRoles:l,onMerged:n}=e;return(0,r.jsx)(j,{initialObjects:{A:{type:"object",id:t},B:{type:"object",id:i}},initialRoles:l,onMerged:n,children:(0,r.jsx)(M,{hideForm:!0})})}},R=e=>{let{initialObjectA:t,initialObjectB:i}=e,l=(0,s.isUndefined)(t)||(0,s.isUndefined)(i)?void 0:{A:t,B:i};return(0,r.jsx)(j,{initialObjects:l,children:(0,r.jsx)(M,{})})},V={onInit:()=>{l.container.get(a.serviceIds.mainNavRegistry).registerMainNavItem({path:"DataManagement/Compare Objects",label:"compare_objects.nav.compare_objects",order:500,permission:n.UserPermission.Objects,widgetConfig:{name:"ObjectMergerPage",id:"object-merger-page",component:"object-merger-page",config:{translationKey:"compare_objects.nav.compare_objects",icon:{type:"name",value:"compare"}}}}),l.container.get(a.serviceIds.widgetManager).registerWidget({name:"object-merger-page",component:R}),window.PimcoreStudioObjectMerger={mergeObjects:N}}};void 0!==(e=i.hmd(e)).hot&&e.hot.accept();let W={name:"object-merger-plugin",onInit:e=>{let{container:t}=e;t.bind("ObjectMerger/Api").toConstantValue(U)},onStartup:e=>{let{moduleSystem:t}=e;t.registerModule(V),console.log("Hello from object merger bundle.")}}},6942(e){!function(){"use strict";var t={}.hasOwnProperty;function i(){for(var e="",n=0;n<arguments.length;n++){var a=arguments[n];a&&(e=l(e,function(e){if("string"==typeof e||"number"==typeof e)return e;if("object"!=typeof e)return"";if(Array.isArray(e))return i.apply(null,e);if(e.toString!==Object.prototype.toString&&!e.toString.toString().includes("[native code]"))return e.toString();var n="";for(var a in e)t.call(e,a)&&e[a]&&(n=l(n,a));return n}(a)))}return e}function l(e,t){return t?e?e+" "+t:e+t:e}e.exports?(i.default=i,e.exports=i):"function"==typeof define&&"object"==typeof define.amd&&define.amd?define("classnames",[],function(){return i}):window.classNames=i}()}}]);
