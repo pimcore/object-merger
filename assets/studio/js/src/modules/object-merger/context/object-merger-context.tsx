@@ -14,10 +14,13 @@ import { serviceIds, useInjection } from '@pimcore/studio-ui-bundle/app'
 import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { type IUseObjectMergerDataReturn, useObjectMergerData } from '../hooks/use-object-merger-data'
 import { type IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
+import { type Roles } from '../types'
 
 interface IObjectMergerProviderProps {
   children: ReactNode
   initialObjects?: IMergerObjectData
+  initialRoles?: Roles
+  onMerged?: () => void
 }
 
 interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
@@ -28,7 +31,7 @@ interface IObjectMergerDataContext extends IUseObjectMergerDataReturn {
 
 const ObjectMergerDataContext = createContext<IObjectMergerDataContext | undefined>(undefined)
 
-export const ObjectMergerProvider = ({ children, initialObjects }: IObjectMergerProviderProps): React.JSX.Element => {
+export const ObjectMergerProvider = ({ children, initialObjects, initialRoles, onMerged }: IObjectMergerProviderProps): React.JSX.Element => {
   const [selectedMergerObjects, setSelectedMergerObjects] = useState<IMergerObjectData>({
     A: initialObjects?.A,
     B: initialObjects?.B
@@ -36,7 +39,7 @@ export const ObjectMergerProvider = ({ children, initialObjects }: IObjectMerger
 
   const objectDataRegistry = useInjection<DynamicTypeObjectDataRegistry>(serviceIds['DynamicTypes/ObjectDataRegistry'])
 
-  const objectMergerDataValue = useObjectMergerData({ selectedMergerObjects, objectDataRegistry })
+  const objectMergerDataValue = useObjectMergerData({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged })
 
   const { setCanCompare, setIsSameObjectType } = objectMergerDataValue
 

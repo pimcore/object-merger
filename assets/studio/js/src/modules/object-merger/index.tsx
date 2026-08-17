@@ -10,9 +10,10 @@
 
 import { type MainNavRegistry } from '@pimcore/studio-ui-bundle/modules/app'
 import { container, type AbstractModule } from '@pimcore/studio-ui-bundle'
-import { type WidgetRegistry, openMainWidget } from '@pimcore/studio-ui-bundle/modules/widget-manager'
+import { type WidgetRegistry } from '@pimcore/studio-ui-bundle/modules/widget-manager'
 import { UserPermission } from '@pimcore/studio-ui-bundle/modules/auth'
-import { serviceIds, store } from '@pimcore/studio-ui-bundle/app'
+import { serviceIds } from '@pimcore/studio-ui-bundle/app'
+import { mergeObjects } from './api/object-merger-api'
 import { ObjectMergerPageWrapper } from './object-merger-page/object-merger-page-wrapper'
 
 declare global {
@@ -53,23 +54,12 @@ export const ObjectMergerModule: AbstractModule = {
       component: ObjectMergerPageWrapper
     })
 
+    /**
+     * @deprecated resolve the 'ObjectMerger/Api' container service instead; the global stays
+     * one release for integrations that still read it.
+     */
     window.PimcoreStudioObjectMerger = {
-      mergeObjects: (mainId: number, targetId: number): void => {
-        store.dispatch(openMainWidget({
-          name: 'ObjectMergerPage',
-          id: `object-merger-page-${mainId}-${targetId}`,
-          component: 'object-merger-page',
-          config: {
-            translationKey: 'compare_objects.nav.compare_objects',
-            icon: {
-              type: 'name',
-              value: 'compare'
-            },
-            initialObjectA: { type: 'object', id: mainId },
-            initialObjectB: { type: 'object', id: targetId }
-          }
-        }))
-      }
+      mergeObjects
     }
   }
 }

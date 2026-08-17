@@ -23,6 +23,10 @@ import { type IFormattedFieldData, type IMergerField, type Roles, type VersionDa
 export interface IUseObjectMergerDataProps {
   selectedMergerObjects: IMergerObjectData
   objectDataRegistry: DynamicTypeObjectDataRegistry
+  /** which side receives applied values initially; defaults to { main: 'A', target: 'B' } */
+  initialRoles?: Roles
+  /** called after a merge has been saved successfully */
+  onMerged?: () => void
 }
 
 export interface IUseObjectMergerDataReturn {
@@ -50,13 +54,13 @@ export interface IUseObjectMergerDataReturn {
   canSaveTarget: boolean
 }
 
-export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
+export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
-  const [roles, setRoles] = useState<Roles>({ main: 'A', target: 'B' })
+  const [roles, setRoles] = useState<Roles>(initialRoles ?? { main: 'A', target: 'B' })
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
 
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
@@ -306,6 +310,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
           }]
         }
       })).unwrap()
+
+      onMerged?.()
     } catch (error) {
       console.error('Failed to save object', error)
     } finally {
@@ -316,7 +322,7 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
 
       setIsSaving(false)
     }
-  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch])
+  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch, onMerged])
 
   const mirror = (): void => {
     setRoles(prev => ({
