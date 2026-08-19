@@ -1,0 +1,50 @@
+{
+  "allFiles": [
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/main.840ac489.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/remoteEntry.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/473.52a4d8f7.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/668.d2085f31.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/__federation_expose_default_export.a70dc97c.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/102.c8072fd5.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/109.5eeb576f.js",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/mf-stats.json",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/mf-manifest.json",
+    "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/main.html"
+  ],
+  "entries": {
+    "main": {
+      "html": [
+        "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/main.html"
+      ],
+      "initial": {
+        "js": [
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/109.5eeb576f.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/main.840ac489.js"
+        ]
+      },
+      "async": {
+        "js": [
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/102.c8072fd5.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/668.d2085f31.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/473.52a4d8f7.js"
+        ]
+      }
+    },
+    "pimcore_objectmerger_bundle": {
+      "initial": {
+        "js": [
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/remoteEntry.js"
+        ]
+      },
+      "async": {
+        "js": [
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/102.c8072fd5.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/__federation_expose_default_export.a70dc97c.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/668.d2085f31.js",
+          "/bundles/objectmerger/studio/build/43630f64-f6ae-40d7-810e-3fe5ee12db89/static/js/async/473.52a4d8f7.js"
+        ]
+      }
+    }
+  },
+  "integrity": {}
+}
