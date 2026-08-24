@@ -12,6 +12,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
+import { ApiError, type ApiErrorData, trackError } from '@pimcore/studio-ui-bundle/modules/app'
 import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { BatchAppendMode, addBatchAppendMode } from '@pimcore/studio-ui-bundle/modules/data-object'
@@ -311,15 +312,15 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
         }
       })).unwrap()
 
-      onMerged?.()
-    } catch (error) {
-      console.error('Failed to save object', error)
-    } finally {
       setLastSavedVersions(prev => ({
         ...prev,
         [targetKey]: cloneDeep(versions[targetKey])
       }))
 
+      onMerged?.()
+    } catch (error) {
+      trackError(new ApiError(error as ApiErrorData))
+    } finally {
       setIsSaving(false)
     }
   }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch, onMerged])
