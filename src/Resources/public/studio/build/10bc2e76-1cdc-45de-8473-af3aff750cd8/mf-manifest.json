@@ -22,7 +22,7 @@
     "globalName": "pimcore_objectmerger_bundle",
     "pluginVersion": "2.3.0",
     "prefetchInterface": false,
-    "publicPath": "/bundles/objectmerger/studio/build/fb6245a0-a698-42c9-abb3-ee5489adfed1/"
+    "publicPath": "/bundles/objectmerger/studio/build/10bc2e76-1cdc-45de-8473-af3aff750cd8/"
   },
   "shared": [
     {
