@@ -35,6 +35,6 @@ export const ObjectMergerEmbedded = ({ objectAId, objectBId, initialRoles, onMer
     initialRoles={ initialRoles }
     onMerged={ onMerged }
   >
-    <ObjectMergerPage hideForm />
+    <ObjectMergerPage embedded />
   </ObjectMergerProvider>
 )

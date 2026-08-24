@@ -11,14 +11,13 @@
 import React from 'react'
 import { isEmpty } from 'lodash'
 import { useTranslation } from '@pimcore/studio-ui-bundle/app'
-import { Toolbar, Flex, IconTextButton, Button, Tooltip, Split } from '@pimcore/studio-ui-bundle/components'
-import { Refetch } from '../refetch/refetch'
+import { Toolbar, Flex, IconTextButton, Button, Tooltip } from '@pimcore/studio-ui-bundle/components'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields, refetch, isFetching, touchedFields, mirror, applyAll, resetAll, save, isSaving, hasUnsavedChanges, canSaveTarget } = useObjectMergerContext()
+  const { canCompare, mergerFields, touchedFields, mirror, applyAll, resetAll, save, isSaving, hasUnsavedChanges, canSaveTarget } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -26,36 +25,26 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
 
   return (
     <Toolbar justify="space-between">
-      <Split size='extra-small'>
-        <Refetch
-          isFetching={ isFetching }
-          refetch={ refetch }
-        />
-        <Flex gap="extra-small">
-          <IconTextButton
-            icon={ { value: 'contrast-01' } }
-            onClick={ mirror }
-          >
-            {t('compare_objects.toolbar.mirror_view')}
-          </IconTextButton>
-          <Tooltip title={ t('compare_objects.toolbar.apply_all.description') }>
-            <IconTextButton
-              icon={ { value: 'corner-up-left' } }
-              onClick={ applyAll }
-            >
-              {t('compare_objects.toolbar.apply_all')}
-            </IconTextButton>
-          </Tooltip>
-        </Flex>
-      </Split>
       <Flex gap="extra-small">
         <IconTextButton
+          icon={ { value: 'contrast-01' } }
+          onClick={ mirror }
+        >
+          {t('compare_objects.toolbar.mirror_view')}
+        </IconTextButton>
+        <Tooltip title={ t('compare_objects.toolbar.apply_all.description') }>
+          <Button onClick={ applyAll }>
+            {t('compare_objects.toolbar.apply_all')}
+          </Button>
+        </Tooltip>
+      </Flex>
+      <Flex gap="extra-small">
+        <Button
           disabled={ isEmpty(touchedFields) }
-          icon={ { value: 'corner-up-left' } }
           onClick={ resetAll }
         >
           {t('compare_objects.toolbar.reset')}
-        </IconTextButton>
+        </Button>
         <Tooltip title={ !canSaveTarget ? t('compare_objects.toolbar.save.no_permission') : '' }>
           <Button
             disabled={ !hasUnsavedChanges || !canSaveTarget }

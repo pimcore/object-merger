@@ -15,16 +15,16 @@ import { ObjectMergerView } from './components/object-merger-view/object-merger-
 import { ObjectMergerToolbar } from './components/object-merger-toolbar/object-merger-toolbar'
 
 export interface ObjectMergerPageProps {
-  /** hosts embedding the merger render their own object header instead of the picker form */
-  hideForm?: boolean
+  /** embedding hosts render their own object header, so the picker form and header rows hide */
+  embedded?: boolean
 }
 
-export const ObjectMergerPage = ({ hideForm = false }: ObjectMergerPageProps): React.JSX.Element => {
+export const ObjectMergerPage = ({ embedded = false }: ObjectMergerPageProps): React.JSX.Element => {
   return (
     <ContentLayout
       renderToolbar={ <ObjectMergerToolbar /> }
       renderTopBar={
-        hideForm
+        embedded
           ? undefined
           : (
             <>
@@ -37,7 +37,7 @@ export const ObjectMergerPage = ({ hideForm = false }: ObjectMergerPageProps): R
             )
       }
     >
-      <ObjectMergerView />
+      <ObjectMergerView hideObjectHeader={ embedded } />
     </ContentLayout>
   )
 }

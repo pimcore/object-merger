@@ -18,7 +18,12 @@ import { type CategoriesList, getObjectBreadcrumbsList, getObjectBreadcrumbsList
 import { ObjectMergerVersions } from './components/object-merger-versions/object-merger-versions'
 import { useStyles } from './object-merger-view.styles'
 
-export const ObjectMergerView = (): React.JSX.Element => {
+interface ObjectMergerViewProps {
+  /** embedding hosts show the pair themselves, so the fullPath/(id) header rows are redundant */
+  hideObjectHeader?: boolean
+}
+
+export const ObjectMergerView = ({ hideObjectHeader = false }: ObjectMergerViewProps): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
@@ -101,12 +106,14 @@ export const ObjectMergerView = (): React.JSX.Element => {
       )}
       {canCompare && !isEmpty(mergerData) && (
         <Flex vertical>
-          <Flex
-            className={ styles.headerContainer }
-            wrap="wrap"
-          >
-            {renderHeaderItem()}
-          </Flex>
+          {!hideObjectHeader && (
+            <Flex
+              className={ styles.headerContainer }
+              wrap="wrap"
+            >
+              {renderHeaderItem()}
+            </Flex>
+          )}
           <Flex
             className={ styles.content }
             vertical

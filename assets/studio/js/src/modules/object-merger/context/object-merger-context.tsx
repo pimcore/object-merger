@@ -50,6 +50,11 @@ export const ObjectMergerProvider = ({ children, initialObjects, initialRoles, o
 
     setIsSameObjectType(true)
     setCanCompare(bothObjectsSelected)
+
+    // Embedded hosts hide the form, so its Compare button can never trigger the initial load.
+    if (autoCompare && bothObjectsSelected) {
+      objectMergerDataValue.refetch()
+    }
   }, [selectedMergerObjects?.A, selectedMergerObjects?.B])
 
   const contextValue: IObjectMergerDataContext = useMemo(() => ({
