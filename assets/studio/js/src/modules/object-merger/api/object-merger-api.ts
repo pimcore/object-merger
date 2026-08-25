@@ -14,9 +14,7 @@ import { openMainWidget } from '@pimcore/studio-ui-bundle/modules/widget-manager
 import { ObjectMergerEmbedded, type ObjectMergerEmbeddedProps } from '../embedded/object-merger-embedded'
 
 export interface ObjectMergerApi {
-  /** opens the merger as a main-area tab with both objects preselected */
   mergeObjects: (mainId: number, targetId: number) => void
-  /** the comparison view without the object-picker form, for embedding into a host surface */
   EmbeddedComponent: ComponentType<ObjectMergerEmbeddedProps>
 }
 
