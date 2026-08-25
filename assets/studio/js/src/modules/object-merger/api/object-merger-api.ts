@@ -15,15 +15,12 @@ import { ObjectMergerEmbedded, type ObjectMergerEmbeddedProps } from '../embedde
 
 /**
  * Container id of the cross-bundle API. Consumers resolve it with
- * `container.isBound(...) && container.get(...)` and mirror the interface locally — they must
- * not import from this bundle (see the data-quality ↔ studio-dashboards precedent).
+ * `container.isBound(...) && container.get(...)` and mirror the interface locally
  */
 export const OBJECT_MERGER_API_SERVICE_ID = 'ObjectMerger/Api'
 
 export interface ObjectMergerApi {
-  /** opens the merger as a main-area tab with both objects preselected */
   mergeObjects: (mainId: number, targetId: number) => void
-  /** the comparison view without the object-picker form, for embedding into a host surface */
   EmbeddedComponent: ComponentType<ObjectMergerEmbeddedProps>
 }
 
