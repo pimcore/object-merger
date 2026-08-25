@@ -10,7 +10,8 @@
 
 import { type IAbstractPlugin } from '@pimcore/studio-ui-bundle'
 import { ObjectMergerModule } from './modules/object-merger'
-import { OBJECT_MERGER_API_SERVICE_ID, objectMergerApi } from './modules/object-merger/api/object-merger-api'
+import { objectMergerApi } from './modules/object-merger/api/object-merger-api'
+import { bundleServiceIds } from './config/service-ids'
 
 if (module.hot !== undefined) {
   module.hot.accept()
@@ -23,7 +24,7 @@ export const ObjectMergerPlugin: IAbstractPlugin = {
   onInit: ({ container }): void => {
     // Cross-bundle API: consumers resolve this id via container.isBound()/get() without any
     // build dependency on this bundle (plugin onInit runs before every module onInit).
-    container.bind(OBJECT_MERGER_API_SERVICE_ID).toConstantValue(objectMergerApi)
+    container.bind(bundleServiceIds['ObjectMerger/Api']).toConstantValue(objectMergerApi)
   },
 
   // register modules here
