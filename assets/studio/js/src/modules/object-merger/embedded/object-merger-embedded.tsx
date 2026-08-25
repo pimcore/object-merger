@@ -20,13 +20,15 @@ export interface ObjectMergerEmbeddedProps {
   initialRoles?: Roles
   /** called after a merge has been saved successfully */
   onMerged?: () => void
+  /** called with the new roles whenever mirroring swaps which side receives applied values */
+  onRolesChanged?: (roles: Roles) => void
 }
 
 /**
  * The merger comparison view without the object-picker form, for hosts that already know
  * which two objects to compare (resolved via the 'ObjectMerger/Api' container service).
  */
-export const ObjectMergerEmbedded = ({ objectAId, objectBId, initialRoles, onMerged }: ObjectMergerEmbeddedProps): React.JSX.Element => (
+export const ObjectMergerEmbedded = ({ objectAId, objectBId, initialRoles, onMerged, onRolesChanged }: ObjectMergerEmbeddedProps): React.JSX.Element => (
   <ObjectMergerProvider
     initialObjects={ {
       A: { type: 'object', id: objectAId },
@@ -34,6 +36,7 @@ export const ObjectMergerEmbedded = ({ objectAId, objectBId, initialRoles, onMer
     } }
     initialRoles={ initialRoles }
     onMerged={ onMerged }
+    onRolesChanged={ onRolesChanged }
   >
     <ObjectMergerPage embedded />
   </ObjectMergerProvider>

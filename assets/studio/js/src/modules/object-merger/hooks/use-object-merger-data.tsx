@@ -28,6 +28,8 @@ export interface IUseObjectMergerDataProps {
   initialRoles?: Roles
   /** called after a merge has been saved successfully */
   onMerged?: () => void
+  /** called with the new roles whenever mirroring swaps which side receives applied values */
+  onRolesChanged?: (roles: Roles) => void
 }
 
 export interface IUseObjectMergerDataReturn {
@@ -55,7 +57,7 @@ export interface IUseObjectMergerDataReturn {
   canSaveTarget: boolean
 }
 
-export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
+export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged, onRolesChanged }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
@@ -326,10 +328,13 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
   }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch, onMerged])
 
   const mirror = (): void => {
-    setRoles(prev => ({
-      main: prev.target,
-      target: prev.main
-    }))
+    const newRoles: Roles = {
+      main: roles.target,
+      target: roles.main
+    }
+
+    setRoles(newRoles)
+    onRolesChanged?.(newRoles)
 
     setVersions({
       A: cloneDeep(initialVersions.A),
