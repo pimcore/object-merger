@@ -6,8 +6,8 @@ compare_objects.form.error.different_object_types: De valda objekten har olika t
 compare_objects.toolbar.mirror_view: Spegelvänd vy
 compare_objects.toolbar.apply_all: Tillämpa alla
 compare_objects.toolbar.apply_all.description: Tillämpa alla kopierar värden från vänster till höger och uppdaterar bara de som är olika.
-compare_objects.toolbar.reset: Återställ ändringar
-compare_objects.toolbar.save: Spara
+compare_objects.toolbar.reset: Återställ
+compare_objects.toolbar.save: Sammanfoga
 compare_objects.toolbar.save.no_permission: Du har inte behörighet att spara detta objekt.
 compare_objects.initial_description: Välj två objekt att jämföra.
 compare_objects.expand_unmodified_fields: Expandera alla

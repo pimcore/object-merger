@@ -4,10 +4,10 @@ compare_objects.title: Compare Objects
 compare_objects.form.compare_btn: Compare
 compare_objects.form.error.different_object_types: The selected objects have different types and cannot be compared.
 compare_objects.toolbar.mirror_view: Mirror view
-compare_objects.toolbar.apply_all: Apply all
-compare_objects.toolbar.apply_all.description: Apply all copies values from the left to the right, updating only those that are different.
-compare_objects.toolbar.reset: Reset changes
-compare_objects.toolbar.save: Save
+compare_objects.toolbar.apply_all: Batch Apply
+compare_objects.toolbar.apply_all.description: Batch Apply copies values from the left to the right, updating only those that are different.
+compare_objects.toolbar.reset: Revert
+compare_objects.toolbar.save: Merge
 compare_objects.toolbar.save.no_permission: You don't have permission to save this object.
 compare_objects.initial_description: Please select two objects to compare.
 compare_objects.expand_unmodified_fields: Expand all

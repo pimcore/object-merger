@@ -24,6 +24,12 @@ import { type IFormattedFieldData, type IMergerField, type Roles, type VersionDa
 export interface IUseObjectMergerDataProps {
   selectedMergerObjects: IMergerObjectData
   objectDataRegistry: DynamicTypeObjectDataRegistry
+  /** which side receives applied values initially; defaults to { main: 'A', target: 'B' } */
+  initialRoles?: Roles
+  /** called after a merge has been saved successfully */
+  onMerged?: () => void
+  /** called with the new roles whenever mirroring swaps which side receives applied values */
+  onRolesChanged?: (roles: Roles) => void
 }
 
 export interface IUseObjectMergerDataReturn {
@@ -51,13 +57,13 @@ export interface IUseObjectMergerDataReturn {
   canSaveTarget: boolean
 }
 
-export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
+export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged, onRolesChanged }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
-  const [roles, setRoles] = useState<Roles>({ main: 'A', target: 'B' })
+  const [roles, setRoles] = useState<Roles>(initialRoles ?? { main: 'A', target: 'B' })
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set())
 
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
@@ -312,18 +318,23 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry 
         ...prev,
         [targetKey]: cloneDeep(versions[targetKey])
       }))
+
+      onMerged?.()
     } catch (error) {
       trackError(new ApiError(error as ApiErrorData))
     } finally {
       setIsSaving(false)
     }
-  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch])
+  }, [roles, versions, initialVersions, touchedFields, selectedMergerObjects, dispatch, onMerged])
 
   const mirror = (): void => {
-    setRoles(prev => ({
-      main: prev.target,
-      target: prev.main
-    }))
+    const newRoles: Roles = {
+      main: roles.target,
+      target: roles.main
+    }
+
+    setRoles(newRoles)
+    onRolesChanged?.(newRoles)
 
     setVersions({
       A: cloneDeep(initialVersions.A),

@@ -6,8 +6,8 @@ compare_objects.form.error.different_object_types: Gli oggetti selezionati hanno
 compare_objects.toolbar.mirror_view: Vista speculare
 compare_objects.toolbar.apply_all: Applica tutto
 compare_objects.toolbar.apply_all.description: Applica tutto copia i valori da sinistra a destra, aggiornando solo quelli che sono diversi.
-compare_objects.toolbar.reset: Reimposta le modifiche
-compare_objects.toolbar.save: Salva
+compare_objects.toolbar.reset: Ripristina
+compare_objects.toolbar.save: Unisci
 compare_objects.toolbar.save.no_permission: Non si dispone dei permessi per salvare questo oggetto.
 compare_objects.initial_description: Selezionare due oggetti da confrontare.
 compare_objects.expand_unmodified_fields: Espandi tutto

@@ -6,8 +6,8 @@ compare_objects.form.error.different_object_types: De valgte objektene har forsk
 compare_objects.toolbar.mirror_view: Speilvend visning
 compare_objects.toolbar.apply_all: Bruk alle
 compare_objects.toolbar.apply_all.description: Bruk alle kopierer verdier fra venstre til høyre, og oppdaterer bare de som er forskjellige.
-compare_objects.toolbar.reset: Tilbakestill endringer
-compare_objects.toolbar.save: Lagre
+compare_objects.toolbar.reset: Tilbakestill
+compare_objects.toolbar.save: Slå sammen
 compare_objects.toolbar.save.no_permission: Du har ikke tillatelse til å lagre dette objektet.
 compare_objects.initial_description: Velg to objekter å sammenligne.
 compare_objects.expand_unmodified_fields: Utvid alle
