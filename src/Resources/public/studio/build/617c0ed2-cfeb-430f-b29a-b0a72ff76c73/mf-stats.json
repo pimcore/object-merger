@@ -22,7 +22,7 @@
     "globalName": "pimcore_objectmerger_bundle",
     "pluginVersion": "2.3.0",
     "prefetchInterface": false,
-    "publicPath": "/bundles/objectmerger/studio/build/249a293f-d19f-4f86-8a71-33c8599f1985/"
+    "publicPath": "/bundles/objectmerger/studio/build/617c0ed2-cfeb-430f-b29a-b0a72ff76c73/"
   },
   "shared": [
     {
@@ -248,7 +248,7 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/__federation_expose_default_export.852f5fc9.js"
+            "static/js/async/__federation_expose_default_export.6dcb8e04.js"
           ],
           "async": []
         },

@@ -298,6 +298,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
     })
 
     if (isEmpty(changedData)) {
+      // Nothing to merge — treat it as a completed step so embedded hosts can advance.
+      onMerged?.()
       return
     }
 

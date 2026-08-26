@@ -17,7 +17,7 @@ import { useObjectMergerContext } from '../../../context/object-merger-context'
 export const ObjectMergerToolbar = (): React.JSX.Element => {
   const { t } = useTranslation()
 
-  const { canCompare, mergerFields, touchedFields, mirror, applyAll, resetAll, save, isSaving, hasUnsavedChanges, canSaveTarget } = useObjectMergerContext()
+  const { canCompare, mergerFields, touchedFields, mirror, applyAll, resetAll, save, isSaving, hasUnsavedChanges, canSaveTarget, autoCompare } = useObjectMergerContext()
 
   if (!canCompare || isEmpty(mergerFields)) {
     return <></>
@@ -47,7 +47,7 @@ export const ObjectMergerToolbar = (): React.JSX.Element => {
         </Button>
         <Tooltip title={ !canSaveTarget ? t('compare_objects.toolbar.save.no_permission') : '' }>
           <Button
-            disabled={ !hasUnsavedChanges || !canSaveTarget }
+            disabled={ hasUnsavedChanges ? !canSaveTarget : !autoCompare }
             loading={ isSaving }
             onClick={ save }
             type="primary"
