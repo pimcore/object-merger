@@ -1,0 +1,14 @@
+compare_objects.empty: Leeg
+compare_objects.nav.compare_objects: Objecten vergelijken
+compare_objects.title: Objecten vergelijken
+compare_objects.form.compare_btn: Vergelijken
+compare_objects.form.error.different_object_types: De geselecteerde objecten hebben verschillende typen en kunnen niet worden vergeleken.
+compare_objects.toolbar.mirror_view: Spiegelweergave
+compare_objects.toolbar.apply_all: Batchgewijs toepassen
+compare_objects.toolbar.apply_all.description: Batchgewijs toepassen kopieert waarden van links naar rechts en werkt alleen de waarden bij die verschillen.
+compare_objects.toolbar.reset: Terugdraaien
+compare_objects.toolbar.save: Samenvoegen
+compare_objects.toolbar.save.no_permission: Je hebt geen toestemming om dit object op te slaan.
+compare_objects.initial_description: Selecteer twee objecten om te vergelijken.
+compare_objects.expand_unmodified_fields: Alles uitvouwen
+compare_objects.no_difference: Er is geen verschil tussen de geselecteerde versies

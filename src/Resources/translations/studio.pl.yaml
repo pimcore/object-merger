@@ -1,0 +1,14 @@
+compare_objects.empty: Pusty
+compare_objects.nav.compare_objects: Porównaj obiekty
+compare_objects.title: Porównaj obiekty
+compare_objects.form.compare_btn: Porównaj
+compare_objects.form.error.different_object_types: Wybrane obiekty mają różne typy i nie można ich porównać.
+compare_objects.toolbar.mirror_view: Widok lustrzany
+compare_objects.toolbar.apply_all: Zastosuj zbiorczo
+compare_objects.toolbar.apply_all.description: Zastosowanie zbiorcze kopiuje wartości z lewej strony na prawą, aktualizując tylko te, które się różnią.
+compare_objects.toolbar.reset: Cofnij
+compare_objects.toolbar.save: Scal
+compare_objects.toolbar.save.no_permission: Nie masz uprawnień do zapisania tego obiektu.
+compare_objects.initial_description: Wybierz dwa obiekty do porównania.
+compare_objects.expand_unmodified_fields: Rozwiń wszystko
+compare_objects.no_difference: Nie ma różnicy między wybranymi wersjami
