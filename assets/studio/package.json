@@ -5,6 +5,7 @@
     "dev": "NODE_ENV=development rsbuild build",
     "dev-server": "NODE_ENV=dev-server rsbuild dev",
     "build": "rsbuild build",
+    "package-build": "studio-package-build --build-dir ../../src/Resources/public/studio/build --out-dir ../../build-dist",
     "lint": "eslint ./js",
     "lint-fix": "eslint ./js --fix",
     "lint-fix-watch": "nodemon --watch './js/**/*' --exec \"eslint ./js --fix --cache\" -e js,jsx,ts,tsx",
@@ -37,7 +38,7 @@
     "typescript-eslint": "^8"
   },
   "dependencies": {
-    "@pimcore/studio-ui-bundle": "^1.0.0-canary.20260402-091140-20a56e6",
+    "@pimcore/studio-ui-bundle": "^2026.2.10",
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-table": "^8.20.5",
     "antd-style": "3.7.x",
