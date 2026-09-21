@@ -35,6 +35,14 @@ export const getBreadcrumbTitle = (value1: string, value2: string): string => {
 
 const fieldTypesRequiringChildren = ['block']
 
+/**
+ * Computed on the server, so a merged value is discarded or misleading: `calculatedValue` is
+ * recalculated from the target's own data, `dataQuality` scores the target's field completeness
+ * (pimcore/backend-power-tools-bundle#724). Registration in the registry only means the field can
+ * be rendered — it cannot make these writes meaningful.
+ */
+const NON_MERGEABLE_FIELD_TYPES = new Set(['calculatedValue', 'dataQuality'])
+
 export const processData = async ({ objectId, layout, objectData, objectDataRegistry, layoutsList, setLayoutsList }: {
   objectId: number
   layout: Layout['children']
@@ -69,7 +77,7 @@ export const processData = async ({ objectId, layout, objectData, objectDataRegi
 
         const getFieldPathValue: string = isEmptyValue(fieldPath) ? fieldName : `${fieldPath}.${fieldName}`
 
-        if (!objectDataRegistry.hasDynamicType(currentFieldType)) {
+        if (!objectDataRegistry.hasDynamicType(currentFieldType) || NON_MERGEABLE_FIELD_TYPES.has(currentFieldType)) {
           return []
         }
 
