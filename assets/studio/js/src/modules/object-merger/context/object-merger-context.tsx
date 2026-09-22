@@ -54,9 +54,10 @@ export const ObjectMergerProvider = ({ children, initialObjects, initialRoles, o
 
     // Embedded hosts hide the form, so its Compare button can never trigger the initial load.
     if (autoCompare && bothObjectsSelected) {
-      objectMergerDataValue.refetch()
+      void objectMergerDataValue.loadLayoutData()
     }
-  }, [selectedMergerObjects?.A, selectedMergerObjects?.B])
+    // ids, not member identity: the form rewrites the members with full paths, which must not reload
+  }, [selectedMergerObjects?.A?.id, selectedMergerObjects?.B?.id])
 
   const contextValue: IObjectMergerDataContext = useMemo(() => ({
     ...objectMergerDataValue,

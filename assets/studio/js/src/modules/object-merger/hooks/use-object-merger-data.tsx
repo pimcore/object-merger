@@ -9,15 +9,15 @@
  */
 
 /* eslint-disable max-lines */
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { isEqual, get, setWith, cloneDeep, isEmpty, isUndefined } from 'lodash'
 import { isEmptyValue } from '@pimcore/studio-ui-bundle/utils'
 import { ApiError, type ApiErrorData, trackError } from '@pimcore/studio-ui-bundle/modules/app'
-import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
+import { api as dataObjectApi, useDataObjectGetByIdQuery, useDataObjectGetLayoutByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
 import { type DynamicTypeObjectDataRegistry } from '@pimcore/studio-ui-bundle/modules/element'
 import { BatchAppendMode, addBatchAppendMode } from '@pimcore/studio-ui-bundle/modules/data-object'
 import { useAppDispatch } from '@pimcore/studio-ui-bundle/app'
-import { createMergerFields, processData } from '../helpers/details-functions'
+import { createMergerFields, type ILayoutItem, processData } from '../helpers/details-functions'
 import type { IMergerObjectData } from '../object-merger-page/components/object-merger-view/types'
 import { type IFormattedFieldData, type IMergerField, type Roles, type VersionData } from '../types'
 
@@ -60,7 +60,7 @@ export interface IUseObjectMergerDataReturn {
 export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry, initialRoles, onMerged, onRolesChanged }: IUseObjectMergerDataProps): IUseObjectMergerDataReturn => {
   const dispatch = useAppDispatch()
 
-  const [isLoadingData, setIsLoadingData] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   const [roles, setRoles] = useState<Roles>(initialRoles ?? { main: 'A', target: 'B' })
@@ -68,7 +68,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
 
   const [formattedDataA, setFormattedDataA] = useState<IFormattedFieldData[]>([])
   const [formattedDataB, setFormattedDataB] = useState<IFormattedFieldData[]>([])
-  const [layoutsList, setLayoutsList] = useState<any>([])
+  // a ref, not state: processData reads it mid-call, so B must see the layouts A just fetched
+  const layoutsListRef = useRef<ILayoutItem[]>([])
 
   const [isSameObjectType, setIsSameObjectType] = useState(false)
   const [canCompare, setCanCompare] = useState<boolean>(false)
@@ -79,85 +80,118 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
   const [lastSavedVersions, setLastSavedVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
   const [versions, setVersions] = useState<{ A: VersionData | null, B: VersionData | null }>({ A: null, B: null })
 
+  // Setting the pair is the only load trigger; the hooks share cache and in-flight requests with the
+  // editor and any embedding host, and refetch on their own when a save invalidates the object's tag.
+  const [comparePair, setComparePair] = useState<{ A: number, B: number } | null>(null)
+  const skip = comparePair === null
+
+  const layoutA = useDataObjectGetLayoutByIdQuery({ id: comparePair?.A ?? 0 }, { skip })
+  // object reads always hit the server on Compare (as the former forceRefetch did); layouts are tag-driven
+  const objectA = useDataObjectGetByIdQuery({ id: comparePair?.A ?? 0 }, { skip, refetchOnMountOrArgChange: true })
+  const layoutB = useDataObjectGetLayoutByIdQuery({ id: comparePair?.B ?? 0 }, { skip })
+  const objectB = useDataObjectGetByIdQuery({ id: comparePair?.B ?? 0 }, { skip, refetchOnMountOrArgChange: true })
+
   const loadLayoutData = async (): Promise<void> => {
-    if (isUndefined(selectedMergerObjects.A) || isUndefined(selectedMergerObjects.B)) {
+    const idA = selectedMergerObjects.A?.id
+    const idB = selectedMergerObjects.B?.id
+
+    if (isUndefined(idA) || isUndefined(idB)) {
       return
     }
 
-    setIsLoadingData(true)
-
-    setFormattedDataA([])
-    setFormattedDataB([])
-    setTouchedFields(new Set())
-
-    try {
-      const [layoutAResult, objectAResult, layoutBResult, objectBResult] =
-        await Promise.all([
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.A?.id }, { forceRefetch: true })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.A?.id }, { forceRefetch: true })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetLayoutById.initiate({ id: selectedMergerObjects?.B?.id }, { forceRefetch: true })).unwrap(),
-          dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects?.B?.id }, { forceRefetch: true })).unwrap()
-        ])
-
-      const isSameObjectType = objectAResult?.className === objectBResult?.className
-
-      if (!isSameObjectType) {
-        setIsSameObjectType(false)
-        setCanCompare(false)
-
-        setIsLoadingData(false)
-
-        return
-      }
-
-      const formattedDataA = await processData({
-        objectId: selectedMergerObjects?.A?.id,
-        layout: layoutAResult?.children ?? [],
-        objectData: objectAResult ?? {},
-        objectDataRegistry,
-        layoutsList,
-        setLayoutsList
-      })
-
-      const formattedDataB = await processData({
-        objectId: selectedMergerObjects?.B?.id,
-        layout: layoutBResult?.children ?? [],
-        objectData: objectBResult ?? {},
-        objectDataRegistry,
-        layoutsList,
-        setLayoutsList
-      })
-
-      setFormattedDataA(formattedDataA)
-      setFormattedDataB(formattedDataB)
-
-      setObjectSavePermissions({
-        A: objectAResult?.permissions?.save !== false,
-        B: objectBResult?.permissions?.save !== false
-      })
-
-      const initialA = objectAResult?.objectData ?? {}
-      const initialB = objectBResult?.objectData ?? {}
-
-      setInitialVersions({
-        A: initialA,
-        B: initialB
-      })
-      setLastSavedVersions({
-        A: cloneDeep(initialA),
-        B: cloneDeep(initialB)
-      })
-      setVersions({
-        A: cloneDeep(initialA),
-        B: cloneDeep(initialB)
-      })
-      setCanCompare(true)
-    } catch (error) {
-      console.error('Failed to load merger data', error)
-    } finally {
-      setIsLoadingData(false)
+    // Compare on the loaded pair is a reload of the object reads; layouts stay tag-driven
+    if (comparePair?.A === idA && comparePair?.B === idB) {
+      void objectA.refetch()
+      void objectB.refetch()
+      return
     }
+
+    setComparePair({ A: idA, B: idB })
   }
+
+  const refetch = (): void => { void loadLayoutData() }
+
+  const isFetching = layoutA.isFetching || objectA.isFetching || layoutB.isFetching || objectB.isFetching || isProcessing
+
+  const processRun = useRef(0)
+
+  useEffect(() => {
+    if (skip || isUndefined(layoutA.data) || isUndefined(objectA.data) || isUndefined(layoutB.data) || isUndefined(objectB.data)) {
+      return
+    }
+
+    const run = ++processRun.current
+    const { A: idA, B: idB } = comparePair
+    const layoutAResult = layoutA.data
+    const objectAResult = objectA.data
+    const layoutBResult = layoutB.data
+    const objectBResult = objectB.data
+
+    if (objectAResult.className !== objectBResult.className) {
+      setIsSameObjectType(false)
+      setCanCompare(false)
+      setFormattedDataA([])
+      setFormattedDataB([])
+
+      return
+    }
+
+    const process = async (): Promise<void> => {
+      setIsProcessing(true)
+
+      try {
+        const formattedDataA = await processData({
+          objectId: idA,
+          layout: layoutAResult.children ?? [],
+          objectData: objectAResult,
+          objectDataRegistry,
+          layoutsList: layoutsListRef.current,
+          setLayoutsList: (layouts) => { layoutsListRef.current = layouts }
+        })
+
+        const formattedDataB = await processData({
+          objectId: idB,
+          layout: layoutBResult.children ?? [],
+          objectData: objectBResult,
+          objectDataRegistry,
+          layoutsList: layoutsListRef.current,
+          setLayoutsList: (layouts) => { layoutsListRef.current = layouts }
+        })
+
+        // a newer pair or fresher data superseded this run while processing
+        if (run !== processRun.current) {
+          return
+        }
+
+        setFormattedDataA(formattedDataA)
+        setFormattedDataB(formattedDataB)
+        setTouchedFields(new Set())
+
+        setObjectSavePermissions({
+          A: objectAResult.permissions.save,
+          B: objectBResult.permissions.save
+        })
+
+        // getById is typed as object | folder; the merger only ever compares objects
+        const initialA = ('objectData' in objectAResult ? objectAResult.objectData : undefined) ?? {}
+        const initialB = ('objectData' in objectBResult ? objectBResult.objectData : undefined) ?? {}
+
+        setInitialVersions({ A: initialA, B: initialB })
+        setLastSavedVersions({ A: cloneDeep(initialA), B: cloneDeep(initialB) })
+        setVersions({ A: cloneDeep(initialA), B: cloneDeep(initialB) })
+        setIsSameObjectType(true)
+        setCanCompare(true)
+      } catch (error) {
+        console.error('Failed to load merger data', error)
+      } finally {
+        if (run === processRun.current) {
+          setIsProcessing(false)
+        }
+      }
+    }
+
+    void process()
+  }, [comparePair, layoutA.data, objectA.data, layoutB.data, objectB.data])
 
   const mergerFields = useMemo(() => {
     if (isEmpty(formattedDataA) || isEmpty(formattedDataB)) {
@@ -177,8 +211,6 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
   }, [versions, lastSavedVersions, roles])
 
   const canSaveTarget = useMemo(() => objectSavePermissions[roles.target], [objectSavePermissions, roles])
-
-  const refetch = (): void => { void loadLayoutData() }
 
   const copyFieldToTarget = useCallback((fieldPath: string) => {
     const mainKey = roles.main
@@ -349,8 +381,8 @@ export const useObjectMergerData = ({ selectedMergerObjects, objectDataRegistry,
   return {
     loadLayoutData,
     refetch,
-    isFetching: isLoadingData,
-    isLoading: isLoadingData,
+    isFetching,
+    isLoading: isFetching,
     isSaving,
     mergerFields,
     roles,

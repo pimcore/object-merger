@@ -9,10 +9,10 @@
  */
 
 import { isNil, isUndefined } from 'lodash'
-import React, { useEffect, useRef } from 'react'
-import { useTranslation, useAppDispatch } from '@pimcore/studio-ui-bundle/app'
+import React, { useEffect } from 'react'
+import { useTranslation } from '@pimcore/studio-ui-bundle/app'
 import { Content, Flex, Title, FormKit, Form, ManyToOneRelationInput, type ManyToOneRelationValue, Button, Alert } from '@pimcore/studio-ui-bundle/components'
-import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
+import { useDataObjectGetByIdQuery } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import { useStyles } from './object-merger-form.styles'
 
@@ -20,41 +20,28 @@ export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
 
-  const dispatch = useAppDispatch()
-  const hasAutoCompared = useRef(false)
-
   const { selectedMergerObjects, setSelectedMergerObjects, loadLayoutData, isLoading, canCompare, isSameObjectType, autoCompare } = useObjectMergerContext()
 
   const showError = !isUndefined(selectedMergerObjects?.A) && !isUndefined(selectedMergerObjects?.B) && !isSameObjectType
 
-  useEffect(() => {
-    if (!autoCompare) return
+  // Embedded hosts pass ids only; the full paths come from the same getById entries the merger
+  // loads, so this costs no extra request.
+  const idA = selectedMergerObjects?.A?.id
+  const idB = selectedMergerObjects?.B?.id
+  const needsFullPaths = autoCompare && !isUndefined(idA) && !isUndefined(idB) &&
+    (isNil(selectedMergerObjects?.A?.fullPath) || isNil(selectedMergerObjects?.B?.fullPath))
 
-    if (isUndefined(selectedMergerObjects?.A?.id) || isUndefined(selectedMergerObjects?.B?.id)) return
-
-    if (!isNil(selectedMergerObjects?.A?.fullPath) && !isNil(selectedMergerObjects?.B?.fullPath)) return
-
-    const fetchFullPaths = async (): Promise<void> => {
-      const [objectAResult, objectBResult] = await Promise.all([
-        dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects.A!.id }, { forceRefetch: false })).unwrap(),
-        dispatch(dataObjectApi.endpoints.dataObjectGetById.initiate({ id: selectedMergerObjects.B!.id }, { forceRefetch: false })).unwrap()
-      ])
-
-      setSelectedMergerObjects({
-        A: { ...selectedMergerObjects.A!, fullPath: objectAResult?.fullPath ?? '' },
-        B: { ...selectedMergerObjects.B!, fullPath: objectBResult?.fullPath ?? '' }
-      })
-    }
-
-    void fetchFullPaths()
-  }, [autoCompare, selectedMergerObjects?.A?.id, selectedMergerObjects?.B?.id])
+  const { data: objectA } = useDataObjectGetByIdQuery({ id: idA ?? 0 }, { skip: !needsFullPaths })
+  const { data: objectB } = useDataObjectGetByIdQuery({ id: idB ?? 0 }, { skip: !needsFullPaths })
 
   useEffect(() => {
-    if (autoCompare && canCompare && !hasAutoCompared.current) {
-      hasAutoCompared.current = true
-      void loadLayoutData()
-    }
-  }, [autoCompare, canCompare])
+    if (!needsFullPaths || isUndefined(objectA) || isUndefined(objectB)) return
+
+    setSelectedMergerObjects({
+      A: { ...selectedMergerObjects.A!, fullPath: objectA.fullPath ?? '' },
+      B: { ...selectedMergerObjects.B!, fullPath: objectB.fullPath ?? '' }
+    })
+  }, [needsFullPaths, objectA, objectB])
 
   return (
     <Content

@@ -24,7 +24,7 @@ enum DATATYPE_LIST {
   DATA = 'data'
 }
 
-interface ILayoutItem {
+export interface ILayoutItem {
   type: string
   data: any
 }
