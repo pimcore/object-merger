@@ -43,12 +43,12 @@ export const getObjectBreadcrumbsListWithFields = ({ data, breadcrumbsList }: { 
   if (isUndefined(breadcrumbsList) || isEmpty(breadcrumbsList)) return []
 
   const versionFieldKeys = data.map(item => item.Field.name)
-  const versionFieldBreadcrumbs = data.map(item => item.Field.fieldBreadcrumbTitle)
+  const versionFieldBreadcrumbs = new Set(data.map(item => item.Field.fieldBreadcrumbTitle))
 
   return breadcrumbsList
     .map(breadcrumb => ({
       ...breadcrumb,
       fieldKeys: intersection(breadcrumb.fieldKeys, versionFieldKeys)
     }))
-    .filter(breadcrumb => !isEmpty(breadcrumb.fieldKeys) && versionFieldBreadcrumbs.includes(breadcrumb.key))
+    .filter(breadcrumb => !isEmpty(breadcrumb.fieldKeys) && versionFieldBreadcrumbs.has(breadcrumb.key))
 }
