@@ -8,7 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-import { map, filter, intersection, isEmpty, isUndefined } from 'lodash'
+import { intersection, isEmpty, isUndefined } from 'lodash'
 import { ComparisonCategoryName } from './constants'
 import { type IMergerField } from '../../../types'
 
@@ -40,18 +40,15 @@ export const getObjectBreadcrumbsList = (data: IMergerField[]): CategoriesList =
 }
 
 export const getObjectBreadcrumbsListWithFields = ({ data, breadcrumbsList }: { data: IMergerField[], breadcrumbsList?: CategoriesList }): CategoriesList => {
-  // get all version field keys
-  const versionFieldKeys = map(data, 'Field.name')
-  const versionFieldBreadcrumbs = map(data, 'Field.fieldBreadcrumbTitle')
+  if (isUndefined(breadcrumbsList) || isEmpty(breadcrumbsList)) return []
 
-  if (isEmpty(breadcrumbsList)) return []
+  const versionFieldKeys = data.map(item => item.Field.name)
+  const versionFieldBreadcrumbs = new Set(data.map(item => item.Field.fieldBreadcrumbTitle))
 
-  return filter(
-    // map over list to update field with matching keys
-    map(breadcrumbsList, breadcrumb => ({
-      ...breadcrumb, // keep initial category properties
-      fieldKeys: intersection(breadcrumb.fieldKeys, versionFieldKeys) // keep only matching keys
-    })),
-    breadcrumb => !isEmpty(breadcrumb.fieldKeys) && versionFieldBreadcrumbs.includes(breadcrumb.key) // include only categories with non-empty fieldKeys
-  )
+  return breadcrumbsList
+    .map(breadcrumb => ({
+      ...breadcrumb,
+      fieldKeys: intersection(breadcrumb.fieldKeys, versionFieldKeys)
+    }))
+    .filter(breadcrumb => !isEmpty(breadcrumb.fieldKeys) && versionFieldBreadcrumbs.has(breadcrumb.key))
 }
