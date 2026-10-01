@@ -16,6 +16,8 @@ import { api as dataObjectApi } from '@pimcore/studio-ui-bundle/api/data-object'
 import { useObjectMergerContext } from '../../../context/object-merger-context'
 import { useStyles } from './object-merger-form.styles'
 
+const ALLOWED_DATA_OBJECT_TYPES = ['object', 'variant']
+
 export const ObjectMergerForm = (): React.JSX.Element => {
   const { t } = useTranslation()
   const { styles } = useStyles()
@@ -74,6 +76,7 @@ export const ObjectMergerForm = (): React.JSX.Element => {
             <FormKit>
               <Form.Item name="mainObject">
                 <ManyToOneRelationInput
+                  allowedDataObjectTypes={ ALLOWED_DATA_OBJECT_TYPES }
                   dataObjectsAllowed
                   enableSearch
                   onChange={ (value: ManyToOneRelationValue) => {
@@ -84,6 +87,7 @@ export const ObjectMergerForm = (): React.JSX.Element => {
               </Form.Item>
               <Form.Item name="compareObject">
                 <ManyToOneRelationInput
+                  allowedDataObjectTypes={ ALLOWED_DATA_OBJECT_TYPES }
                   dataObjectsAllowed
                   enableSearch
                   onChange={ (value: ManyToOneRelationValue) => {
