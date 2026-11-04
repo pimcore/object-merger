@@ -19,6 +19,7 @@ import { FieldCollectionProvider } from '@pimcore/studio-ui-bundle/modules/eleme
 import { AutoHideEmptyContent } from '@pimcore/studio-ui-bundle/modules/app'
 import { type CategoriesList } from '../../helpers'
 import { ComparisonCategoryName, MERGE_SOURCES } from '../../constants'
+import { SECTION_FIELD_CONTENT_CLASS_NAME, SECTION_FIELD_ROW_CLASS_NAME, useIsSectionEmpty } from '../../section-visibility'
 import { useObjectMergerContext } from '../../../../../context/object-merger-context'
 import { type IMergerField } from '../../../../../types'
 import { useStyles } from '../../object-merger-view.styles'
@@ -31,6 +32,20 @@ interface IObjectMergerVersions {
 
 const SECTIONS_WITH_TRANSLATION: string[] = [ComparisonCategoryName.SYSTEM_DATA]
 const SECTIONS_WITH_COMPLEX_TYPES: string[] = ['block', 'fieldcollections']
+
+/** hides itself (title included) when none of its field rows is visible */
+const ObjectMergerSection = ({ children }: { children: React.ReactNode }): React.JSX.Element => {
+  const { ref, isEmpty } = useIsSectionEmpty()
+
+  return (
+    <div
+      hidden={ isEmpty }
+      ref={ ref }
+    >
+      {children}
+    </div>
+  )
+}
 
 export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUnmodifiedFields }: IObjectMergerVersions): React.JSX.Element => {
   const { t } = useTranslation()
@@ -116,7 +131,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
         const isCommonSection = breadcrumb.key === ComparisonCategoryName.SYSTEM_DATA
 
         return (
-          <div key={ `${index}-${breadcrumb.key}` }>
+          <ObjectMergerSection key={ `${index}-${breadcrumb.key}` }>
             {renderSectionTitle({ key: breadcrumb.key, isCommonSection })}
             <Flex
               className={ cn(styles.sectionFields, { [styles.sectionFieldsWithoutBorder]: !isCommonSection }) }
@@ -133,7 +148,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                       contentSelector={ `.${styles.objectSectionFieldItemContent}` }
                       key={ `${fieldIndex}-${fieldItem.Field.name}` }
                     >
-                      <div>
+                      <div className={ SECTION_FIELD_ROW_CLASS_NAME }>
                         <Flex gap="mini">
                           {MERGE_SOURCES.map((key, index) => {
                             const isModifiedField = fieldItem?.isDifferent
@@ -156,7 +171,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                                 <div>
                                   {renderFieldTitle({ fieldItem, isCommonSection, isMainVersion, isCompareVersion })}
                                 </div>
-                                <div className={ styles.objectSectionFieldItemContent }>
+                                <div className={ cn(styles.objectSectionFieldItemContent, SECTION_FIELD_CONTENT_CLASS_NAME) }>
                                   {isEmptyModifiedStateForComplexTypes && (
                                     <Flex
                                       align="center"
@@ -204,7 +219,7 @@ export const ObjectMergerVersions = ({ breadcrumbsList, mergerData, isExpandedUn
                 )
               })}
             </Flex>
-          </div>
+          </ObjectMergerSection>
         )
       })}
     </>
