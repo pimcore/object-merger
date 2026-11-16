@@ -91,6 +91,11 @@ class AdminController extends UserAwareController
         return $object;
     }
 
+    private function isAllowedToSave(?AbstractObject $object): bool
+    {
+        return $object instanceof Concrete && ($object->isAllowed('save') || $object->isAllowed('publish'));
+    }
+
     /**
      * Generates a diff for the given two object ids.
      */
@@ -255,7 +260,7 @@ class AdminController extends UserAwareController
         /** @var \Pimcore\Model\DataObject\Concrete $object */
         $object = AbstractObject::getById($objectId);
 
-        if (!$object instanceof Concrete || (!$object->isAllowed('save') && !$object->isAllowed('publish'))) {
+        if (!$this->isAllowedToSave($object)) {
             Logger::debug('prevented saving object id [ ' . $objectId . ' ] because of missing permissions');
 
             return $this->jsonResponse(['success' => false, 'message' => 'missing_permission']);
