@@ -255,6 +255,12 @@ class AdminController extends UserAwareController
         /** @var \Pimcore\Model\DataObject\Concrete $object */
         $object = AbstractObject::getById($objectId);
 
+        if (!$object instanceof Concrete || (!$object->isAllowed('save') && !$object->isAllowed('publish'))) {
+            Logger::debug('prevented saving object id [ ' . $objectId . ' ] because of missing permissions');
+
+            return $this->jsonResponse(['success' => false, 'message' => 'missing_permission']);
+        }
+
         $preMergeEvent = new GenericEvent($this, [
             'targetId' => $object->getId(),
             'sourceId' => ParameterBagHelper::getInt($request->request, 'sourceId'),
