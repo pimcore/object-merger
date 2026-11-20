@@ -8,6 +8,7 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
+/// <reference types="node" />
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
@@ -46,6 +47,7 @@ describe('manifest minimums', () => {
   })
 
   it('AC2: declares directly imported packages', () => {
+    expect(declared['@types/node']).toBe(`^${lock.packages['node_modules/@types/node'].version}`)
     expect(declared.classnames).toBeDefined()
     expect(declared.classnames).toBe(`^${lock.packages['node_modules/classnames'].version}`)
   })
