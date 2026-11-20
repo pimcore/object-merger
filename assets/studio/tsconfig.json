@@ -3,7 +3,7 @@
     "module": "ESNext",
     "target": "es2017",
     "moduleResolution": "bundler",
-    "types": ["reflect-metadata", "@types/webpack-env", "jest" ],
+    "types": ["reflect-metadata", "@types/webpack-env", "jest", "node" ],
     "baseUrl": "./assets/js/",
     "strictNullChecks": true,
     "jsx": "react",

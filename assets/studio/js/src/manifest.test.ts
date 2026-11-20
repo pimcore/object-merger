@@ -8,13 +8,12 @@
  *  @license    Pimcore Open Core License (POCL)
  */
 
-/// <reference types="node" />
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-const root: string = join(__dirname as string, '..', '..')
-const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8') as string) as { dependencies: Record<string, string>, devDependencies: Record<string, string> }
-const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8') as string) as { packages: Record<string, { version: string }> }
+const root: string = join(__dirname, '..', '..')
+const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as { dependencies: Record<string, string>, devDependencies: Record<string, string> }
+const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8')) as { packages: Record<string, { version: string }> }
 const declared: Record<string, string> = { ...manifest.dependencies, ...manifest.devDependencies }
 
 const minMajor = (range: string): number[] =>
